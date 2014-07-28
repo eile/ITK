@@ -101,6 +101,15 @@ typedef int siginfo_t;
 #if defined(KWSYS_SYS_HAS_MACHINE_CPU_H)
 # include <machine/cpu.h>
 #endif
+#if defined(KWSYS_SYSTEMINFORMATION_HAS_BACKTRACE)
+# include <execinfo.h>
+#endif
+#if defined(KWSYS_SYSTEMINFORMATION_HAS_CPP_DEMANGLE)
+# include <cxxabi.h>
+#endif
+#if defined(KWSYS_SYSTEMINFORMATION_HAS_SYMBOL_LOOKUP)
+# include <dlfcn.h>
+#endif
 
 #if defined(__DragonFly__)
 # include <sys/sysctl.h>
