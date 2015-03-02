@@ -280,6 +280,11 @@ function(add_cppcheck _name)
 
     get_cppcheck_arg( ${_input} )
 
+    get_target_property(_imported_target "${_name}" IMPORTED)
+    if(_imported_target)
+      return()
+    endif()
+
     get_target_property(_cppcheck_sources "${_name}" SOURCES)
     set(_files)
     foreach(_source ${_cppcheck_sources})
