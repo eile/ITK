@@ -222,7 +222,7 @@ public:
 
 // false positive warnings with GCC 4.9
 #if defined( __GNUC__ )
-#if ( __GNUC__ == 4 ) && ( __GNUC_MINOR__ == 9 )
+#if ( __GNUC__ == 4 ) && ( __GNUC_MINOR__ > 7 )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
@@ -234,7 +234,7 @@ public:
     return m_Index[dim];
   }
 #if defined( __GNUC__ )
-#if ( __GNUC__ == 4 ) && ( __GNUC_MINOR__ == 9 )
+#if ( __GNUC__ == 4 ) && ( __GNUC_MINOR__ > 7 )
 #pragma GCC diagnostic pop
 #endif
 #endif
