@@ -182,7 +182,6 @@ foreach(itk-module ${_enabled_modules})
     else()
       set(_reason ", needed by [${ITK_MODULE_${itk-module}_NEEDED_BY}]")
     endif()
-    message(STATUS "Enabled ${itk-module}${_reason}.")
   endif()
 endforeach()
 
