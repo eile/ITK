@@ -20,7 +20,6 @@ MACRO(PERFORM_CMAKE_TEST FILE TEST)
       SET(TEST_ADD_LIBRARIES
           "-DLINK_LIBRARIES:STRING=${CMAKE_REQUIRED_LIBRARIES}")
     ENDIF(CMAKE_REQUIRED_LIBRARIES)
-    MESSAGE(STATUS "Performing Test ${TEST}")
 
     TRY_COMPILE(${TEST}
                 ${CMAKE_BINARY_DIR}
@@ -30,7 +29,6 @@ MACRO(PERFORM_CMAKE_TEST FILE TEST)
                 OUTPUT_VARIABLE OUTPUT)
     IF(${TEST})
       SET(${TEST} 1 CACHE INTERNAL "VXL test ${FUNCTION}")
-      MESSAGE(STATUS "Performing Test ${TEST} - Success")
     ELSE(${TEST})
       MESSAGE(STATUS "Performing Test ${TEST} - Failed")
       SET(${TEST} 0 CACHE INTERNAL "Test ${FUNCTION}")
@@ -67,7 +65,6 @@ MACRO(PERFORM_CMAKE_TEST_CUSTOM DIR TEST)
       SET(TEST_ADD_LIBRARIES
           "-DLINK_LIBRARIES:STRING=${CMAKE_REQUIRED_LIBRARIES}")
     ENDIF(CMAKE_REQUIRED_LIBRARIES)
-    MESSAGE(STATUS "Performing Test ${TEST}")
 
     TRY_COMPILE(${TEST}
                 ${CMAKE_BINARY_DIR}/config/${DIR}
@@ -80,7 +77,6 @@ MACRO(PERFORM_CMAKE_TEST_CUSTOM DIR TEST)
                 OUTPUT_VARIABLE OUTPUT)
     IF(${TEST})
       SET(${TEST} 1 CACHE INTERNAL "VXL test ${FUNCTION}")
-      MESSAGE(STATUS "Performing Test ${TEST} - Success")
     ELSE(${TEST})
       MESSAGE(STATUS "Performing Test ${TEST} - Failed")
       SET(${TEST} 0 CACHE INTERNAL "Test ${FUNCTION}")
@@ -111,7 +107,6 @@ MACRO(PERFORM_CMAKE_TEST_RUN FILE TEST)
       SET(TEST_ADD_LIBRARIES
           "-DLINK_LIBRARIES:STRING=${CMAKE_REQUIRED_LIBRARIES}")
     ENDIF(CMAKE_REQUIRED_LIBRARIES)
-    MESSAGE(STATUS "Performing Test ${TEST}")
 
     TRY_RUN(${TEST} ${TEST}_COMPILED
             ${CMAKE_BINARY_DIR}
@@ -128,7 +123,6 @@ MACRO(PERFORM_CMAKE_TEST_RUN FILE TEST)
                    "${OUTPUT}\n")
       ELSE(${TEST})
         SET(${TEST} 1 CACHE INTERNAL "VXL test ${FUNCTION} (successful run)")
-        MESSAGE(STATUS "Performing Test ${TEST} - Success")
         FILE(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
                    "Performing Test ${TEST} succeeded with the following output:\n"
                    "${OUTPUT}\n")
