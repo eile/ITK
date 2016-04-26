@@ -20,6 +20,7 @@
 
 #include "itkIntTypes.h"
 #include "itkSingleValuedNonLinearVnlOptimizer.h"
+#include "ITKOptimizersExport.h"
 
 namespace itk
 {
@@ -31,7 +32,7 @@ namespace itk
  * vnl_lbfgsb into iteration events in ITK.
  * \ingroup ITKOptimizers
  */
-class LBFGSBOptimizerHelper;
+class ITKOptimizers_EXPORT LBFGSBOptimizerHelper;
 
 /** \class LBFGSBOptimizer
  * \brief Limited memory Broyden Fletcher Goldfarb Shannon minimization with simple bounds.
@@ -59,7 +60,7 @@ class LBFGSBOptimizerHelper;
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class LBFGSBOptimizer:
+class ITKOptimizers_EXPORT LBFGSBOptimizer:
   public SingleValuedNonLinearVnlOptimizer
 {
 public:
@@ -185,8 +186,8 @@ protected:
   typedef Superclass::CostFunctionAdaptorType CostFunctionAdaptorType;
 
 private:
-  LBFGSBOptimizer(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
+  LBFGSBOptimizer(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   // give the helper access to member variables, to update iteration
   // counts, etc.

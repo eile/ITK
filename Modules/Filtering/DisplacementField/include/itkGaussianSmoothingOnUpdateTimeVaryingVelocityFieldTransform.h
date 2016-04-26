@@ -35,17 +35,16 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template
-  <class TScalar, unsigned int NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
 class GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform
-: public TimeVaryingVelocityFieldTransform<TScalar, NDimensions>
+: public TimeVaryingVelocityFieldTransform<TParametersValueType, NDimensions>
 {
 public:
   /** Standard class typedefs. */
-  typedef GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform   Self;
-  typedef TimeVaryingVelocityFieldTransform<TScalar, NDimensions>      Superclass;
-  typedef SmartPointer<Self>                                           Pointer;
-  typedef SmartPointer<const Self>                                     ConstPointer;
+  typedef GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform           Self;
+  typedef TimeVaryingVelocityFieldTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                                   Pointer;
+  typedef SmartPointer<const Self>                                             ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro( GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform,
@@ -133,8 +132,8 @@ protected:
   ScalarType                        m_GaussianTemporalSmoothingVarianceForTheTotalField;
 
 private:
-  GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform( const Self& ); //purposely not implemented
-  void operator=( const Self& ); //purposely not implemented
+  GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform( const Self& ) ITK_DELETE_FUNCTION;
+  void operator=( const Self& ) ITK_DELETE_FUNCTION;
 
 };
 

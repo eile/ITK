@@ -40,88 +40,96 @@ set(ITKT_B  "bool")           # Type
 set(ITKM_B  "B")              # Mangle
 
 ###############################################################################
-# A list of the union of ${ITK_WRAP_DIMS} and incremented ITK_WRAP_DIMS.  This
+# A list of the union of ${ITK_WRAP_IMAGE_DIMS} and incremented ITK_WRAP_IMAGE_DIMS.  This
 # is needed for the VelocityFieldTransform related classes
 ###############################################################################
-set(ITK_WRAP_DIMS_INCREMENTED "")
-foreach(d ${ITK_WRAP_DIMS})
+set(ITK_WRAP_IMAGE_DIMS_INCREMENTED "")
+foreach(d ${ITK_WRAP_IMAGE_DIMS})
   # For VelocityFieldTranform
   INCREMENT(d_inc ${d})
-  list(APPEND ITK_WRAP_DIMS_INCREMENTED ${d} ${d_inc})
+  list(APPEND ITK_WRAP_IMAGE_DIMS_INCREMENTED ${d} ${d_inc})
 endforeach()
-list(REMOVE_DUPLICATES ITK_WRAP_DIMS_INCREMENTED)
+list(REMOVE_DUPLICATES ITK_WRAP_IMAGE_DIMS_INCREMENTED)
+
+# Needed for itkMatrix, itkPoint, ...
+set(ITK_WRAP_VECTOR_COMPONENTS_INCREMENTED "")
+foreach(d ${ITK_WRAP_VECTOR_COMPONENTS})
+  INCREMENT(d_inc ${d})
+  list(APPEND ITK_WRAP_VECTOR_COMPONENTS_INCREMENTED ${d} ${d_inc})
+endforeach()
+list(REMOVE_DUPLICATES ITK_WRAP_VECTOR_COMPONENTS_INCREMENTED)
 
 ###############################################################################
 # Create some variable which can be used later
 ###############################################################################
 set(WRAP_ITK_USIGN_INT "")
 if(ITK_WRAP_unsigned_char)
-  set(WRAP_ITK_USIGN_INT ${WRAP_ITK_USIGN_INT} "UC")
+  list(APPEND WRAP_ITK_USIGN_INT "UC")
 endif()
 if(ITK_WRAP_unsigned_long)
-  set(WRAP_ITK_USIGN_INT ${WRAP_ITK_USIGN_INT} "UL")
+  list(APPEND WRAP_ITK_USIGN_INT "UL")
 endif()
 if(ITK_WRAP_unsigned_short)
-  set(WRAP_ITK_USIGN_INT ${WRAP_ITK_USIGN_INT} "US")
+  list(APPEND WRAP_ITK_USIGN_INT "US")
 endif()
 
 set(WRAP_ITK_SIGN_INT "")
 if(ITK_WRAP_signed_char)
-  set(WRAP_ITK_SIGN_INT ${WRAP_ITK_SIGN_INT} "SC")
+  list(APPEND WRAP_ITK_SIGN_INT "SC")
 endif()
 if(ITK_WRAP_signed_long)
-  set(WRAP_ITK_SIGN_INT ${WRAP_ITK_SIGN_INT} "SL")
+  list(APPEND WRAP_ITK_SIGN_INT "SL")
 endif()
 if(ITK_WRAP_signed_short)
-  set(WRAP_ITK_SIGN_INT ${WRAP_ITK_SIGN_INT} "SS")
+  list(APPEND WRAP_ITK_SIGN_INT "SS")
 endif()
 
 set(WRAP_ITK_REAL "")
 if(ITK_WRAP_float)
-  set(WRAP_ITK_REAL ${WRAP_ITK_REAL} "F")
+  list(APPEND WRAP_ITK_REAL "F")
 endif()
 if(ITK_WRAP_double)
-  set(WRAP_ITK_REAL ${WRAP_ITK_REAL} "D")
+  list(APPEND WRAP_ITK_REAL "D")
 endif()
 
 set(WRAP_ITK_RGB "")
 if(ITK_WRAP_rgb_unsigned_char)
-  set(WRAP_ITK_RGB ${WRAP_ITK_RGB} "RGBUC")
+  list(APPEND WRAP_ITK_RGB "RGBUC")
 endif()
 if(ITK_WRAP_rgb_unsigned_short)
-  set(WRAP_ITK_RGB ${WRAP_ITK_RGB} "RGBUS")
+  list(APPEND WRAP_ITK_RGB "RGBUS")
 endif()
 
 set(WRAP_ITK_RGBA "")
 if(ITK_WRAP_rgba_unsigned_char)
-  set(WRAP_ITK_RGBA ${WRAP_ITK_RGBA} "RGBAUC")
+  list(APPEND WRAP_ITK_RGBA "RGBAUC")
 endif()
 if(ITK_WRAP_rgba_unsigned_short)
-  set(WRAP_ITK_RGBA ${WRAP_ITK_RGBA} "RGBAUS")
+  list(APPEND WRAP_ITK_RGBA "RGBAUS")
 endif()
 
 set(WRAP_ITK_VECTOR_REAL "")
 if(ITK_WRAP_vector_double)
-  set(WRAP_ITK_VECTOR_REAL ${WRAP_ITK_VECTOR_REAL} "VD")
+  list(APPEND WRAP_ITK_VECTOR_REAL "VD")
 endif()
 if(ITK_WRAP_vector_float)
-  set(WRAP_ITK_VECTOR_REAL ${WRAP_ITK_VECTOR_REAL} "VF")
+  list(APPEND WRAP_ITK_VECTOR_REAL "VF")
 endif()
 
 set(WRAP_ITK_COV_VECTOR_REAL "")
 if(ITK_WRAP_covariant_vector_double)
-  set(WRAP_ITK_COV_VECTOR_REAL ${WRAP_ITK_COV_VECTOR_REAL} "CVD")
+  list(APPEND WRAP_ITK_COV_VECTOR_REAL "CVD")
 endif()
 if(ITK_WRAP_covariant_vector_float)
-  set(WRAP_ITK_COV_VECTOR_REAL ${WRAP_ITK_COV_VECTOR_REAL} "CVF")
+  list(APPEND WRAP_ITK_COV_VECTOR_REAL "CVF")
 endif()
 
 set(WRAP_ITK_COMPLEX_REAL "")
 if(ITK_WRAP_complex_double)
-  set(WRAP_ITK_COMPLEX_REAL ${WRAP_ITK_COMPLEX_REAL} "CD")
+  list(APPEND WRAP_ITK_COMPLEX_REAL "CD")
 endif()
 if(ITK_WRAP_complex_float)
-  set(WRAP_ITK_COMPLEX_REAL ${WRAP_ITK_COMPLEX_REAL} "CF")
+  list(APPEND WRAP_ITK_COMPLEX_REAL "CF")
 endif()
 
 set(WRAP_ITK_INT ${WRAP_ITK_SIGN_INT} ${WRAP_ITK_USIGN_INT})
@@ -129,6 +137,24 @@ set(WRAP_ITK_SCALAR ${WRAP_ITK_INT} ${WRAP_ITK_REAL})
 set(WRAP_ITK_VECTOR ${WRAP_ITK_VECTOR_REAL} ${WRAP_ITK_COV_VECTOR_REAL})
 set(WRAP_ITK_COLOR ${WRAP_ITK_RGB} ${WRAP_ITK_RGBA})
 set(WRAP_ITK_ALL_TYPES ${WRAP_ITK_RGB} ${WRAP_ITK_RGBA} ${WRAP_ITK_VECTOR} ${WRAP_ITK_SCALAR} ${WRAP_ITK_COMPLEX_REAL})
+
+# Make a list of all the RGB Pixel types which are wrapped.
+set(WRAP_ITK_RGB_PIXEL_TYPES "D;F")
+if(ITK_WRAP_rgb_unsigned_char)
+  list(APPEND WRAP_ITK_RGB_PIXEL_TYPES UC)
+endif()
+if(ITK_WRAP_rgb_unsigned_short)
+  list(APPEND WRAP_ITK_RGB_PIXEL_TYPES US)
+endif()
+
+# Make a list of all the RGBA Pixel types which are wrapped.
+set(WRAP_ITK_RGBA_PIXEL_TYPES "D;F")
+if(ITK_WRAP_rgba_unsigned_char)
+  list(APPEND WRAP_ITK_RGBA_PIXEL_TYPES UC)
+endif()
+if(ITK_WRAP_rgba_unsigned_short)
+  list(APPEND WRAP_ITK_RGBA_PIXEL_TYPES US)
+endif()
 
 # Make a list of all selected types "smaller than" a given type
 INTERSECTION(SMALLER_THAN_D  "F;UL;US;UC;SL;SS;SC" "${WRAP_ITK_SCALAR}")

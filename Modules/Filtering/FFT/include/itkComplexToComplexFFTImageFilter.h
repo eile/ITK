@@ -31,7 +31,7 @@ namespace itk
  *
  * \ingroup FourierTransform
  *
- * \author Simon K. Warfield simon.warfield@childrens.harvard.edu
+ * \author Simon K. Warfield simon.warfield\@childrens.harvard.edu
  *
  * \note Attribution Notice. This research work was made possible by
  * Grant Number R01 RR021885 (PI Simon K. Warfield, Ph.D.) from
@@ -100,8 +100,8 @@ protected:
   virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 private:
-  ComplexToComplexFFTImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                 //purposely not implemented
+  ComplexToComplexFFTImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   TransformDirectionType m_TransformDirection;
 };

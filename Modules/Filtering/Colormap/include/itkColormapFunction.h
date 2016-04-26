@@ -100,10 +100,14 @@ protected:
    */
   RealType RescaleInputValue(ScalarType v) const
     {
-    RealType d = static_cast< RealType >( this->m_MaximumInputValue -
-      this->m_MinimumInputValue );
+    RealType maxInputValue =
+      static_cast< RealType >( this->m_MaximumInputValue );
+    RealType minInputValue =
+      static_cast< RealType >( this->m_MinimumInputValue );
+
+    RealType d = static_cast< RealType >( maxInputValue - minInputValue );
     RealType value = ( static_cast< RealType >( v ) -
-      static_cast< RealType >( this->m_MinimumInputValue ) ) / d;
+      static_cast< RealType >( minInputValue ) ) / d;
 
     value = vnl_math_max(0.0, value);
     value = vnl_math_min(1.0, value);
@@ -142,8 +146,8 @@ protected:
     }
 
 private:
-  ColormapFunction(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
+  ColormapFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   ScalarType m_MinimumInputValue;
   ScalarType m_MaximumInputValue;

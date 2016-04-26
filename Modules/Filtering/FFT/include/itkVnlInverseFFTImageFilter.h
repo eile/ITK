@@ -76,6 +76,8 @@ public:
   itkStaticConstMacro(OutputImageDimension, unsigned int,
                       TOutputImage::ImageDimension);
 
+  SizeValueType GetSizeGreatestPrimeFactor() const ITK_OVERRIDE;
+
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
   itkConceptMacro( PixelUnsignedIntDivisionOperatorsCheck,
@@ -92,8 +94,8 @@ protected:
   virtual void GenerateData() ITK_OVERRIDE;  // generates output from input
 
 private:
-  VnlInverseFFTImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                          //purposely not implemented
+  VnlInverseFFTImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   typedef vnl_vector< InputPixelType  > SignalVectorType;
 };

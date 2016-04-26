@@ -38,6 +38,46 @@
 #include <fstream>
 // Software Guide : EndCodeSnippet
 
+class CommandIterationUpdate : public itk::Command
+{
+public:
+  typedef CommandIterationUpdate  Self;
+  typedef itk::Command            Superclass;
+  typedef itk::SmartPointer<Self> Pointer;
+  itkNewMacro( Self );
+
+protected:
+  CommandIterationUpdate() {};
+
+public:
+  typedef itk::LevenbergMarquardtOptimizer     OptimizerType;
+  typedef const OptimizerType *                OptimizerPointer;
+
+  void Execute(itk::Object *caller, const itk::EventObject & event) ITK_OVERRIDE
+    {
+    Execute( (const itk::Object *)caller, event);
+    }
+
+  void Execute(const itk::Object * object, const itk::EventObject & event) ITK_OVERRIDE
+    {
+    OptimizerPointer optimizer = dynamic_cast< OptimizerPointer >( object );
+    if( optimizer == ITK_NULLPTR )
+      {
+      itkExceptionMacro( "Could not cast optimizer." );
+      }
+
+    if( ! itk::IterationEvent().CheckEvent( &event ) )
+      {
+      return;
+      }
+
+    std::cout << "Value = " << optimizer->GetCachedValue() << std::endl;
+    std::cout << "Position = "  << optimizer->GetCachedCurrentPosition();
+    std::cout << std::endl << std::endl;
+    }
+};
+
+
 int main(int argc, char * argv[] )
 {
 
@@ -47,7 +87,7 @@ int main(int argc, char * argv[] )
     std::cerr <<
       "Usage:  IterativeClosestPoint2   fixedPointsFile  movingPointsFile "
       << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   const unsigned int Dimension = 3;
@@ -82,7 +122,7 @@ int main(int argc, char * argv[] )
     {
     std::cerr << "Error opening points file with name : " << std::endl;
     std::cerr << argv[1] << std::endl;
-    return 2;
+    return EXIT_FAILURE;
     }
 
   unsigned int pointId = 0;
@@ -105,7 +145,7 @@ int main(int argc, char * argv[] )
     {
     std::cerr << "Error opening points file with name : " << std::endl;
     std::cerr << argv[2] << std::endl;
-    return 2;
+    return EXIT_FAILURE;
     }
 
   pointId = 0;
@@ -234,6 +274,10 @@ int main(int argc, char * argv[] )
   registration->SetFixedPointSet( fixedPointSet );
   registration->SetMovingPointSet(   movingPointSet   );
 // Software Guide : EndCodeSnippet
+//
+  // Connect an observer
+  CommandIterationUpdate::Pointer observer = CommandIterationUpdate::New();
+  optimizer->AddObserver( itk::IterationEvent(), observer );
 
   try
     {
@@ -241,10 +285,12 @@ int main(int argc, char * argv[] )
     }
   catch( itk::ExceptionObject & e )
     {
-    std::cout << e << std::endl;
+    std::cerr << e << std::endl;
     return EXIT_FAILURE;
     }
 
   std::cout << "Solution = " << transform->GetParameters() << std::endl;
+  std::cout << "Stopping condition: " << optimizer->GetStopConditionDescription() << std::endl;
+
   return EXIT_SUCCESS;
 }

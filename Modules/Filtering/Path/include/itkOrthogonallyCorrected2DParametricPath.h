@@ -21,6 +21,7 @@
 #include "itkParametricPath.h"
 #include "itkVectorContainer.h"
 #include "itkIndex.h"
+#include "itkPathTemplateExport.h"
 
 namespace itk
 {
@@ -41,7 +42,8 @@ namespace itk
  * \ingroup PathObjects
  * \ingroup ITKPath
  */
-class OrthogonallyCorrected2DParametricPath:public
+class ITKPath_EXPORT_INHERIT_TEMPLATE
+  OrthogonallyCorrected2DParametricPath:public
   ParametricPath< 2 >
 {
 public:
@@ -113,10 +115,8 @@ protected:
   virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  OrthogonallyCorrected2DParametricPath(const Self &); //purposely not
-                                                       // implemented
-  void operator=(const Self &);                        //purposely not
-                                                       // implemented
+  OrthogonallyCorrected2DParametricPath(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   OriginalPathConstPointer         m_OriginalPath;
   OrthogonalCorrectionTablePointer m_OrthogonalCorrectionTable;

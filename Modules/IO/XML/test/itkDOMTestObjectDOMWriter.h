@@ -51,8 +51,8 @@ protected:
   virtual void GenerateData( DOMNodeType* outputdom, const void* ) const ITK_OVERRIDE;
 
 private:
-  DOMTestObjectDOMWriter(const Self &); //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  DOMTestObjectDOMWriter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 inline void
@@ -74,7 +74,7 @@ DOMTestObjectDOMWriter::GenerateData( DOMNodeType* outputdom, const void* ) cons
   // create the output file if it does not exist
   FileTools::CreateFile( fn );
   // write the foo value to file
-  ofs.open( fn );
+  ofs.open( fn.ToString().c_str() );
   if ( !ofs.is_open() )
     {
     itkExceptionMacro( "cannot write foo file" );

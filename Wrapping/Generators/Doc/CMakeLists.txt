@@ -3,21 +3,9 @@ find_package(Doxygen REQUIRED)
 option(ITK_WRAP_DOC_MAN "Generate unix manual pages." ON)
 
 ###############################################################################
-# install the files requires for doxygen
-if(NOT EXTERNAL_WRAP_ITK_PROJECT)
-  WRAP_ITK_INSTALL(/Configuration/Generators/Doc CMakeLists.txt)
-  WRAP_ITK_INSTALL(/Configuration/Generators/Doc doxygen.config.in)
-  WRAP_ITK_INSTALL(/Configuration/Generators/Doc itk_doxy2swig.conf.in)
-  WRAP_ITK_INSTALL(/Configuration/Generators/Doc doxy2swig.py)
-  WRAP_ITK_INSTALL(/Configuration/Generators/Doc itk_doxy2swig.py)
-endif()
-
-###############################################################################
 # store the current dir, so it can be reused later
 set(ITK_WRAP_DOC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "doc source dir")
 set(ITK_WRAP_DOC_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "doc binary dir")
-
-set(WRAPPER_MASTER_INDEX_OUTPUT_DIR "${PROJECT_BINARY_DIR}/Typedefs" CACHE INTERNAL "typedefs dir")
 
 
 ###############################################################################
@@ -44,12 +32,12 @@ macro(itk_wrap_named_class_DOC class swig_name)
     get_directory_property(dirs INCLUDE_DIRECTORIES)
     set(paths )
     foreach(dir ${dirs})
-      set(paths ${paths} "${dir}/${swig_name}.h")
+      list(APPEND paths "${dir}/${swig_name}.h")
     endforeach()
     file(GLOB doc_path ${paths})
     if(doc_path AND "${class}" MATCHES "^itk::")
       # store the header
-      set(ITK_WRAP_DOC_DOXYGEN_HEADERS ${ITK_WRAP_DOC_DOXYGEN_HEADERS} "${doc_path}")
+      list(APPEND ITK_WRAP_DOC_DOXYGEN_HEADERS "${doc_path}")
       # and the produced file
       string(REPLACE "::" "_" base_name "${class}")
       set(page "${CMAKE_CURRENT_BINARY_DIR}/Doc/man3/${base_name}.3")
@@ -64,7 +52,7 @@ macro(itk_wrap_named_class_DOC class swig_name)
       string(REGEX REPLACE "([A-Z])" "_\\1" xmlname ${class})
       string(REGEX REPLACE ":" "_1" xmlname ${xmlname})
       string(TOLOWER  ${xmlname} xmlname)
-      set(ITK_WRAP_DOC_DOXYGEN_XML_FILES ${ITK_WRAP_DOC_DOXYGEN_XML_FILES} "${CMAKE_CURRENT_BINARY_DIR}/Doc/xml/class${xmlname}.xml")
+      list(APPEND ITK_WRAP_DOC_DOXYGEN_XML_FILES "${CMAKE_CURRENT_BINARY_DIR}/Doc/xml/class${xmlname}.xml")
 
       # the doxy2swig input
       set(ITK_WRAP_DOC_DOXY2SWIG_INPUT "${ITK_WRAP_DOC_DOXY2SWIG_INPUT}\n${CMAKE_CURRENT_BINARY_DIR}/Doc/xml/class${xmlname}.xml\t${class}")
@@ -107,7 +95,7 @@ macro(itk_end_wrap_module_DOC)
     # which files are produced?
     set(outputs ${ITK_WRAP_DOC_DOXYGEN_XML_FILES})
     if(ITK_WRAP_DOC_MAN)
-      set(outputs ${outputs} ${ITK_WRAP_DOC_DOXYGEN_PAGES})
+      list(APPEND outputs ${ITK_WRAP_DOC_DOXYGEN_PAGES})
     endif()
 
     # run doxygen
@@ -147,8 +135,5 @@ macro(itk_end_wrap_submodule_DOC)
     DEPENDS ${ITK_WRAP_DOC_DOXYGEN_XML_FILES} ${doxy2swig_config_file} ${itk_doxy2swig_py}
 #    COMMENT "-- Wrapping library ${WRAPPER_MODULE_NAME}: Generating swig interface for inline documentation."
     )
-    set(ITK_WRAP_DOC_DOCSTRING_FILES ${ITK_WRAP_DOC_DOCSTRING_FILES} ${swig_doc_interface_file})
-
-    # install the produced file
-    WRAP_ITK_INSTALL(/Configuration/Typedefs "${swig_doc_interface_file}")
+    list(APPEND ITK_WRAP_DOC_DOCSTRING_FILES ${swig_doc_interface_file})
 endmacro()

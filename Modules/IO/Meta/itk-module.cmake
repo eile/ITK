@@ -8,10 +8,12 @@ itk_module(ITKIOMeta
   ENABLE_SHARED
   DEPENDS
     ITKMetaIO
+  PRIVATE_DEPENDS
     ITKIOImageBase
   TEST_DEPENDS
     ITKTestKernel
     ITKSmoothing
+    ITKMetaIO
   DESCRIPTION
     "${DOCUMENTATION}"
 )

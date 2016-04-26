@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "itkGaussianMixtureModelComponent.h"
+#include "itkMath.h"
 
 namespace itk
 {
@@ -70,9 +71,9 @@ GaussianMixtureModelComponent< TSample >
   NumericTraits<MeasurementVectorType>::SetLength(m_Mean, measurementVectorLength);
   m_Covariance.SetSize(measurementVectorLength, measurementVectorLength);
 
-  m_Mean.Fill(NumericTraits< double >::Zero);
+  m_Mean.Fill(NumericTraits< double >::ZeroValue());
 
-  m_Covariance.Fill(NumericTraits< double >::Zero);
+  m_Covariance.Fill(NumericTraits< double >::ZeroValue());
 
   typename NativeMembershipFunctionType::MeanVectorType mean;
 
@@ -104,7 +105,7 @@ GaussianMixtureModelComponent< TSample >
 
   for ( i = 0; i < measurementVectorSize; i++ )
     {
-    if ( m_Mean[i] != parameters[paramIndex] )
+    if ( Math::NotExactlyEquals(m_Mean[i], parameters[paramIndex]) )
       {
       m_Mean[i] = parameters[paramIndex];
       changed = true;
@@ -129,8 +130,8 @@ GaussianMixtureModelComponent< TSample >
     {
     for ( j = 0; j < measurementVectorSize; j++ )
       {
-      if ( m_Covariance.GetVnlMatrix().get(i, j) !=
-           parameters[paramIndex] )
+      if ( Math::NotExactlyEquals( m_Covariance.GetVnlMatrix().get(i, j),
+           parameters[paramIndex] ) )
         {
         m_Covariance.GetVnlMatrix().put(i, j, parameters[paramIndex]);
         changed = true;

@@ -23,7 +23,7 @@
 #include "itkIdentityTransform.h"
 #include "itkProgressReporter.h"
 #include "itkImageRegionIteratorWithIndex.h"
-#include "itkImageLinearIteratorWithIndex.h"
+#include "itkImageScanlineIterator.h"
 #include "itkSpecialCoordinatesImage.h"
 #include "itkDefaultConvertPixelTraits.h"
 
@@ -412,10 +412,9 @@ ResampleImageFilter< TInputImage, TOutputImage, TInterpolatorPrecisionType, TTra
   const TransformType *transformPtr = this->GetTransform();
 
   // Create an iterator that will walk the output region for this thread.
-  typedef ImageLinearIteratorWithIndex< TOutputImage > OutputIterator;
+  typedef ImageScanlineIterator< TOutputImage > OutputIterator;
 
   OutputIterator outIt(outputPtr, outputRegionForThread);
-  outIt.SetDirection(0);
 
   // Define a few indices that will be used to translate from an input pixel
   // to an output pixel
@@ -432,10 +431,13 @@ ResampleImageFilter< TInputImage, TOutputImage, TInterpolatorPrecisionType, TTra
 
   IndexType index;
 
+  const typename OutputImageRegionType::SizeType &regionSize = outputRegionForThread.GetSize();
+  const SizeValueType numberOfLinesToProcess = outputRegionForThread.GetNumberOfPixels() / regionSize[0];
+
   // Support for progress methods/callbacks
   ProgressReporter progress( this,
                              threadId,
-                             outputRegionForThread.GetNumberOfPixels() );
+                             numberOfLinesToProcess );
 
   typedef typename InterpolatorType::OutputType OutputType;
 
@@ -522,10 +524,10 @@ ResampleImageFilter< TInputImage, TOutputImage, TInterpolatorPrecisionType, TTra
           }
         }
 
-      progress.CompletedPixel();
       ++outIt;
       inputIndex += delta;
       }
+    progress.CompletedPixel();
     outIt.NextLine();
     } //while( !outIt.IsAtEnd() )
 }

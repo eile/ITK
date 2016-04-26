@@ -50,8 +50,8 @@ protected:
   virtual void GenerateData( const DOMNodeType* inputdom, const void* ) ITK_OVERRIDE;
 
 private:
-  DOMTestObjectDOMReader(const Self &); //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  DOMTestObjectDOMReader(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 inline void
@@ -82,7 +82,7 @@ DOMTestObjectDOMReader::GenerateData( const DOMNodeType* inputdom, const void* )
   s = foo->GetAttribute("fname");
   output->SetFooFileName( s );
   // read the foo value from file
-  ifs.open( s );
+  ifs.open( s.ToString().c_str() );
   if ( !ifs.is_open() )
     {
     itkExceptionMacro( "cannot read foo file" );

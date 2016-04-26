@@ -1,9 +1,9 @@
 ################################################################################
-# Macro definitions for creating proper Swig input files from wrap_*.cmake
+# Macro definitions for creating proper Swig input files from *.wrap
 # files.
 # This file includes definitions for the macros to call from a CMakeList file
-# to cause wrap_*.cmake files to be turned into CXX files, and definitions for
-# the macros to use in the wrap_*.cmake files themselves to declare that certain
+# to cause *.wrap files to be turned into CXX files, and definitions for
+# the macros to use in the *.wrap files themselves to declare that certain
 # classes and template instantiations be wrapped.
 # Note on convention: variable names in ALL_CAPS are global, and shared between
 # macros or between CMake and files that are configured. Variable names in
@@ -48,12 +48,12 @@ macro(itk_wrap_module library_name)
   # contain the desired header files.
   #set(WRAPPER_LIBRARY_INCLUDE_DIRECTORIES )
 
-  # WRAPPER_LIBRARY_SOURCE_DIR. Directory to be scanned for wrap_*.cmake files.
+  # WRAPPER_LIBRARY_SOURCE_DIR. Directory to be scanned for *.wrap files.
   set(WRAPPER_LIBRARY_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
   # WRAPPER_LIBRARY_OUTPUT_DIR. Directory in which generated cxx, xml, and idx
   # files will be placed.
-  set(WRAPPER_LIBRARY_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+  set(WRAPPER_LIBRARY_OUTPUT_DIR "${ITK_DIR}/Wrapping")
 
   # WRAPPER_LIBRARY_DEPENDS. List of names of other wrapper libraries that
   # define symbols used by this wrapper library.
@@ -62,12 +62,14 @@ macro(itk_wrap_module library_name)
 
   # WRAPPER_LIBRARY_LINK_LIBRARIES. List of other libraries that should
   # be linked to the wrapper library.
-  set(WRAPPER_LIBRARY_LINK_LIBRARIES ${ITK_LIBRARIES})
+  set(WRAPPER_LIBRARY_LINK_LIBRARIES ${ITK_LIBRARIES} ${${itk-module}_LIBRARIES})
 
-  # WRAPPER_LIBRARY_GROUPS. List of wrap_*.cmake groups in the source dir
-  # that should be included/wrapped before the rest. Just the group name is needed,
-  # not the full path or file name.
-  set(WRAPPER_LIBRARY_GROUPS )
+  # WRAPPER_SUBMODULE_ORDER. List of *.wrap submodules in the source dir
+  # that should be included/wrapped before the rest in the given order.
+  # Just the submodule group name is needed, not the full path or file name.
+  set(WRAPPER_SUBMODULE_ORDER )
+  # WRAPPER_LIBRARY_GROUPS is a deprecated variable for this specification.
+  unset(WRAPPER_LIBRARY_GROUPS )
 
   # WRAPPER_LIBRARY_SWIG_INPUTS. List of C++ source files to be used
   # as input for Swig. This list is then appended to by
@@ -129,7 +131,7 @@ macro(INCLUDE_LIBRARY library)
   itk_wrap_module("${library}")
   # change some default values
 
-  # WRAPPER_LIBRARY_SOURCE_DIR. Directory to be scanned for wrap_*.cmake files.
+  # WRAPPER_LIBRARY_SOURCE_DIR. Directory to be scanned for *.wrap files.
   set(WRAPPER_LIBRARY_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${library}")
 
   # WRAPPER_LIBRARY_OUTPUT_DIR. Directory in which generated cxx, xml, and idx
@@ -142,12 +144,12 @@ endmacro()
 
 
 ################################################################################
-# Macros for finding and processing wrap_*.cmake files.
+# Macros for finding and processing *.wrap files.
 ################################################################################
 
 macro(itk_auto_load_submodules)
 
-  # Include the wrap_*.cmake files in WRAPPER_LIBRARY_SOURCE_DIR. This causes
+  # Include the *.wrap files in WRAPPER_LIBRARY_SOURCE_DIR. This causes
   # corresponding wrap_*.cxx files to be generated WRAPPER_LIBRARY_OUTPUT_DIR,
   # and added to the WRAPPER_LIBRARY_SWIG_INPUTS list.
   # In addition, this causes the other required wrap_*.cxx files for the entire
@@ -155,9 +157,14 @@ macro(itk_auto_load_submodules)
   # Finally, this macro causes the language support files for the templates and
   # library here defined to be created.
 
-  # Next, include modules already in WRAPPER_LIBRARY_GROUPS, because those are
+  # For backwards compatibility
+  if(WRAPPER_LIBRARY_GROUPS)
+    set(WRAPPER_SUBMODULE_ORDER ${WRAPPER_LIBRARY_GROUPS})
+  endif()
+
+  # Next, include modules already in WRAPPER_SUBMODULE_ORDER, because those are
   # guaranteed to be processed first.
-  foreach(module ${WRAPPER_LIBRARY_GROUPS})
+  foreach(module ${WRAPPER_SUBMODULE_ORDER})
     itk_load_submodule("${module}")
   endforeach()
 
@@ -168,14 +175,14 @@ macro(itk_auto_load_submodules)
   # - the order is important for the order of creation of python template
   # - the typemaps files are always the same, and the rebuild can be avoided
   list(SORT wrap_cmake_files)
-  foreach(file ${wrap_cmake_files})
+  foreach(_file ${wrap_cmake_files})
     # get the module name from module.wrap
-    get_filename_component(module "${file}" NAME_WE)
+    get_filename_component(module "${_file}" NAME_WE)
 
     # if the module is already in the list, it means that it is already included
     # ... and do not include excluded modules
     set(will_include 1)
-    foreach(already_included ${WRAPPER_LIBRARY_GROUPS})
+    foreach(already_included ${WRAPPER_SUBMODULE_ORDER})
       if("${already_included}" STREQUAL "${module}")
         set(will_include 0)
       endif()
@@ -184,47 +191,17 @@ macro(itk_auto_load_submodules)
     if(${will_include})
       # Add the module name to the list. WRITE_MODULE_FILES uses this list
       # to create the master library wrapper file.
-      set(WRAPPER_LIBRARY_GROUPS ${WRAPPER_LIBRARY_GROUPS} "${module}")
+      list(APPEND WRAPPER_SUBMODULE_ORDER "${module}")
       itk_load_submodule("${module}")
     endif()
   endforeach()
-
-  # Now search for other wrap_*.cmake files to include
-  file(GLOB wrap_cmake_files "${WRAPPER_LIBRARY_SOURCE_DIR}/wrap_*.cmake")
-  # sort the list of files so we are sure to always get the same order on all system
-  # and for all builds. That's important for several reasons:
-  # - the order is important for the order of creation of python template
-  # - the typemaps files are always the same, and the rebuild can be avoided
-  list(SORT wrap_cmake_files)
-  foreach(file ${wrap_cmake_files})
-    # get the module name from wrap_module.cmake
-    get_filename_component(module "${file}" NAME_WE)
-    string(REGEX REPLACE "^wrap_" "" module "${module}")
-
-    # if the module is already in the list, it means that it is already included
-    # ... and do not include excluded modules
-    set(will_include 1)
-    foreach(already_included ${WRAPPER_LIBRARY_GROUPS})
-      if("${already_included}" STREQUAL "${module}")
-        set(will_include 0)
-      endif()
-    endforeach()
-
-    if(${will_include})
-      # Add the module name to the list. WRITE_MODULE_FILES uses this list
-      # to create the master library wrapper file.
-      set(WRAPPER_LIBRARY_GROUPS ${WRAPPER_LIBRARY_GROUPS} "${module}")
-      itk_load_submodule("${module}")
-    endif()
-  endforeach()
-
 endmacro()
 
 
 macro(itk_load_submodule module)
   # include a cmake module file and generate the associated wrap_*.cxx file.
   # This basically sets the global vars that will be added to or modified
-  # by the commands in the included wrap_*.cmake module.
+  # by the commands in the included *.wrap module.
   #
   # Global vars used: none
   # Global vars modified: WRAPPER_MODULE_NAME WRAPPER_TYPEDEFS
@@ -276,7 +253,7 @@ macro(itk_wrap_submodule module)
 endmacro()
 
 ################################################################################
-# Macros to be used in the wrap_*.cmake files themselves.
+# Macros to be used in the *.wrap files themselves.
 # These macros specify that a class is to be wrapped, that certain itk headers
 # are to be included, and what specific template instatiations are to be wrapped.
 ################################################################################
@@ -289,7 +266,7 @@ macro(itk_wrap_class class)
   # itk::Statistics::Sample -> itkSample.
   # If the top-level namespace is 'itk' and WRAPPER_AUTO_INCLUDE_HEADERS is ON
   # then the appropriate itk header for this class will be included. Otherwise
-  # itk_wrap_include should be manually called from the wrap_*.cmake file that calls
+  # itk_wrap_include should be manually called from the *.wrap file that calls
   # this macro.
   # Lastly, this class takes an optional 'wrap method' parameter. Valid values are:
   # POINTER POINTER_WITH_CONST_POINTER POINTER_WITH_SUPERCLASS POINTER_WITH_2_SUPERCLASSES
@@ -459,9 +436,9 @@ macro(itk_end_wrap_class)
       itk_wrap_one_type("${WRAPPER_WRAP_METHOD}" "${WRAPPER_CLASS}" "${WRAPPER_SWIG_NAME}${mangled_suffix}" "${template_params}")
     endforeach()
   else()
-    if(WRAPPER_WARN_ABOUT_NO_TEMPLATE)
+    if(WRAPPER_WARN_ABOUT_NO_TEMPLATE AND NOT EXTERNAL_WRAP_ITK_PROJECT)
       # display a warning if the class is empty
-      message("Warning: No template declared for ${WRAPPER_CLASS}. Perhaps should you turn on more WRAP_* options?")
+      message("Warning: No template declared for ${WRAPPER_CLASS}. Perhaps you should turn on more WRAP_* options?")
     endif()
   endif()
 
@@ -502,8 +479,8 @@ macro(itk_wrap_one_type wrap_method wrap_class swig_name)
 
   # Add a typedef for the class. We have this funny looking full_name::base_name
   # thing (it expands to, for example "typedef itk::Foo<baz, 2>::Foo"), to
-  # trick gcc_xml into creating code for the class. If we left off the trailing
-  # base_name, then gcc_xml wouldn't see the typedef as a class instantiation,
+  # trick castxml into creating code for the class. If we left off the trailing
+  # base_name, then castxml wouldn't see the typedef as a class instantiation,
   # and thus wouldn't create XML for any of the methods, etc.
 
   if("${wrap_method}" MATCHES "2_SUPERCLASSES")
@@ -559,7 +536,7 @@ macro(itk_wrap_template name types)
   # Global vars used: WRAPPER_TEMPLATES
   # Global vars modified: WRAPPER_TEMPLATES
 
-#   set(WRAPPER_TEMPLATES ${WRAPPER_TEMPLATES} "${name} # ${types}")
+#   list(APPEND WRAPPER_TEMPLATES "${name} # ${types}")
   set(WRAPPER_WARN_ABOUT_NO_TEMPLATE OFF)
   itk_wrap_one_type("${WRAPPER_WRAP_METHOD}" "${WRAPPER_CLASS}" "${WRAPPER_SWIG_NAME}${name}" "${types}")
   itk_wrap_template_all_generators("${name}" "${types}")
@@ -582,12 +559,6 @@ endmacro()
 # string or just a set of separate parameters), or something of the form "n+"
 # (where n is a number) indicating that instantiations are allowed for dimension
 # n and above.
-#
-# E.g., if only ITK_WRAP_unsigned_char is selected and 2- and 3-dimensional images
-# are selected, then itk_wrap_image_filter_USIGN_INT(2)  will create instantiations for
-# filter<itk::Image<unsigned char, 2>, itk::Image<unsigned char, 2> >
-# and
-# filter<itk::Image<unsigned char, 3>, itk::Image<unsigned char, 3> >
 
 macro(itk_wrap_image_filter param_types param_count)
   # itk_wrap_image_filter is a more general macro for wrapping image filters that
@@ -608,7 +579,7 @@ macro(itk_wrap_image_filter param_types param_count)
   foreach(param_type ${param_types})
     set(param_list "")
     foreach(i RANGE 1 ${param_count})
-      set(param_list ${param_list} ${param_type})
+      list(APPEND param_list ${param_type})
     endforeach()
     if(have_dim_cond)
       itk_wrap_image_filter_types(${param_list} "${ARGN}")
@@ -675,7 +646,7 @@ macro(itk_wrap_image_filter_combinations)
       set(temp "")
       foreach(type_list ${template_combinations})
         foreach(type ${types})
-          set(temp ${temp} "${type_list}#${type}")
+          list(APPEND temp "${type_list}#${type}")
         endforeach()
       endforeach()
       set(template_combinations ${temp})
@@ -727,31 +698,39 @@ macro(itk_wrap_image_filter_types)
     itk_wrap_filter_dims(dims "${last_arg}")
     DECREMENT(last_arg_number ${last_arg_number})
   else()
-    set(dims ${ITK_WRAP_DIMS})
+    set(dims ${ITK_WRAP_IMAGE_DIMS})
   endif()
 
-  foreach(d ${dims})
-    set(template_params "")
-    set(mangled_name "")
-    set(comma "") # Don't add a comma before the first template param!
-    foreach(num RANGE 0 ${last_arg_number})
-      set(type "${arg${num}}")
-      if("${WRAP_ITK_VECTOR}" MATCHES "(^|;)${type}(;|$)")
-        # if the type is a vector type with no dimension specified, make the
-        # vector dimension match the image dimension.
-        set(type "${type}${d}")
-      endif()
-      set(image_type ${ITKT_I${type}${d}})
-      set(mangle_type ${ITKM_I${type}${d}})
-      if(NOT DEFINED image_type)
-        message(FATAL_ERROR "Wrapping ${WRAPPER_CLASS}: No image type for '${type}' pixels is known.")
-      endif()
+  set(vec_dims 1)
+  foreach(num RANGE 0 ${last_arg_number})
+    set(type "${arg${num}}")
+    if("${WRAP_ITK_VECTOR}" MATCHES "(^|;)${type}(;|$)")
+      set(vec_dims ${ITK_WRAP_VECTOR_COMPONENTS})
+    endif()
+  endforeach()
 
-      set(template_params "${template_params}${comma}${image_type}")
-      set(mangled_name "${mangled_name}${mangle_type}")
-      set(comma ", ") # now add commas after the subsequent template params
+  foreach(vec_dim ${vec_dims})
+    foreach(d ${dims})
+      set(template_params "")
+      set(mangled_name "")
+      set(comma "") # Don't add a comma before the first template param!
+      foreach(num RANGE 0 ${last_arg_number})
+        set(type "${arg${num}}")
+        if("${WRAP_ITK_VECTOR}" MATCHES "(^|;)${type}(;|$)")
+          set(type "${type}${vec_dim}")
+        endif()
+        set(image_type ${ITKT_I${type}${d}})
+        set(mangle_type ${ITKM_I${type}${d}})
+        if(NOT DEFINED image_type)
+          message(FATAL_ERROR "Wrapping ${WRAPPER_CLASS}: No image type for '${type}' pixels is known.")
+        endif()
+
+        set(template_params "${template_params}${comma}${image_type}")
+        set(mangled_name "${mangled_name}${mangle_type}")
+        set(comma ", ") # now add commas after the subsequent template params
+      endforeach()
+      itk_wrap_template("${mangled_name}" "${template_params}")
     endforeach()
-    itk_wrap_template("${mangled_name}" "${template_params}")
   endforeach()
 endmacro()
 
@@ -768,7 +747,7 @@ macro(itk_wrap_filter_dims var_name dimension_condition)
     string(REGEX REPLACE "^([0-9]+)\\+$" "\\1" min_dim "${dimension_condition}")
     DECREMENT(max_disallowed ${min_dim})
     set(${var_name} "")
-    foreach(d ${ITK_WRAP_DIMS})
+    foreach(d ${ITK_WRAP_IMAGE_DIMS})
       if("${d}" GREATER "${max_disallowed}")
         set(${var_name} ${${var_name}} ${d})
       endif()
@@ -776,6 +755,6 @@ macro(itk_wrap_filter_dims var_name dimension_condition)
   else()
     # The condition is just a list of dims. Return the intersection of these
     # dims with the selected ones.
-    INTERSECTION(${var_name} "${dimension_condition}" "${ITK_WRAP_DIMS}")
+    INTERSECTION(${var_name} "${dimension_condition}" "${ITK_WRAP_IMAGE_DIMS}")
   endif()
 endmacro()

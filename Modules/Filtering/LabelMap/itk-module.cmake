@@ -7,13 +7,15 @@ the objects based on these values.")
 
 
 itk_module(ITKLabelMap
-  DEPENDS
-    ITKImageLabel
-    ITKMathematicalMorphology
+  ENABLE_SHARED
+  PRIVATE_DEPENDS
     ITKStatistics
+  COMPILE_DEPENDS
+    ITKTransform
   TEST_DEPENDS
     ITKTestKernel
     ITKBinaryMathematicalMorphology
+    ITKStatistics
   DESCRIPTION
     "${DOCUMENTATION}"
 )

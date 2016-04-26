@@ -6,10 +6,14 @@ operations. They are commonly used for representing the output of image
 segmentation algorithms.")
 
 itk_module(ITKQuadEdgeMesh
-  DEPENDS
+  ENABLE_SHARED
+  PRIVATE_DEPENDS
     ITKMesh
+  COMPILE_DEPENDS
+    ITKCommon
   TEST_DEPENDS
     ITKTestKernel
+    ITKMesh
   DESCRIPTION
     "${DOCUMENTATION}"
 )

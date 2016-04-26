@@ -88,11 +88,8 @@ protected:
   }
 
 private:
-  GPUGradientAnisotropicDiffusionImageFilter(const Self &); //purposely not
-                                                            // implemented
-  void operator=(const Self &);                             //purposely not
-
-  // implemented
+  GPUGradientAnisotropicDiffusionImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /**
@@ -110,10 +107,10 @@ public:
   typedef SmartPointer<const Self>                          ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  virtual const char* GetITKSourceVersion() const {
+  virtual const char* GetITKSourceVersion() const ITK_OVERRIDE {
     return ITK_SOURCE_VERSION;
   }
-  const char* GetDescription() const {
+  const char* GetDescription() const ITK_OVERRIDE {
     return "A Factory for GPUGradientAnisotropicDiffusionImageFilter";
   }
 
@@ -134,11 +131,9 @@ public:
 
 private:
   GPUGradientAnisotropicDiffusionImageFilterFactory(const Self&); //purposely
-                                                                  // not
-                                                                  // implemented
+                                                                  // not implemented
   void operator=(const Self&);                                    //purposely
-                                                                  // not
-                                                                  // implemented
+                                                                  // not implemented
 
 #define GradientAnisotropicDiffusionImageFilterTypeMacro(ipt,opt,dm) \
     { \

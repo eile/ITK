@@ -101,7 +101,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ExtractImageFilter, ImageToImageFilter);
+  itkTypeMacro(ExtractImageFilter, InPlaceImageFilter);
 
   /** Image type information. */
   typedef TInputImage  InputImageType;
@@ -277,8 +277,8 @@ protected:
   OutputImageRegionType m_OutputImageRegion;
 
 private:
-  ExtractImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);     //purposely not implemented
+  ExtractImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   DIRECTIONCOLLAPSESTRATEGY m_DirectionCollapseStrategy;
 };

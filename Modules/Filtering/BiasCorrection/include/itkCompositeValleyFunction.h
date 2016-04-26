@@ -19,6 +19,7 @@
 #define itkCompositeValleyFunction_h
 
 #include "itkCacheableScalarFunction.h"
+#include "ITKBiasCorrectionExport.h"
 #include <vector>
 
 namespace itk
@@ -92,7 +93,7 @@ private:
   double m_Sigma;
 }; // end of class
 
-class CompositeValleyFunction:public CacheableScalarFunction
+class ITKBiasCorrection_EXPORT CompositeValleyFunction:public CacheableScalarFunction
 {
 public:
 
@@ -108,7 +109,7 @@ public:
                           const MeasureArrayType & classSigmas);
 
   /** Destructor. */
-  virtual ~CompositeValleyFunction() {}
+    virtual ~CompositeValleyFunction();
 
   /** Get energy table's higher bound. */
   double GetUpperBound() { return m_UpperBound; }
@@ -136,18 +137,7 @@ public:
   }
 
   /** Evalaute the function at point x.  */
-  virtual inline MeasureType Evaluate(MeasureType x) ITK_OVERRIDE
-  {
-    MeasureType res = 1;
-
-    for ( unsigned int k = 0; k < m_Targets.size(); k++ )
-      {
-      res *= valley( ( x - m_Targets[k].GetMean() )
-                     / m_Targets[k].GetSigma() );
-      }
-
-    return res;
-  }
+  virtual MeasureType Evaluate(MeasureType x) ITK_OVERRIDE;
 
   /** Get an energy value for the valley. */
   inline MeasureType valley(MeasureType d)

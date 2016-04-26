@@ -127,10 +127,14 @@ public:
     return b;
   }
 
+  static const bool IsSigned = NumericTraits< ValueType >::IsSigned;
+  static const bool IsInteger = NumericTraits< ValueType >::IsInteger;
+  static const bool IsComplex = NumericTraits< ValueType >::IsComplex;
+
   /** Resize the input vector to the specified size */
   static void SetLength(std::vector< T > & m, const unsigned int s)
   {
-    // since std::vector often holds types that have no NumericTraits::Zero,
+    // since std::vector often holds types that have no NumericTraits::ZeroValue(),
     // allow resize() to call the type's default constructor
     m.clear();
     m.resize(s);

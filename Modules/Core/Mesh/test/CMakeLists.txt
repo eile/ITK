@@ -5,6 +5,7 @@ itkImageToParametricSpaceFilterTest.cxx
 itkInteriorExteriorMeshFilterTest.cxx
 itkParametricSpaceToImageSpaceMeshFilterTest.cxx
 itkRegularSphereMeshSourceTest.cxx
+itkRegularSphereMeshSourceTest2.cxx
 itkSimplexMeshTest.cxx
 itkSimplexMeshAdaptTopologyFilterTest.cxx
 itkSimplexMeshToTriangleMeshFilterTest.cxx
@@ -28,6 +29,10 @@ itkMeshFstreamTest.cxx
 itkMeshSourceGraftOutputTest.cxx
 itkMeshSpatialObjectIOTest.cxx
 itkTriangleMeshToSimplexMeshFilter2Test.cxx
+itkCellInterfaceTest.cxx
+itkNewTest.cxx
+itkQuadrilateralCellTest.cxx
+itkTriangleCellTest.cxx
 )
 
 set(ITKMesh-Test_LIBRARIES ${ITKMesh-Test_LIBRARIES} ITKSpatialObjects)
@@ -47,6 +52,8 @@ itk_add_test(NAME itkInteriorExteriorMeshFilterTest
       COMMAND ITKMeshTestDriver itkInteriorExteriorMeshFilterTest)
 itk_add_test(NAME itkRegularSphereMeshSourceTest
       COMMAND ITKMeshTestDriver itkRegularSphereMeshSourceTest)
+itk_add_test(NAME itkRegularSphereMeshSourceTest2
+      COMMAND ITKMeshTestDriver itkRegularSphereMeshSourceTest2)
 itk_add_test(NAME itkSimplexMeshAdaptTopologyFilterTest
       COMMAND ITKMeshTestDriver itkSimplexMeshAdaptTopologyFilterTest)
 itk_add_test(NAME itkSimplexMeshToTriangleMeshFilterTest
@@ -161,9 +168,16 @@ itk_add_test(NAME itkMeshSpatialObjectIOTest1
 itk_add_test(NAME itkMeshSpatialObjectIOTest2
       COMMAND ITKMeshTestDriver itkMeshSpatialObjectIOTest
               ${ITK_TEST_OUTPUT_DIR}/metameshIOTest2.txt DATA{${ITK_DATA_ROOT}/Input/metamesh.txt})
+itk_add_test(NAME itkParametricSpaceToImageSpaceMeshFilterTest
+      COMMAND ITKMeshTestDriver itkParametricSpaceToImageSpaceMeshFilterTest
+      DATA{${ITK_DATA_ROOT}/Input/cthead1Label.png})
 itk_add_test(NAME itkTriangleMeshToSimplexMeshFilter2Test
       COMMAND ITKMeshTestDriver itkTriangleMeshToSimplexMeshFilter2Test)
 
+itk_add_test(NAME itkNewTest COMMAND ITKMeshTestDriver itkNewTest)
+itk_add_test(NAME itkCellInterfaceTest COMMAND ITKMeshTestDriver itkCellInterfaceTest)
+itk_add_test(NAME itkTriangleCellTest COMMAND ITKMeshTestDriver itkTriangleCellTest)
+itk_add_test(NAME itkQuadrilateralCellTest COMMAND ITKMeshTestDriver itkQuadrilateralCellTest)
 
 
 set_tests_properties(itkVTKPolyDataReaderTest2

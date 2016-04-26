@@ -1,30 +1,7 @@
-if(NOT DEFINED ITK_USE_KWSTYLE)
-  find_package(KWStyle 1.0.1
-    QUIET
-    )
-  option(ITK_USE_KWSTYLE
-    "Enable the use of KWStyle for checking coding style."
-    ${KWSTYLE_FOUND} # default
-    )
-  mark_as_advanced(ITK_USE_KWSTYLE)
-endif(NOT DEFINED ITK_USE_KWSTYLE)
-
 if(ITK_USE_KWSTYLE)
-  find_package(KWStyle 1.0.1
-    QUIET
-    REQUIRED # throw a FATAL_ERROR if KWStyle isn't found
-    )
-
   # Define and configure configuration files
   set(kwstyle_itk_configuration_file
     ${ITK_SOURCE_DIR}/Utilities/KWStyle/ITK.kws.xml
-    )
-  set(kwstyle_itk_code_files_list_file
-    ${ITK_BINARY_DIR}/Utilities/KWStyle/ITKCodeFiles.txt
-    )
-  configure_file( # KWStyle requires that the files list be absolute paths
-    ${ITK_SOURCE_DIR}/Utilities/KWStyle/ITKCodeFiles.txt.in
-    ${kwstyle_itk_code_files_list_file}
     )
   set(kwstyle_itk_examples_files_list_file
     ${ITK_BINARY_DIR}/Utilities/KWStyle/ITKExamplesFiles.txt
@@ -80,14 +57,6 @@ if(ITK_USE_KWSTYLE)
     -v
     -o ${kwstyle_itk_overwrite_file}
     )
-  add_custom_target(StyleCheckCode
-    COMMAND ${KWSTYLE_EXECUTABLE}
-      ${kwstyle_common_arguments}
-      -D ${kwstyle_itk_code_files_list_file}
-      ${kwstyle_editor_format}
-    COMMENT "Coding Style Checker"
-    WORKING_DIRECTORY ${ITK_SOURCE_DIR} # the paths in kwstyle_itk_configuration_file are relative
-    )
   add_custom_target(StyleCheckExamples
     COMMAND ${KWSTYLE_EXECUTABLE}
       ${kwstyle_common_arguments}
@@ -98,14 +67,6 @@ if(ITK_USE_KWSTYLE)
     )
   if(BUILD_TESTING)
     set(itk-module KWStyle)
-    # for uniformity and brevity, test will always output GCC-style
-    itk_add_test(NAME KWStyleCodeTest
-      COMMAND ${KWSTYLE_EXECUTABLE}
-        ${kwstyle_common_arguments}
-        -D ${kwstyle_itk_code_files_list_file}
-        -gcc
-      WORKING_DIRECTORY ${ITK_SOURCE_DIR}
-      )
     itk_add_test(NAME KWStyleExamplesTest
       COMMAND ${KWSTYLE_EXECUTABLE}
         ${kwstyle_common_arguments}

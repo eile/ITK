@@ -72,11 +72,11 @@ public:
   itkGetConstMacro(GPUEnabled, bool);
   itkBooleanMacro(GPUEnabled);
 
-  void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
-  virtual void GraftOutput(DataObject *output);
+  virtual void GraftOutput(DataObject *output) ITK_OVERRIDE;
 
-  virtual void GraftOutput(const DataObjectIdentifierType & key, DataObject *output);
+  virtual void GraftOutput(const DataObjectIdentifierType & key, DataObject *output) ITK_OVERRIDE;
 
 protected:
   GPUImageToImageFilter();
@@ -95,8 +95,8 @@ protected:
   //int m_KernelHandle;
 
 private:
-  GPUImageToImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
+  GPUImageToImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   bool m_GPUEnabled;
 };

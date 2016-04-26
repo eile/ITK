@@ -209,7 +209,7 @@ public:
   itkSetConstObjectMacro( FixedPointSet, FixedPointSetType );
   itkGetConstObjectMacro( FixedPointSet, FixedPointSetType );
 
-  /** Get the moving transformed point set.  */
+  /** Get the fixed transformed point set.  */
   itkGetModifiableObjectMacro( FixedTransformedPointSet, FixedTransformedPointSetType );
 
   /** Get/Set the moving point set.  */
@@ -217,7 +217,7 @@ public:
   itkGetConstObjectMacro( MovingPointSet, MovingPointSetType );
 
   /** Get the moving transformed point set.  */
-  itkGetModifiableObjectMacro(MovingTransformedPointSet, MovingTransformedPointSetType );
+  itkGetModifiableObjectMacro( MovingTransformedPointSet, MovingTransformedPointSetType );
 
   /**
    * For now return the number of points used in the value/derivative calculations.
@@ -265,20 +265,20 @@ public:
    * the local metric value for a single point.  The \c PixelType may or
    * may not be used.  See class description for further explanation.
    */
-  virtual MeasureType GetLocalNeighborhoodValue( const PointType &, const PixelType & pixel = 0 ) const = 0;
+  virtual MeasureType GetLocalNeighborhoodValue( const PointType &, const PixelType & pixel ) const = 0;
 
   /**
    * Calculates the local derivative for a single point. The \c PixelType may or
    * may not be used.  See class description for further explanation.
    */
-  virtual LocalDerivativeType GetLocalNeighborhoodDerivative( const PointType &, const PixelType & pixel = 0 ) const;
+  virtual LocalDerivativeType GetLocalNeighborhoodDerivative( const PointType &, const PixelType & pixel ) const;
 
   /**
    * Calculates the local value/derivative for a single point.  The \c PixelType may or
    * may not be used.  See class description for further explanation.
    */
   virtual void GetLocalNeighborhoodValueAndDerivative( const PointType &,
-    MeasureType &, LocalDerivativeType &, const PixelType & pixel = 0 ) const = 0;
+    MeasureType &, LocalDerivativeType &, const PixelType & pixel ) const = 0;
 
   /**
    * Get the virtual point set, derived from the fixed point set.
@@ -298,6 +298,28 @@ public:
      * correspond to a point within either point set. */
     return false;
   }
+
+  /**
+   * By default, the point set metric derivative for a displacement field transform
+   * is stored by saving the gradient for every voxel in the displacement field (see
+   * the function StorePointDerivative()).  Since the "fixed points" will typically
+   * constitute a sparse set, this means that the field will have zero gradient values
+   * at every voxel that doesn't have a corresponding point.  This might cause additional
+   * computation time for certain transforms (e.g. B-spline SyN). To avoid this, this
+   * option permits storing the point derivative only at the fixed point locations.
+   * If this variable is set to false, then the derivative array will be of length
+   * = PointDimension * m_FixedPointSet->GetNumberOfPoints().
+   */
+  itkSetMacro( StoreDerivativeAsSparseFieldForLocalSupportTransforms, bool );
+  itkGetConstMacro( StoreDerivativeAsSparseFieldForLocalSupportTransforms, bool );
+  itkBooleanMacro( StoreDerivativeAsSparseFieldForLocalSupportTransforms );
+
+  /**
+   *
+   */
+  itkSetMacro( CalculateValueAndDerivativeInTangentSpace, bool );
+  itkGetConstMacro( CalculateValueAndDerivativeInTangentSpace, bool );
+  itkBooleanMacro( CalculateValueAndDerivativeInTangentSpace );
 
 protected:
   PointSetToPointSetMetricv4();
@@ -322,6 +344,15 @@ protected:
    * should be used.  Default = false.
    */
   bool m_UsePointSetData;
+
+  /**
+   * Flag to calculate value and/or derivative at tangent space.  This is needed
+   * for the diffeomorphic registration methods.  The fixed and moving points are
+   * warped to the virtual domain where the metric is calculated.  Derived point
+   * set metrics might have associated gradient information which will need to be
+   * warped if this flag is true.  Default = false.
+   */
+  bool m_CalculateValueAndDerivativeInTangentSpace;
 
   /**
    * Prepare point sets for use. */
@@ -382,8 +413,8 @@ protected:
 
 
 private:
-  PointSetToPointSetMetricv4( const Self & ); //purposely not implemented
-  void operator=( const Self & );           //purposely not implemented
+  PointSetToPointSetMetricv4( const Self & ) ITK_DELETE_FUNCTION;
+  void operator=( const Self & ) ITK_DELETE_FUNCTION;
 
   mutable bool m_MovingTransformPointLocatorsNeedInitialization;
   mutable bool m_FixedTransformPointLocatorsNeedInitialization;
@@ -391,6 +422,10 @@ private:
   // Flag to keep track of whether a warning has already been issued
   // regarding the number of valid points.
   mutable bool m_HaveWarnedAboutNumberOfValidPoints;
+
+  // Flag to store derivatives at fixed point locations with the rest being zero gradient
+  // (default = true).
+  bool m_StoreDerivativeAsSparseFieldForLocalSupportTransforms;
 
   mutable ModifiedTimeType m_MovingTransformedPointSetTime;
   mutable ModifiedTimeType m_FixedTransformedPointSetTime;

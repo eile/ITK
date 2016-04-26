@@ -30,11 +30,11 @@ namespace itk
  *  \brief Base exception class for IO problems during writing.
  * \ingroup ITKIOImageBase
  */
-class ITK_ABI_EXPORT ImageSeriesWriterException:public ExceptionObject
+class ITKIOImageBase_EXPORT ImageSeriesWriterException:public ExceptionObject
 {
 public:
   /** Has to have empty throw(). */
-  virtual ~ImageSeriesWriterException() throw( ) {};
+  virtual ~ImageSeriesWriterException() throw( );
 
   /** Run-time information. */
   itkTypeMacro(ImageSeriesWriterException, ExceptionObject);
@@ -215,8 +215,8 @@ protected:
   bool m_UserSpecifiedImageIO;
 
 private:
-  ImageSeriesWriter(const Self &); //purposely not implemented
-  void operator=(const Self &);    //purposely not implemented
+  ImageSeriesWriter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   /** A list of filenames to be processed. */
   FileNamesContainer m_FileNames;

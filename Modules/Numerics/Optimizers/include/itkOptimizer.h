@@ -22,6 +22,7 @@
 #include "itkObjectFactory.h"
 #include "itkArray.h"
 #include "itkOptimizerParameters.h"
+#include "ITKOptimizersExport.h"
 
 namespace itk
 {
@@ -34,7 +35,7 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class Optimizer:public Object
+class ITKOptimizers_EXPORT Optimizer:public Object
 {
 public:
   /** Standard class typedefs. */
@@ -99,8 +100,8 @@ protected:
   ParametersType m_CurrentPosition;
 
 private:
-  Optimizer(const Self &);      //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  Optimizer(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   ParametersType m_InitialPosition;
   ScalesType     m_Scales;

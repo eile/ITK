@@ -36,7 +36,7 @@ namespace itk
  * NeighborhoodOperator and a NeighborhoodIterator, which is swept
  * across every pixel in an image region.
  *
- * \author Won-Ki Jeong (wkjeong@seas.harvard.edu)
+ * \author Won-Ki Jeong (wkjeong\@seas.harvard.edu)
  * \ingroup ITKGPUImageFilterBase
  */
 
@@ -167,16 +167,16 @@ protected:
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             ThreadIdType threadId);*/
 
-  void GPUGenerateData();
+  void GPUGenerateData() ITK_OVERRIDE;
 
-  void PrintSelf(std::ostream & os, Indent indent) const
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {
     GPUSuperclass::PrintSelf(os, indent);
   }
 
 private:
-  GPUNeighborhoodOperatorImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                     //purposely not implemented
+  GPUNeighborhoodOperatorImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   /** Internal operator used to filter the image.
   OutputNeighborhoodType m_Operator;*/

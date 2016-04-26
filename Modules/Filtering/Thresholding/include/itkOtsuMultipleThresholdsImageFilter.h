@@ -105,7 +105,7 @@ public:
   itkGetConstMacro(NumberOfThresholds, SizeValueType);
 
   /** Set/Get the offset which labels have to start from. Default is 0. */
-  itkSetClampMacro( LabelOffset, OutputPixelType, NumericTraits< OutputPixelType >::Zero,
+  itkSetClampMacro( LabelOffset, OutputPixelType, NumericTraits< OutputPixelType >::ZeroValue(),
                     NumericTraits< OutputPixelType >::max() );
   itkGetConstMacro(LabelOffset, OutputPixelType);
 
@@ -139,8 +139,8 @@ protected:
   void GenerateData() ITK_OVERRIDE;
 
 private:
-  OtsuMultipleThresholdsImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                    //purposely not implemented
+  OtsuMultipleThresholdsImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   SizeValueType       m_NumberOfHistogramBins;
   SizeValueType       m_NumberOfThresholds;

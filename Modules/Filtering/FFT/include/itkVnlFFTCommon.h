@@ -18,6 +18,8 @@
 #ifndef itkVnlFFTCommon_h
 #define itkVnlFFTCommon_h
 
+#include "itkIntTypes.h"
+
 #include "vnl/algo/vnl_fft_base.h"
 
 namespace itk
@@ -35,6 +37,8 @@ struct VnlFFTCommon
   sizes have a prime factorization consisting of 2's, 3's, and 5's. */
   template< typename TSizeValue >
   static bool IsDimensionSizeLegal(TSizeValue n);
+
+  static const SizeValueType GREATEST_PRIME_FACTOR = 5;
 
   /** Convenience struct for computing the discrete Fourier
   Transform. */

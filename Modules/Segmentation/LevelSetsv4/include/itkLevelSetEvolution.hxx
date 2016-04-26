@@ -134,7 +134,7 @@ LevelSetEvolution< TEquationContainer, LevelSetDenseImage< TImage > >
         }
       else
         {
-        if( contribution == NumericTraits< LevelSetOutputRealType >::max() )
+        if( Math::ExactlyEquals(contribution, NumericTraits< LevelSetOutputRealType >::max()) )
           {
           itkGenericExceptionMacro( << "contribution is " << contribution );
           }
@@ -258,21 +258,21 @@ LevelSetEvolution< TEquationContainer, WhitakerSparseLevelSetImage< TOutput, VDi
   typename LevelSetContainerType::Iterator it = this->m_LevelSetContainer->Begin();
   while( it != this->m_LevelSetContainer->End() )
     {
-    IdentifierType id = it->GetIdentifier();
+    const IdentifierType identifier = it->GetIdentifier();
 
-    if( this->m_UpdateBuffer.find( id ) == this->m_UpdateBuffer.end() )
+    if( this->m_UpdateBuffer.find( identifier ) == this->m_UpdateBuffer.end() )
       {
-      this->m_UpdateBuffer[ id ] = new LevelSetLayerType;
+      this->m_UpdateBuffer[ identifier ] = new LevelSetLayerType;
       }
     else
       {
-      if( this->m_UpdateBuffer[ id ] )
+      if( this->m_UpdateBuffer[ identifier ] )
         {
-        this->m_UpdateBuffer[ id ]->clear();
+        this->m_UpdateBuffer[ identifier ]->clear();
         }
       else
         {
-        this->m_UpdateBuffer[ id ] = new LevelSetLayerType;
+        this->m_UpdateBuffer[ identifier ] = new LevelSetLayerType;
         }
       }
     ++it;
@@ -317,7 +317,7 @@ LevelSetEvolution< TEquationContainer, WhitakerSparseLevelSetImage< TOutput, VDi
         }
       else
         {
-        if( contribution == NumericTraits< LevelSetOutputRealType >::max() )
+        if( Math::ExactlyEquals(contribution, NumericTraits< LevelSetOutputRealType >::max()) )
           {
           itkGenericExceptionMacro( << "contribution is " << contribution );
           }

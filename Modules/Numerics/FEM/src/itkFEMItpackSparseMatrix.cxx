@@ -453,6 +453,10 @@ FEMExceptionItpackSparseMatrixSbagn::FEMExceptionItpackSparseMatrixSbagn(const c
   SetLocation(location);
 }
 
+FEMExceptionItpackSparseMatrixSbagn::~FEMExceptionItpackSparseMatrixSbagn() ITK_NOEXCEPT
+{
+}
+
 FEMExceptionItpackSparseMatrixSbsij::FEMExceptionItpackSparseMatrixSbsij(const char *file, unsigned int lineNumber,
                                                                          std::string location,
                                                                          integer errorCode) :
@@ -478,6 +482,10 @@ FEMExceptionItpackSparseMatrixSbsij::FEMExceptionItpackSparseMatrixSbsij(const c
   SetDescription( buf.str().c_str() );
 
   SetLocation(location);
+}
+
+FEMExceptionItpackSparseMatrixSbsij::~FEMExceptionItpackSparseMatrixSbsij() ITK_NOEXCEPT
+{
 }
 
 }

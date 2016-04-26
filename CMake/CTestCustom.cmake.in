@@ -106,17 +106,27 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
   # other warning expression:
   "[0-9,]+ warnings? generated."
 
-  # The PCRE, SWIG, and GCCXML third party builds for wrapping.
+  # The PCRE, SWIG, and third party builds for wrapping.
   ".*/PCRE/.*"
   ".*/swig/.*"
   ".*parser.py.*"
-  ".*/GCC_XML/.*"
+  "checking maximum warning verbosity option.*"
+
+  "warning: Using 'getpwnam' in statically linked applications requires at runtime the shared libraries"
+
+  # Doxygen warnings
+  "include/itkIsConvertible.h:[0-9]+: warning: Conditional section with label HIDE_META_PROGRAMMING"
   )
 
 if(APPLE)
-set(CTEST_CUSTOM_WARNING_EXCEPTION
-  ${CTEST_CUSTOM_WARNING_EXCEPTION}
-  "warning -.: directory name .* does not exist"
-  "ld.*warning.*duplicate dylib.*"
-  )
+  set(CTEST_CUSTOM_WARNING_EXCEPTION
+    ${CTEST_CUSTOM_WARNING_EXCEPTION}
+    "warning -.: directory name .* does not exist"
+    "ld.*warning.*duplicate dylib.*"
+    )
 endif()
+
+set(CTEST_CUSTOM_ERROR_EXCEPTION
+  # Emscripten
+  ".*WARNING  root: emcc: cannot find library.*"
+  )

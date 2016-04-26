@@ -82,6 +82,9 @@ public:
   /** Typedefs associated with the transform */
   typedef TTransform                                        TransformType;
   typedef typename TransformType::Pointer                   TransformPointer;
+
+  typedef typename Superclass::FixedParametersType          FixedParametersType;
+  typedef typename Superclass::FixedParametersValueType     FixedParametersValueType;
   typedef typename Superclass::ParametersType               ParametersType;
   typedef typename Superclass::ParametersValueType          ParametersValueType;
 
@@ -125,7 +128,7 @@ public:
   /** Get the required direction. */
   itkGetConstReferenceMacro( RequiredTransformDomainDirection, DirectionType );
 
-  virtual void SetRequiredFixedParameters( const ParametersType ) ITK_OVERRIDE;
+  virtual void SetRequiredFixedParameters( const FixedParametersType ) ITK_OVERRIDE;
 
   /** Initialize the transform using the specified fixed parameters */
   virtual void AdaptTransformParameters() ITK_OVERRIDE;
@@ -137,8 +140,8 @@ protected:
   void PrintSelf( std::ostream & os, Indent indent ) const ITK_OVERRIDE;
 
 private:
-  BSplineTransformParametersAdaptor( const Self & ); //purposely not implemented
-  void operator=( const Self & );             //purposely not implemented
+  BSplineTransformParametersAdaptor( const Self & ) ITK_DELETE_FUNCTION;
+  void operator=( const Self & ) ITK_DELETE_FUNCTION;
 
   /** Helper function to set m_RequiredFixedParameters */
   void UpdateRequiredFixedParameters();

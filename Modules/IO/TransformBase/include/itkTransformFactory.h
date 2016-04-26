@@ -28,6 +28,8 @@
 #ifndef itkTransformFactory_h
 #define itkTransformFactory_h
 
+#include "ITKIOTransformBaseExport.h"
+
 #include "itkTransformFactoryBase.h"
 
 namespace itk

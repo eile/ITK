@@ -20,6 +20,7 @@
 #include "itkHDF5ImageIOFactory.h"
 #include "itkIOTestHelper.h"
 #include "itkMetaDataObject.h"
+#include "itkMath.h"
 
 template <typename TPixel>
 int HDF5ReadWriteTest(const char *fileName)
@@ -252,7 +253,7 @@ int HDF5ReadWriteTest(const char *fileName)
 
   float metaDataFloat2(0.0f);
   if(!itk::ExposeMetaData<float>(metaDict2,"TestFloat",metaDataFloat2) ||
-     metaDataFloat2 != metaDataFloat)
+     itk::Math::NotAlmostEquals( metaDataFloat2, metaDataFloat) )
     {
     std::cerr << "Failure Reading metaData " << "TestFloat "
               << metaDataFloat2 << " " << metaDataFloat
@@ -262,7 +263,7 @@ int HDF5ReadWriteTest(const char *fileName)
 
   double metaDataDouble2(0.0);
   if(!itk::ExposeMetaData<double>(metaDict2,"TestDouble",metaDataDouble2) ||
-     metaDataDouble2 != metaDataDouble)
+     itk::Math::NotAlmostEquals( metaDataDouble2, metaDataDouble) )
     {
     std::cerr << "Failure reading metaData " << "TestDouble "
               << metaDataDouble2 << " " << metaDataDouble
@@ -271,7 +272,7 @@ int HDF5ReadWriteTest(const char *fileName)
     }
 
   itk::Array<char> metaDataCharArray2;
-  metaDataCharArray2.Fill(itk::NumericTraits<char>::Zero);
+  metaDataCharArray2.Fill(itk::NumericTraits<char>::ZeroValue());
   if(!itk::ExposeMetaData<itk::Array<char> >(metaDict2,"TestCharArray",
                                              metaDataCharArray2) ||
      metaDataCharArray2 != metaDataCharArray)
@@ -283,7 +284,7 @@ int HDF5ReadWriteTest(const char *fileName)
     }
 
   itk::Array<double> metaDataDoubleArray2;
-  metaDataDoubleArray2.Fill(itk::NumericTraits<double>::Zero);
+  metaDataDoubleArray2.Fill(itk::NumericTraits<double>::ZeroValue());
   if(!itk::ExposeMetaData<itk::Array<double> >(metaDict2,"TestDoubleArray",
                                              metaDataDoubleArray2) ||
      metaDataDoubleArray2 != metaDataDoubleArray)
@@ -307,11 +308,11 @@ int HDF5ReadWriteTest(const char *fileName)
   itk::ImageRegionIterator<ImageType> it2(im2,im2->GetLargestPossibleRegion());
   for(it.GoToBegin(),it2.GoToBegin(); !it.IsAtEnd() && !it2.IsAtEnd(); ++it,++it2)
     {
-    if(it.Value() != it2.Value())
+    if(itk::Math::NotAlmostEquals( it.Get(), it2.Get()) )
       {
-      std::cout << "Original Pixel (" << it.Value()
+      std::cout << "Original Pixel (" << it.Get()
                 << ") doesn't match read-in Pixel ("
-                << it2.Value() << std::endl;
+                << it2.Get() << std::endl;
       success = EXIT_FAILURE;
       break;
       }

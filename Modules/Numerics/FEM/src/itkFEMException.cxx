@@ -31,6 +31,10 @@ FEMException::FEMException(const char *file, unsigned int lineNumber, std::strin
   SetLocation(location);
 }
 
+FEMException::~FEMException() ITK_NOEXCEPT
+{
+}
+
 FEMExceptionIO::FEMExceptionIO(const char *file, unsigned int lineNumber, std::string location,
                                std::string moreDescription) :
   FEMException(file, lineNumber)
@@ -39,10 +43,18 @@ FEMExceptionIO::FEMExceptionIO(const char *file, unsigned int lineNumber, std::s
   SetLocation(location);
 }
 
+FEMExceptionIO::~FEMExceptionIO() ITK_NOEXCEPT
+{
+}
+
 FEMExceptionWrongClass::FEMExceptionWrongClass(const char *file, unsigned int lineNumber, std::string location) :
   FEMException(file, lineNumber, location)
 {
   SetDescription("Object was of wrong class!");
+}
+
+FEMExceptionWrongClass::~FEMExceptionWrongClass() ITK_NOEXCEPT
+{
 }
 
 FEMExceptionObjectNotFound::FEMExceptionObjectNotFound(const char *file, unsigned int lineNumber, std::string location,
@@ -57,12 +69,20 @@ FEMExceptionObjectNotFound::FEMExceptionObjectNotFound(const char *file, unsigne
   SetDescription( buf.str().c_str() );
 }
 
+FEMExceptionObjectNotFound::~FEMExceptionObjectNotFound() ITK_NOEXCEPT
+{
+}
+
 FEMExceptionSolution::FEMExceptionSolution(const char *file, unsigned int lineNumber, std::string location,
                                            std::string moreDescription) :
   FEMException(file, lineNumber)
 {
   SetDescription("Error when solving FEM problem: " + moreDescription);
   SetLocation(location);
+}
+
+FEMExceptionSolution::~FEMExceptionSolution() ITK_NOEXCEPT
+{
 }
 
 }

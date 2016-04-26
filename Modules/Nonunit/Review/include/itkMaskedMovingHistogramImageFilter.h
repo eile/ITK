@@ -118,11 +118,11 @@ public:
   /** Get the modified mask image */
   MaskImageType * GetOutputMask();
 
-  void AllocateOutputs();
+  void AllocateOutputs() ITK_OVERRIDE;
 
   typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx);
+  DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
   itkSetMacro(FillValue, OutputPixelType);
   itkGetConstMacro(FillValue, OutputPixelType);
@@ -148,7 +148,7 @@ protected:
   /** Multi-thread version GenerateData. */
   void  ThreadedGenerateData(const OutputImageRegionType &
                              outputRegionForThread,
-                             ThreadIdType threadId);
+                             ThreadIdType threadId) ITK_OVERRIDE;
 
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
@@ -162,8 +162,8 @@ protected:
                      const IndexType currentIdx);
 
 private:
-  MaskedMovingHistogramImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                   //purposely not implemented
+  MaskedMovingHistogramImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   bool m_GenerateOutputMask;
 

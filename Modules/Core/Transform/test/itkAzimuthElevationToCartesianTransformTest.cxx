@@ -16,16 +16,12 @@
  *
  *=========================================================================*/
 
-#include <iostream>
-
 #include "itkAzimuthElevationToCartesianTransform.h"
 
-typedef  double                                     CoordinateRepresentationType;
-typedef  itk::Point<CoordinateRepresentationType,3> PointType;
-
-void PrintPoint( const PointType & p )
+template< typename TPoint >
+void PrintPoint( const TPoint & p )
 {
-  for( unsigned int i=0; i<PointType::PointDimension; i++)
+  for( unsigned int i=0; i < TPoint::PointDimension; ++i)
     {
     std::cout << p[i] << ", ";
     }
@@ -34,6 +30,8 @@ void PrintPoint( const PointType & p )
 
 int itkAzimuthElevationToCartesianTransformTest(int, char *[])
 {
+  typedef  double                                     CoordinateRepresentationType;
+  typedef  itk::Point<CoordinateRepresentationType,3> PointType;
 
   const CoordinateRepresentationType ACCEPTABLE_ERROR = 1E-10;
 
@@ -45,42 +43,100 @@ int itkAzimuthElevationToCartesianTransformTest(int, char *[])
     AzimuthElevationToCartesianTransformType::New();
 
   transform->SetAzimuthElevationToCartesianParameters(1.0,5.0,45,45);
-  PointType p;
-  p[0] = 3;
-  p[1] = 3;
-  p[2] = 25;
 
-  std::cout<< "original values of (theta,phi,r) p = "<<std::endl;
-  PrintPoint(p);
+  // test a bunch of points in all quadrants and those that could create exceptions
+  PointType q;
+  std::vector<PointType> p;
 
-  transform->SetForwardAzimuthElevationToCartesian();
+  q[0] = 1;
+  q[1] = 1;
+  q[2] = 1;
+  p.push_back(q);
 
-  PointType answer = transform->TransformPoint(p);
-  PrintPoint(answer);
+  q[0] = 1;
+  q[1] = 1;
+  q[2] = -1;
+  p.push_back(q);
 
-  PointType answerBackwards = transform->BackTransformPoint(answer);
-  PrintPoint(answerBackwards);
+  q[0] = 1;
+  q[1] = -1;
+  q[2] = 1;
+  p.push_back(q);
 
-  transform->SetForwardCartesianToAzimuthElevation();
-  PointType reverseDirectionAnswer = transform->BackTransformPoint(answerBackwards);
-  PrintPoint(reverseDirectionAnswer);
+  q[0] = 1;
+  q[1] = -1;
+  q[2] = -1;
+  p.push_back(q);
 
-  PointType reverseDirectionAnswerBackwards = transform->TransformPoint(reverseDirectionAnswer);
-  PrintPoint(reverseDirectionAnswerBackwards);
+  q[0] = -1;
+  q[1] = 1;
+  q[2] = 1;
+  p.push_back(q);
+
+  q[0] = -1;
+  q[1] = 1;
+  q[2] = -1;
+  p.push_back(q);
+
+  q[0] = -1;
+  q[1] = -1;
+  q[2] = 1;
+  p.push_back(q);
+
+  q[0] = -1;
+  q[1] = -1;
+  q[2] = -1;
+  p.push_back(q);
+
+  q[0] = -1;
+  q[1] = 1;
+  q[2] = 0;
+  p.push_back(q);
+
+  q[0] = 0;
+  q[1] = 1;
+  q[2] = 0;
+  p.push_back(q);
+
+  std::cout << "\n\n\t\t\tTransform Info:\n\n";
   transform->Print(std::cout);
+  std::cout << "\n\n--------\n\n";
 
-  bool same=true;
-  for (unsigned int i=0; i < p.PointDimension && same; i++)
+  for (unsigned int j = 0; j < p.size(); ++j)
     {
-    same = ((vnl_math_abs(p[i] - answerBackwards[i]) < ACCEPTABLE_ERROR) &&
-            (vnl_math_abs(p[i] - reverseDirectionAnswerBackwards[i]) < ACCEPTABLE_ERROR) &&
-            (vnl_math_abs(answer[i] - reverseDirectionAnswer[i]) < ACCEPTABLE_ERROR));
-    }
-  if (!same)
-    {
-    std::cout << "itkAzimuthElevationToCartesianTransformTest failed" <<std::endl;
-    return EXIT_FAILURE;
-    }
+    std::cout << "original values of (theta,phi,r) p = " << std::endl;
+    PrintPoint< PointType >(p.at(j));
+
+    transform->SetForwardAzimuthElevationToCartesian();
+
+    PointType answer = transform->TransformPoint(p.at(j));
+    PrintPoint< PointType >(answer);
+
+    PointType answerBackwards = transform->BackTransformPoint(answer);
+    PrintPoint< PointType >(answerBackwards);
+
+    transform->SetForwardCartesianToAzimuthElevation();
+    PointType reverseDirectionAnswer = transform->BackTransformPoint(answerBackwards);
+    PrintPoint< PointType >(reverseDirectionAnswer);
+
+    PointType reverseDirectionAnswerBackwards = transform->TransformPoint(reverseDirectionAnswer);
+    PrintPoint< PointType >(reverseDirectionAnswerBackwards);
+
+    std::cout << "\n\n--------\n\n";
+
+    bool same = true;
+    for (unsigned int i = 0; i < PointType::PointDimension && same; ++i)
+      {
+      same = ((vnl_math_abs(p.at(j)[i] - answerBackwards[i]) < ACCEPTABLE_ERROR) &&
+          (vnl_math_abs(p.at(j)[i] - reverseDirectionAnswerBackwards[i]) < ACCEPTABLE_ERROR) &&
+          (vnl_math_abs(answer[i] - reverseDirectionAnswer[i]) < ACCEPTABLE_ERROR));
+      }
+    if (!same)
+      {
+      std::cout << "itkAzimuthElevationToCartesianTransformTest failed" << std::endl;
+      return EXIT_FAILURE;
+      }
+  }
   std::cout << "itkAzimuthElevationToCartesianTransformTest passed" <<std::endl;
   return EXIT_SUCCESS;
 }

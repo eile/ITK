@@ -20,6 +20,7 @@
 
 #include "itkObjectFactoryBase.h"
 #include "itkImageIOBase.h"
+#include "ITKIOGDCMExport.h"
 
 namespace itk
 {
@@ -27,7 +28,7 @@ namespace itk
  * \brief Create instances of GDCMImageIO objects using an object factory.
  * \ingroup ITKIOGDCM
  */
-class GDCMImageIOFactory:public ObjectFactoryBase
+class ITKIOGDCM_EXPORT GDCMImageIOFactory:public ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */
@@ -60,8 +61,8 @@ protected:
   ~GDCMImageIOFactory();
 
 private:
-  GDCMImageIOFactory(const Self &); //purposely not implemented
-  void operator=(const Self &);     //purposely not implemented
+  GDCMImageIOFactory(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

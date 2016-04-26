@@ -136,11 +136,12 @@ protected:
   // Override since the filter produces the entire dataset
   void EnlargeOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
 
+  void VerifyInputInformation() ITK_OVERRIDE;
   void GenerateData() ITK_OVERRIDE;
 
 private:
-  IsolatedWatershedImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);               //purposely not implemented
+  IsolatedWatershedImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

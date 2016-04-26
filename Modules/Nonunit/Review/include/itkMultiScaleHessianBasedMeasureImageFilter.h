@@ -161,8 +161,6 @@ public:
    * best response */
   const ScalesImageType * GetScalesOutput() const;
 
-  void EnlargeOutputRequestedRegion(DataObject *);
-
   /** Methods to turn on/off flag to generate an image with scale values at
    *  each pixel for the best vesselness response */
   itkSetMacro(GenerateScalesOutput, bool);
@@ -177,8 +175,6 @@ public:
 
   /** This is overloaded to create the Scales and Hessian output images */
   typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
-  using Superclass::MakeOutput;
-  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx);
 
 protected:
   MultiScaleHessianBasedMeasureImageFilter();
@@ -186,7 +182,12 @@ protected:
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Generate Data */
-  void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
+
+  void EnlargeOutputRequestedRegion(DataObject *) ITK_OVERRIDE;
+
+  using Superclass::MakeOutput;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
 private:
   void UpdateMaximumResponse(double sigma);
@@ -195,9 +196,8 @@ private:
 
   void AllocateUpdateBuffer();
 
-  //purposely not implemented
-  MultiScaleHessianBasedMeasureImageFilter(const Self &);
-  void operator=(const Self &); //purposely not implemented
+  MultiScaleHessianBasedMeasureImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   bool m_NonNegativeHessianBasedMeasure;
 

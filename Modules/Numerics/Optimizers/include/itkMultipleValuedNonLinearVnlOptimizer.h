@@ -21,6 +21,7 @@
 #include "itkMultipleValuedNonLinearOptimizer.h"
 #include "itkMultipleValuedVnlCostFunctionAdaptor.h"
 #include "itkCommand.h"
+#include "ITKOptimizersExport.h"
 
 namespace itk
 {
@@ -33,7 +34,7 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class MultipleValuedNonLinearVnlOptimizer:
+class ITKOptimizers_EXPORT MultipleValuedNonLinearVnlOptimizer:
   public MultipleValuedNonLinearOptimizer
 {
 public:
@@ -111,8 +112,8 @@ protected:
   typedef ReceptorMemberCommand< Self > CommandType;
 
 private:
-  MultipleValuedNonLinearVnlOptimizer(const Self &); //purposely not implemented
-  void operator=(const Self &);                      //purposely not implemented
+  MultipleValuedNonLinearVnlOptimizer(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   /** Callback function for the Command Observer */
   void IterationReport(const EventObject & event);

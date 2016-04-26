@@ -18,6 +18,8 @@
 #ifndef itkTransformFileReader_h
 #define itkTransformFileReader_h
 
+#include "ITKIOTransformBaseExport.h"
+
 #include "itkTransformIOBase.h"
 
 namespace itk
@@ -31,20 +33,24 @@ namespace itk
    * \wikiexample{IO/TransformFileReader,Read a transform from a file}
    * \endwiki
    */
-template<typename ScalarType>
-class TransformFileReaderTemplate: public LightProcessObject
+template<typename TParametersValueType>
+class ITKIOTransformBase_TEMPLATE_EXPORT TransformFileReaderTemplate: public LightProcessObject
 {
 public:
 
   /** SmartPointer typedef support */
-  typedef TransformFileReaderTemplate         Self;
-  typedef SmartPointer< Self >                Pointer;
-  typedef TransformBaseTemplate< ScalarType > TransformType;
+  typedef TransformFileReaderTemplate                 Self;
+  typedef SmartPointer<Self>                          Pointer;
+  typedef TransformBaseTemplate<TParametersValueType> TransformType;
 
-  typedef typename TransformType::ParametersType      ParametersType;
-  typedef TransformIOBaseTemplate< ScalarType >       TransformIOType;
-  typedef typename TransformIOType::TransformPointer  TransformPointer;
-  typedef typename TransformIOType::TransformListType TransformListType;
+  typedef typename TransformType::ParametersType           ParametersType;
+  typedef typename TransformType::ParametersValueType      ParametersValueType;
+  typedef typename TransformType::FixedParametersType      FixedParametersType;
+  typedef typename TransformType::FixedParametersValueType FixedParametersValueType;
+
+  typedef TransformIOBaseTemplate< ParametersValueType >   TransformIOType;
+  typedef typename TransformIOType::TransformPointer       TransformPointer;
+  typedef typename TransformIOType::TransformListType      TransformListType;
 
   /** Method for creation through the object factory */
   itkNewMacro(Self);
@@ -59,11 +65,18 @@ public:
   /** Get the filename */
   itkGetStringMacro(FileName);
 
-  /** Read the transform */
+  /** Read the transforms */
   virtual void Update();
 
-  /** Get the list of transform */
+#if !defined( ITK_FUTURE_LEGACY_REMOVE )
+  /** Get the list of transforms.
+   * \warning The output is not intended to be modifiable.
+   * \deprecated */
   TransformListType * GetTransformList() { return &m_TransformList; }
+#else
+  /** Get the list of transforms. */
+  const TransformListType * GetTransformList() { return &m_TransformList; }
+#endif
 
   /** Set/Get the TransformIO class used internally to read to transform. */
   itkSetObjectMacro( TransformIO, TransformIOType );
@@ -74,15 +87,14 @@ protected:
 
   TransformFileReaderTemplate();
   virtual ~TransformFileReaderTemplate();
-  void CreateTransform(TransformPointer & ptr, const std::string & ClassName);
 
   TransformListType                 m_TransformList;
   typename TransformIOType::Pointer m_TransformIO;
   std::string                       m_FileName;
 
 private:
-  TransformFileReaderTemplate(const Self &); //purposely not implemented
-  void operator=(const Self &);              //purposely not implemented
+  TransformFileReaderTemplate(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** This helps to meet backward compatibility */
@@ -94,8 +106,44 @@ typedef itk::TransformFileReaderTemplate<double> TransformFileReader;
 #include "itkTransformIOFactoryRegisterManager.h"
 #endif
 
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "itkTransformFileReader.hxx"
-#endif
+// Note: Explicit instantiation is done in itkTransformFileReader.cxx
 
 #endif // itkTransformFileReade_h
+
+/** Explicit instantiations */
+#ifndef ITK_TEMPLATE_EXPLICIT_TransformFileReader
+// Explicit instantiation is required to ensure correct dynamic_cast
+// behavior across shared libraries.
+//
+// IMPORTANT: Since within the same compilation unit,
+//            ITK_TEMPLATE_EXPLICIT_<classname> defined and undefined states
+//            need to be considered. This code *MUST* be *OUTSIDE* the header
+//            guards.
+//
+#  if defined( ITKIOTransformBase_EXPORTS )
+//   We are building this library
+#    define ITKIOTransformBase_EXPORT_EXPLICIT
+#  else
+//   We are using this library
+#    define ITKIOTransformBase_EXPORT_EXPLICIT ITKIOTransformBase_EXPORT
+#  endif
+namespace itk
+{
+
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_PUSH()
+#endif
+ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
+
+extern template class ITKIOTransformBase_EXPORT_EXPLICIT TransformFileReaderTemplate< double >;
+extern template class ITKIOTransformBase_EXPORT_EXPLICIT TransformFileReaderTemplate< float >;
+
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_POP()
+#else
+  ITK_GCC_PRAGMA_DIAG(warning "-Wattributes")
+#endif
+
+} // end namespace itk
+#  undef ITKIOTransformBase_EXPORT_EXPLICIT
+#endif

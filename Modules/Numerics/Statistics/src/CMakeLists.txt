@@ -1,4 +1,5 @@
 set(ITKStatistics_SRC
+itkProbabilityDistribution.cxx
 itkDenseFrequencyContainer2.cxx
 itkSparseFrequencyContainer2.cxx
 itkChiSquareDistribution.cxx
@@ -12,5 +13,5 @@ itkMinimumDecisionRule.cxx
 )
 
 add_library(ITKStatistics ${ITKStatistics_SRC})
-target_link_libraries(ITKStatistics  ${ITKCommon_LIBRARIES} ${ITKNetlib_LIBRARIES})
+itk_module_link_dependencies()
 itk_module_target(ITKStatistics)

@@ -29,6 +29,7 @@
 #define itkIPLFileNameList_h
 #include "ITKIOIPLExport.h"
 
+#include "itkMath.h"
 #include "itkMacro.h"
 #include "itkObject.h"
 
@@ -36,21 +37,30 @@
 #include <string>
 #include <list>
 /** Set built-in type.  Creates member Set"name"() (e.g., SetVisibility()); */
-#define IPLSetMacro(name, type)              \
-  virtual void Set##name (const type _arg) \
-    {                                        \
+#define IPLSetMacroDeclaration(name, type)              \
+  virtual void Set##name (const type _arg);
+
+#define IPLSetMacroDefinition(class, name, type)              \
+  void class::Set##name (const type _arg) \
+  {                                        \
+CLANG_PRAGMA_PUSH                          \
+CLANG_SUPPRESS_Wfloat_equal                \
     if ( this->m_##name != _arg )          \
-      {                                      \
+CLANG_PRAGMA_POP                           \
+    {                                      \
       this->m_##name = _arg;               \
-      }                                      \
-    }
+    }                                      \
+  }
 
 /** Get built-in type.  Creates member Get"name"() (e.g., GetVisibility()); */
-#define IPLGetMacro(name, type) \
-  virtual type Get##name ()   \
-    {                           \
+#define IPLGetMacroDeclaration(name, type) \
+  virtual type Get##name ();
+
+#define IPLGetMacroDefinition(class, name, type) \
+  type class::Get##name ()   \
+  {                           \
     return this->m_##name;    \
-    }
+  }
 
 namespace itk
 {
@@ -82,20 +92,20 @@ public:
     m_Data = data;
   }
 
-  virtual ~IPLFileSortInfo() {}
+  virtual ~IPLFileSortInfo();
 
-  IPLSetMacro(ImageFileName, std::string);
-  IPLGetMacro(ImageFileName, std::string);
-  IPLSetMacro(SliceLocation, float);
-  IPLGetMacro(SliceLocation, float);
-  IPLSetMacro(SliceOffset, int);
-  IPLGetMacro(SliceOffset, int);
-  IPLSetMacro(EchoNumber, int);
-  IPLGetMacro(EchoNumber, int);
-  IPLSetMacro(ImageNumber, int);
-  IPLGetMacro(ImageNumber, int);
-  IPLSetMacro(Data, void *);
-  IPLGetMacro(Data, const void *);
+  IPLSetMacroDeclaration(ImageFileName, std::string);
+  IPLGetMacroDeclaration(ImageFileName, std::string);
+  IPLSetMacroDeclaration(SliceLocation, float);
+  IPLGetMacroDeclaration(SliceLocation, float);
+  IPLSetMacroDeclaration(SliceOffset, int);
+  IPLGetMacroDeclaration(SliceOffset, int);
+  IPLSetMacroDeclaration(EchoNumber, int);
+  IPLGetMacroDeclaration(EchoNumber, int);
+  IPLSetMacroDeclaration(ImageNumber, int);
+  IPLGetMacroDeclaration(ImageNumber, int);
+  IPLSetMacroDeclaration(Data, void *);
+  IPLGetMacroDeclaration(Data, const void *);
 
 private:
   std::string m_ImageFileName;
@@ -137,17 +147,7 @@ public:
     m_SortOrder = SortGlobalAscend;
   }
 
-  virtual ~IPLFileNameList()
-  {
-    IteratorType it = begin();
-    IteratorType itend = end();
-
-    while ( it != itend )
-      {
-      delete ( *it );
-      it++;
-      }
-  }
+  virtual ~IPLFileNameList();
 
   IteratorType begin()
   {
@@ -202,7 +202,8 @@ public:
       {
       return false;
       }
-    else if(XRes != m_XRes || YRes != m_YRes)
+    else if(Math::NotAlmostEquals( XRes, m_XRes ) ||
+            Math::NotAlmostEquals( YRes, m_YRes) )
       {
       return false;
       }
@@ -259,19 +260,19 @@ public:
     return m_List.size();
   }
 
-  IPLSetMacro(XDim, int);
-  IPLGetMacro(XDim, int);
-  IPLSetMacro(YDim, int);
-  IPLGetMacro(YDim, int);
-  IPLSetMacro(XRes, float);
-  IPLGetMacro(XRes, float);
-  IPLSetMacro(YRes, float);
-  IPLGetMacro(YRes, float);
-  IPLSetMacro(Key1, int);
-  IPLGetMacro(Key1, int);
-  IPLSetMacro(Key2, int);
-  IPLGetMacro(Key2, int);
-  IPLSetMacro(SortOrder, int);
+  IPLSetMacroDeclaration(XDim, int);
+  IPLGetMacroDeclaration(XDim, int);
+  IPLSetMacroDeclaration(YDim, int);
+  IPLGetMacroDeclaration(YDim, int);
+  IPLSetMacroDeclaration(XRes, float);
+  IPLGetMacroDeclaration(XRes, float);
+  IPLSetMacroDeclaration(YRes, float);
+  IPLGetMacroDeclaration(YRes, float);
+  IPLSetMacroDeclaration(Key1, int);
+  IPLGetMacroDeclaration(Key1, int);
+  IPLSetMacroDeclaration(Key2, int);
+  IPLGetMacroDeclaration(Key2, int);
+  IPLSetMacroDeclaration(SortOrder, int);
 
 private:
   ListType m_List;

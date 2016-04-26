@@ -20,6 +20,7 @@
 
 #include "itkCostFunction.h"
 #include "itkNumericTraits.h"
+#include "ITKOptimizersExport.h"
 
 namespace itk
 {
@@ -30,7 +31,7 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class SingleValuedCostFunction:
+class ITKOptimizers_EXPORT SingleValuedCostFunction:
   public CostFunction
 {
 public:
@@ -69,19 +70,15 @@ public:
     * to the specified parameters    */
   virtual void GetValueAndDerivative(const ParametersType & parameters,
                                      MeasureType & value,
-                                     DerivativeType & derivative) const
-  {
-    value = this->GetValue(parameters);
-    this->GetDerivative(parameters, derivative);
-  }
+                                     DerivativeType & derivative) const;
 
 protected:
   SingleValuedCostFunction() {}
-  virtual ~SingleValuedCostFunction() {}
+  virtual ~SingleValuedCostFunction();
 
 private:
-  SingleValuedCostFunction(const Self &); //purposely not implemented
-  void operator=(const Self &);           //purposely not implemented
+  SingleValuedCostFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

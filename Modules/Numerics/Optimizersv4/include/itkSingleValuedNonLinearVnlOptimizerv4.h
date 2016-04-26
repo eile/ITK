@@ -18,6 +18,8 @@
 #ifndef itkSingleValuedNonLinearVnlOptimizerv4_h
 #define itkSingleValuedNonLinearVnlOptimizerv4_h
 
+#include "ITKOptimizersv4Export.h"
+
 #include "itkObjectToObjectOptimizerBase.h"
 #include "itkSingleValuedVnlCostFunctionAdaptorv4.h"
 #include "itkCommand.h"
@@ -32,7 +34,7 @@ namespace itk
  *
  * \ingroup ITKOptimizersv4
  */
-class  SingleValuedNonLinearVnlOptimizerv4 :
+class ITKOptimizersv4_EXPORT SingleValuedNonLinearVnlOptimizerv4 :
     public ObjectToObjectOptimizerBaseTemplate<double>
 {
 public:
@@ -111,8 +113,8 @@ private:
    * iteration will generate a lot more of Iteration events here. */
   void IterationReport(const EventObject & event);
 
-  SingleValuedNonLinearVnlOptimizerv4(const Self &); //purposely not implemented
-  void operator=(const Self &);                    //purposely not implemented
+  SingleValuedNonLinearVnlOptimizerv4(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   CostFunctionAdaptorType *m_CostFunctionAdaptor;
 

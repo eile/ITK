@@ -19,6 +19,7 @@
 
 #include "itkObject.h"
 #include "itkVideoIOBase.h"
+#include "ITKVideoIOExport.h"
 
 namespace itk
 {
@@ -32,7 +33,7 @@ namespace itk
  *
  * \ingroup ITKVideoIO
  */
-class VideoIOFactory : public Object
+class ITKVideoIO_EXPORT VideoIOFactory : public Object
 {
 public:
   /** Standard class typedefs. */
@@ -59,8 +60,8 @@ protected:
   ~VideoIOFactory();
 
 private:
-  VideoIOFactory(const Self &); //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  VideoIOFactory(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };
 

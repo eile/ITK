@@ -19,6 +19,7 @@
 #define itkFileListVideoIO_h
 
 #include "itkVideoIOBase.h"
+#include "ITKVideoIOExport.h"
 
 namespace itk
 {
@@ -35,7 +36,7 @@ namespace itk
  * \ingroup ITKVideoIO
  *
  */
-class FileListVideoIO : public VideoIOBase
+class ITKVideoIO_EXPORT FileListVideoIO : public VideoIOBase
 {
 public:
   /** Standard class typedefs. */
@@ -160,8 +161,8 @@ protected:
   bool VerifyExtensions( const std::vector<std::string>& fileList ) const;
 
 private:
-  FileListVideoIO(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
+  FileListVideoIO(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   /** Member Variables */
   ImageIOBase::Pointer m_ImageIO;

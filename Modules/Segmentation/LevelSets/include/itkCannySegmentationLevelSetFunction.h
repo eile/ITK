@@ -88,9 +88,9 @@ public:
   {
     Superclass::Initialize(r);
 
-    this->SetAdvectionWeight(-1.0 * NumericTraits< ScalarValueType >::One);
-    this->SetPropagationWeight(-1.0 * NumericTraits< ScalarValueType >::One);
-    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::One);
+    this->SetAdvectionWeight(-1.0 * NumericTraits< ScalarValueType >::OneValue());
+    this->SetPropagationWeight(-1.0 * NumericTraits< ScalarValueType >::OneValue());
+    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::OneValue());
   }
 
   ImageType * GetCannyImage()
@@ -108,8 +108,8 @@ protected:
 
   virtual ~CannySegmentationLevelSetFunction() {}
 
-  CannySegmentationLevelSetFunction(const Self &); //purposely not implemented
-  void operator=(const Self &);                    //purposely not implemented
+  CannySegmentationLevelSetFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 private:
   ScalarValueType m_Variance;

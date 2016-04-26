@@ -20,6 +20,7 @@
 
 #include "itkLBFGSOptimizerBasev4.h"
 #include "vnl/algo/vnl_lbfgsb.h"
+#include "ITKOptimizersv4Export.h"
 
 namespace itk
 {
@@ -32,7 +33,7 @@ namespace itk
  *
  * \ingroup ITKOptimizersv4
  */
-class LBFGSBOptimizerHelperv4;
+class ITKOptimizersv4_EXPORT LBFGSBOptimizerHelperv4;
 
 /** \class LBFGSBOptimizerv4
  * \brief Limited memory Broyden Fletcher Goldfarb Shannon minimization with simple bounds.
@@ -60,7 +61,7 @@ class LBFGSBOptimizerHelperv4;
  * \ingroup Numerics Optimizersv4
  * \ingroup ITKOptimizersv4
  */
-class LBFGSBOptimizerv4:
+class ITKOptimizersv4_EXPORT LBFGSBOptimizerv4:
   public LBFGSOptimizerBasev4< vnl_lbfgsb >
 {
 public:
@@ -167,8 +168,8 @@ protected:
   friend class LBFGSBOptimizerHelperv4;
 
 private:
-  LBFGSBOptimizerv4(const Self &); //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  LBFGSBOptimizerv4(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   unsigned int m_MaximumNumberOfCorrections;
 

@@ -29,7 +29,7 @@ namespace itk
 {
 /**
  *  \class MalcolmSparseLevelSetImage
- *  \brief Derived class for the shi representation of level-set function
+ *  \brief Derived class for the Malcolm representation of level-set function
  *
  *  This representation is a "sparse" level-set function, where values could
  *  only be { -1, 0, +1 } and organized into 1 layer { 0 }.
@@ -113,8 +113,8 @@ protected:
   virtual void InitializeInternalLabelList() ITK_OVERRIDE;
 
 private:
-  MalcolmSparseLevelSetImage( const Self& ); //purposely not implemented
-  void operator = ( const Self& ); //purposely not implemented
+  MalcolmSparseLevelSetImage( const Self& ) ITK_DELETE_FUNCTION;
+  void operator = ( const Self& ) ITK_DELETE_FUNCTION;
 };
 }
 #ifndef ITK_MANUAL_INSTANTIATION

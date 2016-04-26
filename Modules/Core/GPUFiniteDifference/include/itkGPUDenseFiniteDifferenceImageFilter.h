@@ -106,35 +106,35 @@ protected:
 
   /** This method applies changes from the m_UpdateBuffer to the output using
    * the GPU.  "dt" is the time step to use for the update of each pixel. */
-  virtual void ApplyUpdate(const TimeStepType& dt);
+  virtual void ApplyUpdate(const TimeStepType& dt) ITK_OVERRIDE;
 
-  virtual void GPUApplyUpdate(const TimeStepType& dt);
+  virtual void GPUApplyUpdate(const TimeStepType& dt) ITK_OVERRIDE;
 
   /** This method populates an update buffer with changes for each pixel in the
    * output using the GPU. Returns value is a time step to be used for the update. */
-  virtual TimeStepType GPUCalculateChange();
+  virtual TimeStepType GPUCalculateChange() ITK_OVERRIDE;
 
   /** A simple method to copy the data from the input to the output.  ( Supports
    * "read-only" image adaptors in the case where the input image type converts
    * to a different output image type. )  */
-  virtual void CopyInputToOutput();
+  virtual void CopyInputToOutput() ITK_OVERRIDE;
 
   /** Method to allow subclasses to get direct access to the update
    * buffer */
-  virtual UpdateBufferType * GetUpdateBuffer() {
+  virtual UpdateBufferType * GetUpdateBuffer() ITK_OVERRIDE {
     return CPUSuperclass::GetUpdateBuffer();
   }
 
   /** This method allocates storage in m_UpdateBuffer.  It is called from
    * Superclass::GenerateData(). */
-  virtual void AllocateUpdateBuffer();
+  virtual void AllocateUpdateBuffer() ITK_OVERRIDE;
 
   /* GPU kernel handle for GPUApplyUpdate */
   int m_ApplyUpdateGPUKernelHandle;
 
 private:
-  GPUDenseFiniteDifferenceImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                      //purposely not implemented
+  GPUDenseFiniteDifferenceImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };
 } // end namespace itk

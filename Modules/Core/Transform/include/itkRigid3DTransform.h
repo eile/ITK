@@ -53,17 +53,16 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template< typename TScalar = double >
-// type for scalars (float or double)
+template<typename TParametersValueType=double>
 class Rigid3DTransform:
-  public MatrixOffsetTransformBase< TScalar, 3, 3 >
+  public MatrixOffsetTransformBase<TParametersValueType, 3, 3>
 {
 public:
   /** Standard class typedefs. */
-  typedef Rigid3DTransform                           Self;
-  typedef MatrixOffsetTransformBase< TScalar, 3, 3 > Superclass;
-  typedef SmartPointer< Self >                       Pointer;
-  typedef SmartPointer< const Self >                 ConstPointer;
+  typedef Rigid3DTransform                                      Self;
+  typedef MatrixOffsetTransformBase<TParametersValueType, 3, 3> Superclass;
+  typedef SmartPointer<Self>                                    Pointer;
+  typedef SmartPointer<const Self>                              ConstPointer;
 
 #ifdef ITKV3_COMPATIBILITY
   /** Run-time type information (and related methods).   */
@@ -81,6 +80,8 @@ public:
 
   typedef typename Superclass::ParametersType            ParametersType;
   typedef typename Superclass::ParametersValueType       ParametersValueType;
+  typedef typename Superclass::FixedParametersType       FixedParametersType;
+  typedef typename Superclass::FixedParametersValueType  FixedParametersValueType;
   typedef typename Superclass::JacobianType              JacobianType;
   typedef typename Superclass::ScalarType                ScalarType;
   typedef typename Superclass::InputVectorType           InputVectorType;
@@ -128,7 +129,7 @@ public:
    * else an exception is thrown.
    *
    * \sa MatrixOffsetTransformBase::SetMatrix() */
-  virtual void SetMatrix(const MatrixType & matrix, double tolerance );
+  virtual void SetMatrix(const MatrixType & matrix, const TParametersValueType tolerance );
 
   /**
    * Compose the transformation with a translation
@@ -143,7 +144,9 @@ public:
    * Utility function to test if a matrix is orthogonal within a specified
    * tolerance
    */
-  bool MatrixIsOrthogonal(const MatrixType & matrix, double tolerance = 1e-10);
+  bool MatrixIsOrthogonal(const MatrixType & matrix,
+              const TParametersValueType tolerance =
+                  MatrixOrthogonalityTolerance<TParametersValueType>::GetTolerance());
 
 #ifdef ITKV3_COMPATIBILITY
   /** Get an inverse of this transform. */
@@ -214,8 +217,8 @@ protected:
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  Rigid3DTransform(const Self &); //purposely not implemented
-  void operator=(const Self &);   //purposely not implemented
+  Rigid3DTransform(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };                                //class Rigid3DTransform
 }  // namespace itk
 

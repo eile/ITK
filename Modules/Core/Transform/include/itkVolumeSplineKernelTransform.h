@@ -30,19 +30,18 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template< typename TScalar, // Data type for scalars (float or
-                             // double)
-          unsigned int NDimensions = 3 >
+template<typename TParametersValueType,
+         unsigned int NDimensions=3>
 // Number of dimensions
 class VolumeSplineKernelTransform:
-  public KernelTransform< TScalar, NDimensions >
+  public KernelTransform<TParametersValueType, NDimensions>
 {
 public:
   /** Standard class typedefs. */
-  typedef VolumeSplineKernelTransform             Self;
-  typedef KernelTransform< TScalar, NDimensions > Superclass;
-  typedef SmartPointer< Self >                    Pointer;
-  typedef SmartPointer< const Self >              ConstPointer;
+  typedef VolumeSplineKernelTransform                        Self;
+  typedef KernelTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                 Pointer;
+  typedef SmartPointer<const Self>                           ConstPointer;
 
   /** New macro for creation of through a Smart Pointer */
   itkNewMacro(Self);
@@ -54,7 +53,8 @@ public:
   typedef typename Superclass::ScalarType ScalarType;
 
   /** Parameters type. */
-  typedef typename Superclass::ParametersType ParametersType;
+  typedef typename Superclass::ParametersType      ParametersType;
+  typedef typename Superclass::FixedParametersType FixedParametersType;
 
   /** Jacobian Type */
   typedef typename Superclass::JacobianType JacobianType;
@@ -97,8 +97,8 @@ protected:
     OutputPointType & result) const ITK_OVERRIDE;
 
 private:
-  VolumeSplineKernelTransform(const Self &); //purposely not implemented
-  void operator=(const Self &);              //purposely not implemented
+  VolumeSplineKernelTransform(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // namespace itk
 

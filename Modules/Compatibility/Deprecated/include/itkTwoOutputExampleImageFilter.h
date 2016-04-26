@@ -64,7 +64,7 @@ public:
   itkTypeMacro(TwoOutputExampleImageFilter, ImageToImageFilter);
 
   /** Set the "outside" pixel value. The default value
-   * NumericTraits<PixelType>::Zero. */
+   * NumericTraits<PixelType>::ZeroValue(). */
   itkSetMacro(OutsideValue, PixelType);
 
   /** Get the "outside" pixel value. */
@@ -123,8 +123,8 @@ protected:
                             ThreadIdType threadId);
 
 private:
-  TwoOutputExampleImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);              //purposely not implemented
+  TwoOutputExampleImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   PixelType m_OutsideValue;
   PixelType m_Lower;

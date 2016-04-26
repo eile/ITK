@@ -19,6 +19,7 @@
 #define itkHalfToFullHermitianImageFilter_h
 
 #include "itkImageToImageFilter.h"
+#include "itkSimpleDataObjectDecorator.h"
 
 namespace itk
 {
@@ -78,25 +79,11 @@ public:
                       TInputImage::ImageDimension);
 
   /** Was the original truncated dimension size in the x-dimension odd? */
-  void SetActualXDimensionIsOdd(bool isOdd)
-  {
-    m_ActualXDimensionIsOdd = isOdd;
-  }
-  void SetActualXDimensionIsOddOn()
-  {
-    this->SetActualXDimensionIsOdd(true);
-  }
-  void SetActualXDimensionIsOddOff()
-  {
-    this->SetActualXDimensionIsOdd(false);
-  }
-  bool GetActualXDimensionIsOdd()
-  {
-    return m_ActualXDimensionIsOdd;
-  }
+  itkSetGetDecoratedInputMacro(ActualXDimensionIsOdd, bool);
+  itkBooleanMacro(ActualXDimensionIsOdd);
 
 protected:
-  HalfToFullHermitianImageFilter() : m_ActualXDimensionIsOdd(false) {}
+  HalfToFullHermitianImageFilter();
   ~HalfToFullHermitianImageFilter() {}
 
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
@@ -109,10 +96,8 @@ protected:
   virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 private:
-  HalfToFullHermitianImageFilter(const Self &); // purposely not implemented
-  void operator=(const Self &);           // purposely not implemented
-
-  bool m_ActualXDimensionIsOdd;
+  HalfToFullHermitianImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

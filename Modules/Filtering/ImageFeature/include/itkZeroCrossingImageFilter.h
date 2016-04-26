@@ -39,9 +39,9 @@ namespace itk
  *  \par
  *  The output of the filter is a binary, labeled image of user-specified type.
  *  By default, zero-crossing pixels are labeled with a default ``foreground''
- *  value of itk::NumericTraits<OutputDataType>::One, where OutputDataType is
+ *  value of itk::NumericTraits<OutputDataType>::OneValue(), where OutputDataType is
  *  the data type of the output image.  All other pixels are labeled with a
- *  default ``background'' value of itk::NumericTraits<OutputDataType>::Zero.
+ *  default ``background'' value of itk::NumericTraits<OutputDataType>::ZeroValue().
  *
  *  \par Parameters
  *  There are two parameters for this filter.  ForegroundValue is the value
@@ -154,8 +154,8 @@ protected:
                             ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
-  ZeroCrossingImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  ZeroCrossingImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };
 } //end of namespace itk

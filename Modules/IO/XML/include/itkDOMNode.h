@@ -21,6 +21,7 @@
 
 #include "itkObject.h"
 #include "itkObjectFactory.h"
+#include "ITKIOXMLExport.h"
 
 #include <string>
 #include <vector>
@@ -49,7 +50,7 @@ class DOMTextNode; // forward declaration
  *
  * \ingroup ITKIOXML
  */
-class DOMNode : public Object
+class ITKIOXML_EXPORT DOMNode : public Object
 {
 public:
   /** Standard class typedefs. */
@@ -228,8 +229,8 @@ private:
   typedef std::list<AttributeItemType*> OrderedAttributesContainer;
   OrderedAttributesContainer m_OrderedAttributes;
 
-  DOMNode(const Self &); //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  DOMNode(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 } // namespace itk

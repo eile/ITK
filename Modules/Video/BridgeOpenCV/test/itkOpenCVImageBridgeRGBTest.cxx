@@ -20,9 +20,13 @@
 
 #include "itkOpenCVImageBridge.h"
 #include "itkImageFileReader.h"
-#include "itkTestingComparisonImageFilter.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
 #include "itkOpenCVVideoIOFactory.h"
+
+// Include the required header with OpenCV > 2.X
+#if !defined( CV_VERSION_EPOCH )
+#include "opencv2/imgcodecs.hpp" // cv::imread
+#endif
 
 //-----------------------------------------------------------------------------
 // Compare RGBPixel Images
@@ -140,8 +144,6 @@ int itkOpenCVImageBridgeTestTemplatedRGB(char* argv0, char* argv1)
   typedef typename PixelType::ComponentType               ComponentType;
   typedef itk::Image< PixelType, Dimension >              ImageType;
   typedef itk::ImageFileReader<ImageType>                 ReaderType;
-  typedef itk::Testing::ComparisonImageFilter<ImageType, ImageType>
-                                                          DifferenceFilterType;
 
   //
   // Read the image directly

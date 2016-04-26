@@ -19,6 +19,7 @@
 #define itkSegmentationLevelSetImageFilter_hxx
 
 #include "itkSegmentationLevelSetImageFilter.h"
+#include "itkMath.h"
 
 namespace itk
 {
@@ -41,7 +42,7 @@ SegmentationLevelSetImageFilter< TInputImage, TFeatureImage, TOutputPixelType >
   this->SetNumberOfLayers(TInputImage::ImageDimension);
   m_SegmentationFunction = ITK_NULLPTR;
   m_AutoGenerateSpeedAdvection = true;
-  this->SetIsoSurfaceValue(NumericTraits< ValueType >::Zero);
+  this->SetIsoSurfaceValue(NumericTraits< ValueType >::ZeroValue());
 
   // Provide some reasonable defaults which will at least prevent infinite
   // looping.
@@ -89,12 +90,12 @@ SegmentationLevelSetImageFilter< TInputImage, TFeatureImage, TOutputPixelType >
   // if it is uninitialized and AutoGenerateSpeedAvection is true
   if ( !this->m_IsInitialized && m_AutoGenerateSpeedAdvection == true )
     {
-    if ( this->GetSegmentationFunction()->GetPropagationWeight() != 0 )
+    if ( Math::NotExactlyEquals(this->GetSegmentationFunction()->GetPropagationWeight(), 0) )
       {
       this->GenerateSpeedImage();
       }
 
-    if ( this->GetSegmentationFunction()->GetAdvectionWeight() != 0 )
+    if ( Math::NotExactlyEquals(this->GetSegmentationFunction()->GetAdvectionWeight(), 0) )
       {
       this->GenerateAdvectionImage();
       }

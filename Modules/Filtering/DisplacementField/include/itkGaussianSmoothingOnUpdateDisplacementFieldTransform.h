@@ -42,17 +42,16 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template
-  <class TScalar, unsigned int NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
 class GaussianSmoothingOnUpdateDisplacementFieldTransform :
-  public DisplacementFieldTransform<TScalar, NDimensions>
+  public DisplacementFieldTransform<TParametersValueType, NDimensions>
 {
 public:
   /** Standard class typedefs. */
-  typedef GaussianSmoothingOnUpdateDisplacementFieldTransform   Self;
-  typedef DisplacementFieldTransform<TScalar, NDimensions>      Superclass;
-  typedef SmartPointer<Self>                                    Pointer;
-  typedef SmartPointer<const Self>                              ConstPointer;
+  typedef GaussianSmoothingOnUpdateDisplacementFieldTransform           Self;
+  typedef DisplacementFieldTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                            Pointer;
+  typedef SmartPointer<const Self>                                      ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro( GaussianSmoothingOnUpdateDisplacementFieldTransform,
@@ -69,8 +68,7 @@ public:
   typedef typename Superclass::DisplacementFieldPointer DisplacementFieldPointer;
   typedef typename DisplacementFieldType::PixelType     DisplacementVectorType;
 
-  typedef typename Transform<TScalar,NDimensions,NDimensions>::Pointer
-          TransformPointer;
+  typedef typename Transform<TParametersValueType,NDimensions, NDimensions>::Pointer TransformPointer;
 
   /**
    * Get/Set the Gaussian smoothing standard deviation for the update field.
@@ -125,8 +123,8 @@ protected:
   GaussianSmoothingOperatorType                    m_GaussianSmoothingOperator;
 
 private:
-  GaussianSmoothingOnUpdateDisplacementFieldTransform( const Self& ); //purposely not implemented
-  void operator=( const Self& ); //purposely not implemented
+  GaussianSmoothingOnUpdateDisplacementFieldTransform( const Self& ) ITK_DELETE_FUNCTION;
+  void operator=( const Self& ) ITK_DELETE_FUNCTION;
 
 };
 

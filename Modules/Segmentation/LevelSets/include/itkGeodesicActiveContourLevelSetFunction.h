@@ -130,27 +130,25 @@ public:
   {
     Superclass::Initialize(r);
 
-    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::One);
-    this->SetPropagationWeight(NumericTraits< ScalarValueType >::One);
-    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::One);
+    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetPropagationWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::OneValue());
   }
 
 protected:
   GeodesicActiveContourLevelSetFunction()
   {
-    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::One);
-    this->SetPropagationWeight(NumericTraits< ScalarValueType >::One);
-    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::One);
+    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetPropagationWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::OneValue());
 
     m_DerivativeSigma = 1.0;
   }
 
   virtual ~GeodesicActiveContourLevelSetFunction() {}
 
-  GeodesicActiveContourLevelSetFunction(const Self &); //purposely not
-                                                       // implemented
-  void operator=(const Self &);                        //purposely not
-                                                       // implemented
+  GeodesicActiveContourLevelSetFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {

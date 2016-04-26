@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <algorithm>
 #include "itkVersion.h"
 #include "itkTransformFactoryBase.h"
 
@@ -44,7 +45,7 @@ int itkTransformFactoryBaseTest (int, char*[])
 
   defaultTransforms.push_back("BSplineTransform_double_2_2");
   defaultTransforms.push_back("BSplineTransform_double_3_3");
-#ifdef ITKV3_COMPATIBILITY
+#if !defined(ITK_FUTURE_LEGACY_REMOVE)
   defaultTransforms.push_back("BSplineDeformableTransform_double_2_2");
   defaultTransforms.push_back("BSplineDeformableTransform_double_3_3");
 #endif
@@ -122,7 +123,7 @@ int itkTransformFactoryBaseTest (int, char*[])
 
   defaultTransforms.push_back("BSplineTransform_float_2_2");
   defaultTransforms.push_back("BSplineTransform_float_3_3");
-#ifdef ITKV3_COMPATIBILITY
+#if !defined(ITK_FUTURE_LEGACY_REMOVE)
   defaultTransforms.push_back("BSplineDeformableTransform_float_2_2");
   defaultTransforms.push_back("BSplineDeformableTransform_float_3_3");
 #endif
@@ -184,53 +185,45 @@ int itkTransformFactoryBaseTest (int, char*[])
 
   defaultTransforms.push_back("VersorRigid3DTransform_float_3_3");
   defaultTransforms.push_back("VersorTransform_float_3_3");
+  defaultTransforms.push_back("DisplacementFieldTransform_float_2_2");
+  defaultTransforms.push_back("DisplacementFieldTransform_float_3_3");
+  defaultTransforms.push_back("BSplineSmoothingOnUpdateDisplacementFieldTransform_float_2_2");
+  defaultTransforms.push_back("BSplineSmoothingOnUpdateDisplacementFieldTransform_float_3_3");
+  defaultTransforms.push_back("ConstantVelocityFieldTransform_float_2_2");
+  defaultTransforms.push_back("ConstantVelocityFieldTransform_float_3_3");
+  defaultTransforms.push_back("VelocityFieldTransform_float_2_2");
+  defaultTransforms.push_back("VelocityFieldTransform_float_3_3");
+  defaultTransforms.push_back("TimeVaryingBSplineVelocityFieldTransform_float_2_2");
+  defaultTransforms.push_back("TimeVaryingBSplineVelocityFieldTransform_float_3_3");
+  defaultTransforms.push_back("TimeVaryingVelocityFieldTransform_float_2_2");
+  defaultTransforms.push_back("TimeVaryingVelocityFieldTransform_float_3_3");
+  defaultTransforms.push_back("GaussianExponentialDiffeomorphicTransform_float_2_2");
+  defaultTransforms.push_back("GaussianExponentialDiffeomorphicTransform_float_3_3");
+  defaultTransforms.push_back("GaussianSmoothingOnUpdateDisplacementFieldTransform_float_2_2");
+  defaultTransforms.push_back("GaussianSmoothingOnUpdateDisplacementFieldTransform_float_3_3");
+  defaultTransforms.push_back("GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform_float_2_2");
+  defaultTransforms.push_back("GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform_float_3_3");
 
   defaultTransforms.push_back("DisplacementFieldTransform_double_2_2");
   defaultTransforms.push_back("DisplacementFieldTransform_double_3_3");
-
-  defaultTransforms.push_back("DisplacementFieldTransform_float_2_2");
-  defaultTransforms.push_back("DisplacementFieldTransform_float_3_3");
-
   defaultTransforms.push_back("BSplineSmoothingOnUpdateDisplacementFieldTransform_double_2_2");
   defaultTransforms.push_back("BSplineSmoothingOnUpdateDisplacementFieldTransform_double_3_3");
-  defaultTransforms.push_back("BSplineSmoothingOnUpdateDisplacementFieldTransform_float_2_2");
-  defaultTransforms.push_back("BSplineSmoothingOnUpdateDisplacementFieldTransform_float_3_3");
-
   defaultTransforms.push_back("ConstantVelocityFieldTransform_double_2_2");
   defaultTransforms.push_back("ConstantVelocityFieldTransform_double_3_3");
-  defaultTransforms.push_back("ConstantVelocityFieldTransform_float_2_2");
-  defaultTransforms.push_back("ConstantVelocityFieldTransform_float_3_3");
-
   defaultTransforms.push_back("VelocityFieldTransform_double_2_2");
   defaultTransforms.push_back("VelocityFieldTransform_double_3_3");
-  defaultTransforms.push_back("VelocityFieldTransform_float_2_2");
-  defaultTransforms.push_back("VelocityFieldTransform_float_3_3");
-
   defaultTransforms.push_back("TimeVaryingBSplineVelocityFieldTransform_double_2_2");
   defaultTransforms.push_back("TimeVaryingBSplineVelocityFieldTransform_double_3_3");
-  defaultTransforms.push_back("TimeVaryingBSplineVelocityFieldTransform_float_2_2");
-  defaultTransforms.push_back("TimeVaryingBSplineVelocityFieldTransform_float_3_3");
-
   defaultTransforms.push_back("TimeVaryingVelocityFieldTransform_double_2_2");
   defaultTransforms.push_back("TimeVaryingVelocityFieldTransform_double_3_3");
-  defaultTransforms.push_back("TimeVaryingVelocityFieldTransform_float_2_2");
-  defaultTransforms.push_back("TimeVaryingVelocityFieldTransform_float_3_3");
-
   defaultTransforms.push_back("GaussianExponentialDiffeomorphicTransform_double_2_2");
   defaultTransforms.push_back("GaussianExponentialDiffeomorphicTransform_double_3_3");
   defaultTransforms.push_back("GaussianExponentialDiffeomorphicTransform_float_2_2");
   defaultTransforms.push_back("GaussianExponentialDiffeomorphicTransform_float_3_3");
-
   defaultTransforms.push_back("GaussianSmoothingOnUpdateDisplacementFieldTransform_double_2_2");
   defaultTransforms.push_back("GaussianSmoothingOnUpdateDisplacementFieldTransform_double_3_3");
-  defaultTransforms.push_back("GaussianSmoothingOnUpdateDisplacementFieldTransform_float_2_2");
-  defaultTransforms.push_back("GaussianSmoothingOnUpdateDisplacementFieldTransform_float_3_3");
-
   defaultTransforms.push_back("GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform_double_2_2");
   defaultTransforms.push_back("GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform_double_3_3");
-  defaultTransforms.push_back("GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform_float_2_2");
-  defaultTransforms.push_back("GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform_float_3_3");
-
   int testReturnStatus = EXIT_SUCCESS;
 
   // check to make sure that all default transforms have been registered
@@ -239,15 +232,14 @@ int itkTransformFactoryBaseTest (int, char*[])
   std::list<std::string> names = itk::TransformFactoryBase::GetFactory()->GetClassOverrideWithNames();
   names.sort();
     {
-    std::list<std::string>::iterator namesIt;
     std::list<std::string>::iterator defaultsIt;
-    for (namesIt = names.begin(), defaultsIt = defaultTransforms.begin();
-      namesIt != names.end() && defaultsIt != defaultTransforms.end();
-      ++namesIt, ++defaultsIt)
+    for (defaultsIt = defaultTransforms.begin();
+         defaultsIt != defaultTransforms.end();
+      ++defaultsIt)
       {
-      if (strcmp((*namesIt).c_str(), (*defaultsIt).c_str()) != 0)
+      if (std::find(names.begin(), names.end(), *defaultsIt) == names.end())
         {
-        std::cout << "[FAILED] " <<*namesIt<<"   "<< *defaultsIt << " not registered properly with defaults" << std::endl;
+        std::cout << "[FAILED] " << *defaultsIt << " not registered properly with defaults" << std::endl;
         testReturnStatus = EXIT_FAILURE;
         }
       else

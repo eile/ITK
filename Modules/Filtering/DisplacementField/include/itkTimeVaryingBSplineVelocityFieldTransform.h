@@ -64,16 +64,16 @@ namespace itk
  * \ingroup Transforms
  * \ingroup ITKDisplacementField
  */
-template<typename TScalar, unsigned int NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
 class TimeVaryingBSplineVelocityFieldTransform :
-  public VelocityFieldTransform<TScalar, NDimensions>
+  public VelocityFieldTransform<TParametersValueType, NDimensions>
 {
 public:
   /** Standard class typedefs. */
-  typedef TimeVaryingBSplineVelocityFieldTransform                 Self;
-  typedef VelocityFieldTransform<TScalar, NDimensions>             Superclass;
-  typedef SmartPointer<Self>                                       Pointer;
-  typedef SmartPointer<const Self>                                 ConstPointer;
+  typedef TimeVaryingBSplineVelocityFieldTransform                  Self;
+  typedef VelocityFieldTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                        Pointer;
+  typedef SmartPointer<const Self>                                  ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro( TimeVaryingBSplineVelocityFieldTransform, VelocityFieldTransform );
@@ -98,6 +98,8 @@ public:
   /** Type of the input parameters. */
   typedef typename Superclass::ParametersType          ParametersType;
   typedef typename ParametersType::ValueType           ParametersValueType;
+  typedef typename Superclass::FixedParametersType     FixedParametersType;
+  typedef typename FixedParametersType::ValueType      FixedParametersValueType;
   typedef typename Superclass::NumberOfParametersType  NumberOfParametersType;
 
   /** Derivative type */
@@ -173,8 +175,8 @@ protected:
   void PrintSelf( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
 
 private:
-  TimeVaryingBSplineVelocityFieldTransform( const Self& ); //purposely not implementen
-  void operator=( const Self& ); //purposely not implemented
+  TimeVaryingBSplineVelocityFieldTransform( const Self& ) ITK_DELETE_FUNCTION;
+  void operator=( const Self& ) ITK_DELETE_FUNCTION;
 
   unsigned int                                                   m_SplineOrder;
   bool                                                           m_TemporalPeriodicity;

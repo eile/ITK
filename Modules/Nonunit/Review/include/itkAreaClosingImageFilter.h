@@ -108,7 +108,7 @@ protected:
 
   virtual ~AreaClosingImageFilter() {}
 
-  void GenerateData()
+  void GenerateData() ITK_OVERRIDE
   {
     this->m_AttributeValuePerPixel = 1;
     if ( m_UseImageSpacing )
@@ -127,7 +127,7 @@ protected:
     Superclass::GenerateData();
   }
 
-  void PrintSelf(std::ostream & os, Indent indent) const
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {
     Superclass::PrintSelf(os, indent);
     os << indent << "UseImageSpacing: "  << m_UseImageSpacing << std::endl;
@@ -135,8 +135,8 @@ protected:
 
 private:
 
-  AreaClosingImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);         //purposely not implemented
+  AreaClosingImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   bool m_UseImageSpacing;
 };

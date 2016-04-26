@@ -90,7 +90,7 @@ public:
   {
     Self b( a.Size() );
 
-    b.Fill(NumericTraits< T >::Zero);
+    b.Fill(NumericTraits< T >::ZeroValue());
     return b;
   }
 
@@ -98,7 +98,7 @@ public:
   {
     Self b( a.Size() );
 
-    b.Fill(NumericTraits< T >::One);
+    b.Fill(NumericTraits< T >::OneValue());
     return b;
   }
 
@@ -109,11 +109,15 @@ public:
     return b;
   }
 
+  static const bool IsSigned = NumericTraits< ValueType >::IsSigned;
+  static const bool IsInteger = NumericTraits< ValueType >::IsInteger;
+  static const bool IsComplex = NumericTraits< ValueType >::IsComplex;
+
   /** Set the length of the input array and fill it with zeros. */
   static void SetLength(Array< T > & m, const unsigned int s)
   {
     m.SetSize(s);
-    m.Fill(NumericTraits< T >::Zero);
+    m.Fill(NumericTraits< T >::ZeroValue());
   }
 
   /** Get the length of the input array. */
@@ -145,7 +149,7 @@ public:
   itkLegacyMacro(static const Self Zero(const Self  & a))
   {
     Self b( a.Size() );
-    b.Fill(NumericTraits< T >::Zero);
+    b.Fill(NumericTraits< T >::ZeroValue());
     return b;
   }
 
@@ -153,7 +157,7 @@ public:
   itkLegacyMacro(static const Self One(const Self & a))
   {
     Self b( a.Size() );
-    b.Fill(NumericTraits< T >::One);
+    b.Fill(NumericTraits< T >::OneValue());
     return b;
   }
 #endif

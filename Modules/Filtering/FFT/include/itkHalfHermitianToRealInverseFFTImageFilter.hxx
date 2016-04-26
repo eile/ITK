@@ -78,6 +78,13 @@ HalfHermitianToRealInverseFFTImageFilter< TInputImage, TOutputImage >
 }
 
 template< typename TInputImage, typename TOutputImage >
+HalfHermitianToRealInverseFFTImageFilter< TInputImage, TOutputImage >
+::HalfHermitianToRealInverseFFTImageFilter()
+{
+  this->ActualXDimensionIsOddOff();
+}
+
+template< typename TInputImage, typename TOutputImage >
 void
 HalfHermitianToRealInverseFFTImageFilter< TInputImage, TOutputImage >
 ::GenerateOutputInformation()
@@ -159,5 +166,14 @@ HalfHermitianToRealInverseFFTImageFilter< TInputImage, TOutputImage >
   this->GetOutput()
     ->SetRequestedRegion( this->GetOutput()->GetLargestPossibleRegion() );
 }
+
+template< typename TInputImage, typename TOutputImage >
+SizeValueType
+HalfHermitianToRealInverseFFTImageFilter< TInputImage, TOutputImage >
+::GetSizeGreatestPrimeFactor() const
+{
+  return 2;
+}
+
 }
 #endif

@@ -128,17 +128,17 @@ BSplineTransformInitializer<TTransform, TImage>
   ContinuousIndexType startIndex;
   for( unsigned int i = 0; i < SpaceDimension; i++ )
     {
-    startIndex[i] = this->m_Image->GetRequestedRegion().GetIndex()[i] - 0.5 -
+    startIndex[i] = this->m_Image->GetLargestPossibleRegion().GetIndex()[i] - 0.5 -
       BSplineTransformDomainEpsilon;
     }
 
-  for( unsigned int d = 0; d < std::pow( 2.0, SpaceDimension ); d++ )
+  for( unsigned int d = 0, N = 1 << SpaceDimension; d < N; d++ )
     {
     ContinuousIndexType whichIndex;
     for( unsigned int i = 0; i < SpaceDimension; i++ )
       {
       whichIndex[i] = startIndex[i] + static_cast<CoordRepType>( ( ( d >> i ) &
-        1 ) * ( this->m_Image->GetRequestedRegion().GetSize()[i] + 2.0 *
+        1 ) * ( this->m_Image->GetLargestPossibleRegion().GetSize()[i] + 2.0 *
         BSplineTransformDomainEpsilon ) );
       }
     ImagePointType point;
@@ -200,7 +200,7 @@ BSplineTransformInitializer<TTransform, TImage>
     for( unsigned int i = 0; i < SpaceDimension; i++ )
       {
       PointIdentifier oppositeCornerId = static_cast<PointIdentifier>(
-        std::pow( 2.0, static_cast<int>( i ) ) ) ^ transformDomainOriginId;
+        1 << i ) ^ transformDomainOriginId;
 
       PointType corner;
       corner.Fill( 0.0 );

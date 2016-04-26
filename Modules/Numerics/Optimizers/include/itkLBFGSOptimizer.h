@@ -20,6 +20,7 @@
 
 #include "itkSingleValuedNonLinearVnlOptimizer.h"
 #include "vnl/algo/vnl_lbfgs.h"
+#include "ITKOptimizersExport.h"
 
 namespace itk
 {
@@ -29,7 +30,7 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class LBFGSOptimizer:
+class ITKOptimizers_EXPORT LBFGSOptimizer:
   public SingleValuedNonLinearVnlOptimizer
 {
 public:
@@ -114,8 +115,8 @@ protected:
   typedef Superclass::CostFunctionAdaptorType CostFunctionAdaptorType;
 
 private:
-  LBFGSOptimizer(const Self &); //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  LBFGSOptimizer(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   bool                       m_OptimizerInitialized;
   InternalOptimizerType *    m_VnlOptimizer;

@@ -76,7 +76,7 @@ public:
   typedef typename TOutputImage::PixelType OutputPixelType;
 
   /** Set the "outside" pixel value. The default value
-   * NumericTraits<OutputPixelType>::Zero. */
+   * NumericTraits<OutputPixelType>::ZeroValue(). */
   itkSetMacro(OutsideValue, OutputPixelType);
 
   /** Get the "outside" pixel value. */
@@ -147,8 +147,8 @@ protected:
   void GenerateData() ITK_OVERRIDE;
 
 private:
-  DoubleThresholdImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);             //purposely not implemented
+  DoubleThresholdImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   InputPixelType m_Threshold1;
   InputPixelType m_Threshold2;

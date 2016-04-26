@@ -18,7 +18,6 @@
 #ifndef itkArrowSpatialObject_h
 #define itkArrowSpatialObject_h
 
-
 #include "itkSpatialObject.h"
 
 namespace itk
@@ -134,8 +133,8 @@ protected:
   virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  ArrowSpatialObject(const Self &); //purposely not implemented
-  void operator=(const Self &);     //purposely not implemented
+  ArrowSpatialObject(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   VectorType m_Direction;
   PointType  m_Position;

@@ -19,6 +19,7 @@
 #define itkRealToHalfHermitianForwardFFTImageFilter_h
 
 #include "itkImageToImageFilter.h"
+#include "itkSimpleDataObjectDecorator.h"
 
 namespace itk
 {
@@ -75,8 +76,18 @@ public:
     * Default implementation is VnlFFT. */
   static Pointer New();
 
+  /* Return the prefered greatest prime factor supported for the input image
+   * size. Defaults to 2 as many implementations work only for sizes that are
+   * power of 2.
+   */
+  virtual SizeValueType GetSizeGreatestPrimeFactor() const;
+
+  /** Get whether the actual X dimension of the image is odd or not in the full
+   * representation */
+  itkGetDecoratedOutputMacro(ActualXDimensionIsOdd, bool);
+
 protected:
-  RealToHalfHermitianForwardFFTImageFilter() {}
+  RealToHalfHermitianForwardFFTImageFilter();
   virtual ~RealToHalfHermitianForwardFFTImageFilter() {}
 
   /** The output is a different size from the input because of
@@ -89,9 +100,11 @@ protected:
   /** This class produces the entire output. */
   virtual void EnlargeOutputRequestedRegion(DataObject *output);
 
+  itkSetDecoratedOutputMacro(ActualXDimensionIsOdd, bool);
+
 private:
-  RealToHalfHermitianForwardFFTImageFilter(const Self &); // purposely not implemented
-  void operator=(const Self &);        // purposely not implemented
+  RealToHalfHermitianForwardFFTImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

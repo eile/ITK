@@ -23,6 +23,11 @@
 #include "highgui.h"
 #include "itkVideoStream.h"
 
+// Include the required header with OpenCV > 2.X
+#if !defined( CV_VERSION_EPOCH )
+#include "opencv2/videoio.hpp"
+#endif
+
 namespace itk
 {
 

@@ -23,8 +23,9 @@
 namespace itk
 {
 // Constructor with default arguments
-template< typename TScalar, unsigned int NDimensions >
-AzimuthElevationToCartesianTransform< TScalar, NDimensions >::AzimuthElevationToCartesianTransform()
+template<typename TParametersValueType, unsigned int NDimensions>
+AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>
+::AzimuthElevationToCartesianTransform()
 // add this construction call when deriving from itk::Transform
 // :Superclass(ParametersDimension)
 {
@@ -38,25 +39,25 @@ AzimuthElevationToCartesianTransform< TScalar, NDimensions >::AzimuthElevationTo
 }
 
 // Destructor
-template< typename TScalar, unsigned int NDimensions >
-AzimuthElevationToCartesianTransform< TScalar, NDimensions >::
+template<typename TParametersValueType, unsigned int NDimensions>
+AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>::
 ~AzimuthElevationToCartesianTransform()
 {
 }
 
 // Print self
-template< typename TScalar, unsigned int NDimensions >
+template<typename TParametersValueType, unsigned int NDimensions>
 void
-AzimuthElevationToCartesianTransform< TScalar, NDimensions >::PrintSelf(std::ostream & os, Indent indent) const
+AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
   os << indent << "x = z*tan(Azimuth)" << std::endl;
   os << indent << "y = z*tan(Elevation)" << std::endl;
-  os << indent << "z = sqrt(r*r * cos(Azimuth)*cos(Azimuth) "
-     << " / (1 + cos(Azimuth) * cos(Azimuth) * tan(Elevation)"
+  os << indent << "z = r * cos(Azimuth) "
+     << " / sqrt((1 + cos(Azimuth) * cos(Azimuth) * tan(Elevation)"
      << "* tan(Elevation)))" << std::endl;
-  os << indent << "Azimuth = 1 / (tan(x/y))" << std::endl;
+  os << indent << "Azimuth = 1 / (tan(x/z))" << std::endl;
   os << indent << "Elevation = 1 / (tan(y/z))" << std::endl;
   os << indent << "r = sqrt(x*x + y*y + z*z)" << std::endl;
   os << indent << "m_MaxAzimuth = " << m_MaxAzimuth << std::endl;
@@ -73,10 +74,10 @@ AzimuthElevationToCartesianTransform< TScalar, NDimensions >::PrintSelf(std::ost
   os << indent << std::endl;
 }
 
-template< typename TScalar, unsigned int NDimensions >
-typename AzimuthElevationToCartesianTransform< TScalar, NDimensions >
+template<typename TParametersValueType, unsigned int NDimensions>
+typename AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>
 ::OutputPointType
-AzimuthElevationToCartesianTransform< TScalar, NDimensions >::TransformPoint(const InputPointType & point) const
+AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>::TransformPoint(const InputPointType & point) const
 {
   OutputPointType result;
 
@@ -92,17 +93,18 @@ AzimuthElevationToCartesianTransform< TScalar, NDimensions >::TransformPoint(con
 }
 
 /** Transform a point, from azimuth-elevation to cartesian */
-template< typename TScalar, unsigned int NDimensions >
-typename AzimuthElevationToCartesianTransform< TScalar, NDimensions >
+template<typename TParametersValueType, unsigned int NDimensions>
+typename AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>
 ::OutputPointType
-AzimuthElevationToCartesianTransform< TScalar,
-                                      NDimensions >::TransformAzElToCartesian(const InputPointType & point) const
+AzimuthElevationToCartesianTransform<TParametersValueType,
+                                      NDimensions >
+                                      ::TransformAzElToCartesian(const InputPointType & point) const
 {
   OutputPointType result;
-  ScalarType      Azimuth = ( ( 2 * vnl_math::pi ) / 360 )
+  ScalarType Azimuth = ( ( 2 * vnl_math::pi ) / 360 )
                             * ( point[0] * m_AzimuthAngularSeparation
                                 - ( ( m_MaxAzimuth - 1 ) / 2.0 ) );
-  ScalarType Elevation   = ( ( 2 * vnl_math::pi ) / 360 )
+  ScalarType Elevation = ( ( 2 * vnl_math::pi ) / 360 )
                            * ( point[1] * m_ElevationAngularSeparation
                                - ( ( m_MaxElevation - 1 ) / 2.0 ) );
   ScalarType r = ( m_FirstSampleDistance + point[2] ) * m_RadiusSampleSize;
@@ -110,26 +112,26 @@ AzimuthElevationToCartesianTransform< TScalar,
   ScalarType cosOfAzimuth = std::cos(Azimuth);
   ScalarType tanOfElevation = std::tan(Elevation);
 
-  result[2] = std::sqrt( ( r * r * cosOfAzimuth * cosOfAzimuth )
-                        / ( 1 + cosOfAzimuth * cosOfAzimuth * tanOfElevation
+  result[2] = (r * cosOfAzimuth)
+               / std::sqrt(( 1 + cosOfAzimuth * cosOfAzimuth * tanOfElevation
                             * tanOfElevation ) );
   result[0] = result[2] * std::tan(Azimuth);
   result[1] = result[2] * tanOfElevation;
   return result;
 }
 
-template< typename TScalar, unsigned int NDimensions >
-typename AzimuthElevationToCartesianTransform< TScalar, NDimensions >
+template<typename TParametersValueType, unsigned int NDimensions>
+typename AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>
 ::OutputPointType
-AzimuthElevationToCartesianTransform< TScalar, NDimensions >::TransformCartesianToAzEl(
+AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>::TransformCartesianToAzEl(
   const OutputPointType & point) const
 {
   InputPointType result;       // Converted point
 
-  result[0] = ( std::atan(point[0] / point[2]) ) * ( 360 / ( 2 * vnl_math::pi ) )
-              + ( ( m_MaxAzimuth - 1 ) / 2.0 );
-  result[1] = ( std::atan(point[1] / point[2]) ) * ( 360 / ( 2 * vnl_math::pi ) )
-              + ( ( m_MaxElevation - 1 ) / 2.0 );
+  result[0] = std::atan2(point[0], point[2]) * (360 / (2 * vnl_math::pi))
+            + ((m_MaxAzimuth - 1) / 2.0);
+  result[1] = std::atan2(point[1], point[2]) * (360 / (2 * vnl_math::pi))
+            + ((m_MaxElevation - 1) / 2.0);
   result[2] = ( ( std::sqrt(point[0] * point[0]
                            + point[1] * point[1]
                            + point[2] * point[2]) / m_RadiusSampleSize )
@@ -138,9 +140,9 @@ AzimuthElevationToCartesianTransform< TScalar, NDimensions >::TransformCartesian
 }
 
 // Set parameters
-template< typename TScalar, unsigned int NDimensions >
+template<typename TParametersValueType, unsigned int NDimensions>
 void
-AzimuthElevationToCartesianTransform< TScalar, NDimensions >::SetAzimuthElevationToCartesianParameters(
+AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>::SetAzimuthElevationToCartesianParameters(
   const double sampleSize,
   const double
   firstSampleDistance,
@@ -163,9 +165,9 @@ AzimuthElevationToCartesianTransform< TScalar, NDimensions >::SetAzimuthElevatio
   SetFirstSampleDistance(firstSampleDistance / sampleSize);
 }
 
-template< typename TScalar, unsigned int NDimensions >
+template<typename TParametersValueType, unsigned int NDimensions>
 void
-AzimuthElevationToCartesianTransform< TScalar, NDimensions >::SetAzimuthElevationToCartesianParameters(
+AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>::SetAzimuthElevationToCartesianParameters(
   const double sampleSize,
   const double
   firstSampleDistance,
@@ -178,16 +180,16 @@ AzimuthElevationToCartesianTransform< TScalar, NDimensions >::SetAzimuthElevatio
                                            maxAzimuth, maxElevation, 1.0, 1.0);
 }
 
-template< typename TScalar, unsigned int NDimensions >
+template<typename TParametersValueType, unsigned int NDimensions>
 void
-AzimuthElevationToCartesianTransform< TScalar, NDimensions >::SetForwardAzimuthElevationToCartesian()
+AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>::SetForwardAzimuthElevationToCartesian()
 {
   m_ForwardAzimuthElevationToPhysical = true;
 }
 
-template< typename TScalar, unsigned int NDimensions >
+template<typename TParametersValueType, unsigned int NDimensions>
 void
-AzimuthElevationToCartesianTransform< TScalar, NDimensions >::SetForwardCartesianToAzimuthElevation()
+AzimuthElevationToCartesianTransform<TParametersValueType, NDimensions>::SetForwardCartesianToAzimuthElevation()
 {
   m_ForwardAzimuthElevationToPhysical = false;
 }

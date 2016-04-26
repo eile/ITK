@@ -83,11 +83,11 @@ public:
   /** ContinuousIndex typedef support. */
   typedef ContinuousIndex< TCoordRep, VSpaceDimension > ContinuousIndexType;
 
-  /** Evaluate the weights at specified ContinousIndex position.
+  /** Evaluate the weights at specified ContinuousIndex position.
    * Subclasses must provide this method. */
   virtual WeightsType Evaluate(const ContinuousIndexType & index) const ITK_OVERRIDE;
 
-  /** Evaluate the weights at specified ContinousIndex position.
+  /** Evaluate the weights at specified ContinuousIndex position.
    * The weights are returned in the user specified container.
    * This function assume that weights can hold
    * (SplineOrder + 1)^(SpaceDimension) elements. For efficiency,
@@ -110,8 +110,8 @@ protected:
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  BSplineInterpolationWeightFunction(const Self &); //purposely not implemented
-  void operator=(const Self &);                     //purposely not implemented
+  BSplineInterpolationWeightFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   /** Number of weights. */
   unsigned int m_NumberOfWeights;

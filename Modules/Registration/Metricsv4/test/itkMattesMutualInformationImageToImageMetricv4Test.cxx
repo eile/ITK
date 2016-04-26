@@ -56,12 +56,14 @@ int TestMattesMetricWithAffineTransform(
 //------------------------------------------------------------
 
   //Allocate Images
-  typedef TImage           MovingImageType;
-  typedef TImage           FixedImageType;
+  typedef TImage                                  MovingImageType;
+  typedef TImage                                  FixedImageType;
+  typedef typename MovingImageType::SizeValueType SizeValueType;
 
   const unsigned int ImageDimension = MovingImageType::ImageDimension;
   //Image size is scaled to represent sqrt(256^3)
-  typename MovingImageType::SizeType size = {{imageSize,imageSize}};
+  typename MovingImageType::SizeType size = {{static_cast<SizeValueType>(imageSize),
+                                              static_cast<SizeValueType>(imageSize)}};
   typename MovingImageType::IndexType index = {{0,0}};
   typename MovingImageType::RegionType region;
   region.SetSize( size );
@@ -315,7 +317,7 @@ int TestMattesMetricWithAffineTransform(
       metricValueOnly << "\tderivative[4]: " << derivative[4];
     // Make sure the metric value calculation is
     // consistent
-    if( ! itk::Math::FloatAlmostEqual( metricValueWithDerivative, metricValueOnly ) )
+    if( ! itk::Math::FloatAlmostEqual( metricValueWithDerivative, metricValueOnly, 8 ) )
       {
       std::cout << "\t[FAILED]: metricValueWithDerivative values do not match: ("
                 << metricValueWithDerivative << " - " << metricValueOnly <<  ") = "

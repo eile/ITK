@@ -236,10 +236,10 @@ QuasiNewtonOptimizerv4Template<TInternalComputationValueType>
     if (!this->m_NewtonStepValidFlags[loc])
       {
         // Using the Gradient step
-      IndexValueType offset = loc * numLocalPara;
-      for (SizeValueType p=0; p<numLocalPara; p++)
+      const SizeValueType offset = loc * numLocalPara;
+      for (SizeValueType p = offset; p < (offset + numLocalPara); p++)
         {
-        this->m_NewtonStep[offset+p] = this->m_Gradient[offset+p] * ratio;
+        this->m_NewtonStep[p] = this->m_Gradient[p] * ratio;
         }
       }
     }
@@ -266,14 +266,14 @@ QuasiNewtonOptimizerv4Template<TInternalComputationValueType>
   else
     {
     this->m_LearningRate = this->m_MaximumNewtonStepSizeInPhysicalUnits / stepScale;
-    if (this->m_LearningRate > NumericTraits<TInternalComputationValueType>::One)
+    if (this->m_LearningRate > NumericTraits<TInternalComputationValueType>::OneValue())
       {
         // learning rate is at most 1 for a newton step
       this->m_LearningRate = NumericTraits<TInternalComputationValueType>::OneValue();
       }
     }
 
-  if (std::abs(this->m_LearningRate - NumericTraits<TInternalComputationValueType>::One)
+  if (std::abs(this->m_LearningRate - NumericTraits<TInternalComputationValueType>::OneValue())
       > 0.01)
     {
     this->m_NewtonStep *= this->m_LearningRate;
@@ -288,7 +288,7 @@ QuasiNewtonOptimizerv4Template<TInternalComputationValueType>
   const SizeValueType numLocalPara = this->m_Metric->GetNumberOfLocalParameters();
 
     // Initialize Hessian to identity matrix
-  m_HessianArray[loc].Fill(NumericTraits<TInternalComputationValueType>::Zero);
+  m_HessianArray[loc].Fill(NumericTraits<TInternalComputationValueType>::ZeroValue());
 
   for (unsigned int i=0; i<numLocalPara; i++)
     {
@@ -309,6 +309,11 @@ void
 QuasiNewtonOptimizerv4Template<TInternalComputationValueType>
 ::EstimateNewtonStep()
 {
+  if ( this->m_Gradient.GetSize() == 0 )
+    {
+    return;
+    }
+
   IndexRangeType fullrange;
   fullrange[0] = 0;
   fullrange[1] = this->m_Gradient.GetSize()-1; //range is inclusive

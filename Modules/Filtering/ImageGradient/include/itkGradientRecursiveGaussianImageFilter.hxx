@@ -35,12 +35,13 @@ GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
   m_NormalizeAcrossScale = false;
   this->m_UseImageDirection = true;
 
-  const int imageDimensionMinus1 = static_cast< int >( ImageDimension ) - 1;
+  itkStaticAssert(ImageDimension > 0, "Images shall have one dimension at least");
+  const unsigned int imageDimensionMinus1 = ImageDimension - 1;
   if ( ImageDimension > 1 )
     {
     m_SmoothingFilters.resize(imageDimensionMinus1);
 
-    for ( int i = 0; i < imageDimensionMinus1; ++i )
+    for ( unsigned int i = 0; i != imageDimensionMinus1; ++i )
       {
       m_SmoothingFilters[i] = GaussianFilterType::New();
       m_SmoothingFilters[i]->SetOrder(GaussianFilterType::ZeroOrder);
@@ -60,7 +61,7 @@ GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
   if ( ImageDimension > 1 )
     {
     m_SmoothingFilters[0]->SetInput( m_DerivativeFilter->GetOutput() );
-    for ( int i = 1; i < imageDimensionMinus1; ++i )
+    for ( unsigned int i = 1; i != imageDimensionMinus1; ++i )
       {
       m_SmoothingFilters[i]->SetInput(m_SmoothingFilters[i - 1]->GetOutput() );
       }
@@ -68,39 +69,71 @@ GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
 
   m_ImageAdaptor = OutputImageAdaptorType::New();
 
+  // NB: We must call SetSigma in order to initialize the smoothing
+  // filters with the default scale.  However, m_Sigma must first be
+  // initialized (it is used inside SetSigma), and it must be different
+  // from 1.0 or the call will be ignored.
+  this->m_Sigma.Fill(0.0);
   this->SetSigma(1.0);
 }
 
 /**
- * Set value of Sigma
+ * Set value of Sigma along all dimensions.
  */
 template< typename TInputImage, typename TOutputImage >
 void
 GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
 ::SetSigma(ScalarRealType sigma)
 {
-  if (ImageDimension > 1)
-    {
-    const int imageDimensionMinus1 = static_cast< int >( ImageDimension ) - 1;
-    for ( int i = 0; i < imageDimensionMinus1; ++i )
-      {
-      m_SmoothingFilters[i]->SetSigma(sigma);
-      }
-    }
-  m_DerivativeFilter->SetSigma(sigma);
-  this->Modified();
+  SigmaArrayType sigmas(sigma);
+  this->SetSigmaArray(sigmas);
 }
 
 /**
- * Get value of Sigma
+ * Set value of Sigma array.
+ */
+template< typename TInputImage, typename TOutputImage >
+void
+GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
+::SetSigmaArray(const SigmaArrayType & sigma)
+{
+  if( this->m_Sigma != sigma )
+  {
+    this->m_Sigma = sigma;
+    itkStaticAssert(ImageDimension > 0, "Images shall have one dimension at least");
+    const unsigned int imageDimensionMinus1 = ImageDimension - 1;
+    for ( unsigned int i = 0; i != imageDimensionMinus1; ++i )
+      {
+      m_SmoothingFilters[i]->SetSigma(m_Sigma[i]);
+      }
+    m_DerivativeFilter->SetSigma(sigma[imageDimensionMinus1]);
+
+    this->Modified();
+  }
+}
+
+/**
+ * Get the Sigma array.
  */
 template< typename TInputImage, typename TOutputImage >
 typename GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
-::RealType
+::SigmaArrayType
+GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
+::GetSigmaArray() const
+{
+  return m_Sigma;
+}
+
+/**
+ * Get value of Sigma. Returns the sigma along the first dimension.
+ */
+template< typename TInputImage, typename TOutputImage >
+typename GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
+::ScalarRealType
 GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
 ::GetSigma() const
 {
-  return m_DerivativeFilter->GetSigma();
+  return m_Sigma[0];
 }
 
 /**
@@ -113,8 +146,9 @@ GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
 {
   m_NormalizeAcrossScale = normalize;
 
-  const int imageDimensionMinus1 = static_cast< int >( ImageDimension ) - 1;
-  for ( int i = 0; i < imageDimensionMinus1; i++ )
+  itkStaticAssert(ImageDimension > 0, "Images shall have one dimension at least");
+  const unsigned int imageDimensionMinus1 = ImageDimension - 1;
+  for ( unsigned int i = 0; i != imageDimensionMinus1; i++ )
     {
     m_SmoothingFilters[i]->SetNormalizeAcrossScale(normalize);
     }
@@ -177,10 +211,11 @@ GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
   // Compute the contribution of each filter to the total progress.
   const double weight = 1.0 / ( ImageDimension * ImageDimension );
 
-  const int imageDimensionMinus1 = static_cast< int >( ImageDimension ) - 1;
+  itkStaticAssert(ImageDimension > 0, "Images shall have one dimension at least");
+  const unsigned int imageDimensionMinus1 = ImageDimension - 1;
   if( ImageDimension > 1 )
     {
-    for( int i = 0; i < imageDimensionMinus1; ++i )
+    for( unsigned int i = 0; i != imageDimensionMinus1; ++i )
       {
       progress->RegisterInternalFilter(m_SmoothingFilters[i], weight);
       }
@@ -221,11 +256,11 @@ GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
 
   for ( unsigned int nc = 0; nc < nComponents; ++nc )
     {
-    for ( int dim = 0; dim < ImageDimension; ++dim )
+    for ( unsigned int dim = 0; dim < ImageDimension; ++dim )
       {
-      int i = 0;
+      unsigned int i = 0;
       int j = 0;
-      while( i < imageDimensionMinus1 )
+      while( i != imageDimensionMinus1 )
         {
         if( i == dim )
           {
@@ -325,14 +360,12 @@ GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
   // this methods is overloaded so that if the output image is a
   // VectorImage then the correct number of components are set.
 
-
   Superclass::GenerateOutputInformation();
 
   OutputImageType* output = this->GetOutput();
   const typename TInputImage::ConstPointer inputImage( this->GetInput() );
 
   const unsigned int nComponents = inputImage->GetNumberOfComponentsPerPixel() * ImageDimension;
-
 
   output->SetNumberOfComponentsPerPixel( nComponents );
 }
@@ -346,6 +379,7 @@ GradientRecursiveGaussianImageFilter< TInputImage, TOutputImage >
   os << indent << "NormalizeAcrossScale: " << m_NormalizeAcrossScale << std::endl;
   os << indent << "UseImageDirection :   "
      << ( this->m_UseImageDirection ? "On" : "Off" ) << std::endl;
+  os << "Sigma: " << m_Sigma << std::endl;
 }
 
 } // end namespace itk

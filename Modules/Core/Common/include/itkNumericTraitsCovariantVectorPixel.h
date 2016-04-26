@@ -135,6 +135,10 @@ public:
     return OneValue();
   }
 
+  static const bool IsSigned = NumericTraits< ValueType >::IsSigned;
+  static const bool IsInteger = NumericTraits< ValueType >::IsInteger;
+  static const bool IsComplex = NumericTraits< ValueType >::IsComplex;
+
   /** Fixed length vectors cannot be resized, so an exception will
    *  be thrown if the input size is not valid.  If the size is valid
    *  the vector will be filled with zeros. */
@@ -145,7 +149,7 @@ public:
       itkGenericExceptionMacro(<< "Cannot set the size of a CovariantVector of length "
                                << D << " to " << s);
       }
-    m.Fill(NumericTraits< T >::Zero);
+    m.Fill(NumericTraits< T >::ZeroValue());
   }
 
   /** Return the length of the vector. */

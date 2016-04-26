@@ -20,6 +20,7 @@
 
 #include "itkObjectFactoryBase.h"
 #include "itkImageIOBase.h"
+#include "ITKIOMINCExport.h"
 
 namespace itk
 {
@@ -37,7 +38,7 @@ namespace itk
  * And Modified by Vladimir S. FONOV during ITK-MINC Hackathon
  *
  */
-class MINCImageIOFactory : public ObjectFactoryBase
+class ITKIOMINC_EXPORT MINCImageIOFactory : public ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */
@@ -47,9 +48,9 @@ public:
   typedef SmartPointer< const Self > ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  virtual const char * GetITKSourceVersion() const;
+  virtual const char * GetITKSourceVersion() const ITK_OVERRIDE;
 
-  virtual const char * GetDescription() const;
+  virtual const char * GetDescription() const ITK_OVERRIDE;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -70,8 +71,8 @@ protected:
   ~MINCImageIOFactory();
 
 private:
-  MINCImageIOFactory(const Self &); //purposely not implemented
-  void operator=(const Self &);     //purposely not implemented
+  MINCImageIOFactory(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };
 } // end namespace itk

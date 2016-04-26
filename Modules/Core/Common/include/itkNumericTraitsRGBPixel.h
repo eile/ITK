@@ -111,12 +111,12 @@ public:
 
   static const Self ZeroValue()
   {
-    return Self(NumericTraits< T >::Zero);
+    return Self(NumericTraits< T >::ZeroValue());
   }
 
   static const Self OneValue()
   {
-    return Self(NumericTraits< T >::One);
+    return Self(NumericTraits< T >::OneValue());
   }
 
   static const Self NonpositiveMin(const Self &)
@@ -134,6 +134,10 @@ public:
     return OneValue();
   }
 
+  static const bool IsSigned = NumericTraits< ValueType >::IsSigned;
+  static const bool IsInteger = NumericTraits< ValueType >::IsInteger;
+  static const bool IsComplex = NumericTraits< ValueType >::IsComplex;
+
   /** RGB pixels must have 3 components, so the size cannot be
    *  set to anything besides 3.  If called with size of 3, this
    *  function will fill the pixel with zeros. */
@@ -144,7 +148,7 @@ public:
       itkGenericExceptionMacro(<< "Cannot set the size of a RGBPixel to anything other "
                                "than 3.");
       }
-    m.Fill(NumericTraits< T >::Zero);
+    m.Fill(NumericTraits< T >::ZeroValue());
   }
 
   /** Return the dimensionality of the pixel. Always returns 3. */

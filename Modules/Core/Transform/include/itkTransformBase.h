@@ -18,6 +18,8 @@
 #ifndef itkTransformBase_h
 #define itkTransformBase_h
 
+#include "ITKTransformExport.h"
+
 #include "itkObject.h"
 #include "itkPoint.h"
 #include "itkCovariantVector.h"
@@ -39,19 +41,35 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template< typename TScalar >
+template<typename TParametersValueType>
 class TransformBaseTemplate:public Object
 {
 public:
   /** Standard class typedefs. */
-  typedef TransformBaseTemplate      Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  typedef TransformBaseTemplate    Self;
+  typedef Object                   Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Type of the input parameters. */
-  typedef  TScalar                                    ParametersValueType;
-  typedef  OptimizerParameters< ParametersValueType > ParametersType;
+
+  typedef  TParametersValueType                          ParametersValueType;
+  typedef  OptimizerParameters<ParametersValueType>      ParametersType;
+  typedef  double                                        FixedParametersValueType;
+  typedef  OptimizerParameters<FixedParametersValueType> FixedParametersType;
+
+// The ITK_FIXED_PARAMETERS_ARE_DOUBLE is intended
+// to facilitate transition of ITK for those very
+// rare cases where multiple versions of ITK
+// may need to be supported simultaneously.
+#if defined( ITK_LEGACY_REMOVE )
+  #undef  ITK_FIXED_PARAMETERS_ARE_DOUBLE
+#else
+  #define ITK_FIXED_PARAMETERS_ARE_DOUBLE
+  // #if !defined(ITK_FIXED_PARAMETERS_ARE_DOUBLE)
+  // typedef ParametersValueType FixedParametersValueType;
+  // #endif
+#endif
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(TransformBaseTemplate, Object);
@@ -85,10 +103,24 @@ public:
   virtual void SetParametersByValue(const ParametersType & p) = 0;
 
   /** Set the fixed parameters. */
-  virtual void SetFixedParameters(const ParametersType &) = 0;
+  virtual void SetFixedParameters(const FixedParametersType &) = 0;
+
+  /** This function allow copying a range of values into the Parameters
+    * The range of values must conform to std::copy(begin, end, m_Parameters)
+    * requirements.
+    */
+  virtual void CopyInParameters(const ParametersValueType * const begin,
+                                const ParametersValueType * const end) = 0;
+
+  /** This function allow copying a range of values into the FixedParameters
+    * The range of values must conform to std::copy(begin, end, m_FixedParameters)
+    * requirements.
+    */
+  virtual void CopyInFixedParameters(const FixedParametersValueType * const begin,
+                                     const FixedParametersValueType * const end) = 0;
 
   /** Get the fixed parameters. */
-  virtual const ParametersType & GetFixedParameters() const = 0;
+  virtual const FixedParametersType & GetFixedParameters() const = 0;
 
   /** Generate a platform independent name */
   virtual std::string GetTransformTypeAsString() const = 0;
@@ -110,8 +142,8 @@ protected:
   virtual ~TransformBaseTemplate() {}
 
 private:
-  TransformBaseTemplate(const Self &);  //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  TransformBaseTemplate(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** This helps to meet backward compatibility */
@@ -119,4 +151,38 @@ typedef TransformBaseTemplate< double > TransformBase;
 
 } // end namespace itk
 
+#endif
+
+/** Explicit instantiations */
+#ifndef ITK_TEMPLATE_EXPLICIT_TransformBase
+// Explicit instantiation is required to ensure correct dynamic_cast
+// behavior across shared libraries.
+//
+// IMPORTANT: Since within the same compilation unit,
+//            ITK_TEMPLATE_EXPLICIT_<classname> defined and undefined states
+//            need to be considered. This code *MUST* be *OUTSIDE* the header
+//            guards.
+//
+#  if defined( ITKTransform_EXPORTS )
+//   We are building this library
+#    define ITKTransform_EXPORT_EXPLICIT
+#  else
+//   We are using this library
+#    define ITKTransform_EXPORT_EXPLICIT ITKTransform_EXPORT
+#  endif
+namespace itk
+{
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_PUSH()
+#endif
+ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
+extern template class ITKTransform_EXPORT_EXPLICIT TransformBaseTemplate< double >;
+extern template class ITKTransform_EXPORT_EXPLICIT TransformBaseTemplate< float >;
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_POP()
+#else
+  ITK_GCC_PRAGMA_DIAG(warning "-Wattributes")
+#endif
+} // end namespace itk
+#  undef ITKTransform_EXPORT_EXPLICIT
 #endif

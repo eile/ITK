@@ -27,33 +27,37 @@
 #include "itkBSplineTransform.h"
 #include "itksys/SystemTools.hxx"
 
-template<typename ScalarType>
+template<typename TParametersValueType>
 static int oneTest(const char *goodname,const char *badname)
 {
   unsigned int i;
-  typedef itk::AffineTransform<ScalarType,4>  AffineTransformType;
-  typedef itk::AffineTransform<ScalarType,10> AffineTransformTypeNotRegistered;
+  typedef itk::AffineTransform<TParametersValueType,4>  AffineTransformType;
+  typedef itk::AffineTransform<TParametersValueType,10> AffineTransformTypeNotRegistered;
   typename AffineTransformType::Pointer        affine = AffineTransformType::New();
   typename AffineTransformType::InputPointType cor;
-  typedef itk::TransformFileWriterTemplate<ScalarType> TransformWriterType;
-  typedef itk::TransformFileReaderTemplate<ScalarType> TransformReaderType;
+  typedef itk::TransformFileWriterTemplate<TParametersValueType> TransformWriterType;
+  typedef itk::TransformFileReaderTemplate<TParametersValueType> TransformReaderType;
 
   itk::ObjectFactoryBase::RegisterFactory(itk::MatlabTransformIOFactory::New() );
 
 
   // Set it's parameters
-  typename AffineTransformType::ParametersType p = affine->GetParameters();
-  for ( i = 0; i < p.GetSize(); i++ )
     {
-    p[i] = i;
+    typename AffineTransformType::ParametersType p = affine->GetParameters();
+    for ( i = 0; i < p.GetSize(); i++ )
+      {
+      p[i] = i;
+      }
+    affine->SetParameters ( p );
     }
-  affine->SetParameters ( p );
-  p = affine->GetFixedParameters ();
-  for ( i = 0; i < p.GetSize(); i++ )
     {
-    p[i] = i;
+    typename AffineTransformType::FixedParametersType p = affine->GetFixedParameters ();
+    for ( i = 0; i < p.GetSize(); i++ )
+      {
+      p[i] = i;
+      }
+    affine->SetFixedParameters ( p );
     }
-  affine->SetFixedParameters ( p );
   typename TransformWriterType::Pointer writer = TransformWriterType::New();
   typename TransformReaderType::Pointer reader = TransformReaderType::New();
 
@@ -85,9 +89,8 @@ static int oneTest(const char *goodname,const char *badname)
 
   try
     {
-    typename TransformReaderType::TransformListType *list;
-    list = reader->GetTransformList();
-    typename TransformReaderType::TransformListType::iterator lit = list->begin();
+    const typename TransformReaderType::TransformListType * list = reader->GetTransformList();
+    typename TransformReaderType::TransformListType::const_iterator lit = list->begin();
     while ( lit != list->end() )
       {
       (*lit)->Print ( std::cout );
@@ -107,18 +110,22 @@ static int oneTest(const char *goodname,const char *badname)
   typename AffineTransformTypeNotRegistered::Pointer Bogus = AffineTransformTypeNotRegistered::New();
 
   // Set it's parameters
-  p = Bogus->GetParameters();
-  for ( i = 0; i < p.GetSize(); i++ )
     {
-    p[i] = i;
+    typename AffineTransformType::ParametersType p = Bogus->GetParameters();
+    for ( i = 0; i < p.GetSize(); i++ )
+      {
+      p[i] = i;
+      }
+    Bogus->SetParameters ( p );
     }
-  Bogus->SetParameters ( p );
-  p = Bogus->GetFixedParameters ();
-  for ( i = 0; i < p.GetSize(); i++ )
     {
-    p[i] = i;
+    typename AffineTransformType::FixedParametersType p = Bogus->GetFixedParameters ();
+    for ( i = 0; i < p.GetSize(); i++ )
+      {
+      p[i] = i;
+      }
+    Bogus->SetFixedParameters ( p );
     }
-  Bogus->SetFixedParameters ( p );
 
   typename TransformWriterType::Pointer badwriter = TransformWriterType::New();
   typename TransformReaderType::Pointer badreader = TransformReaderType::New();
@@ -173,7 +180,7 @@ static int oneTest(const char *goodname,const char *badname)
 // EOL at end of file.
 // This test will exercise this reported bug:
 // http://public.kitware.com/Bug/view.php?id=7028
-template<typename ScalarType>
+template<typename TParametersValueType>
 int secondTest()
 {
   std::filebuf fb;
@@ -192,16 +199,15 @@ int secondTest()
      << "FixedParameters: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18";
   fb.close();
 
-  typedef itk::TransformFileReaderTemplate<ScalarType> TransformReaderType;
+  typedef itk::TransformFileReaderTemplate<TParametersValueType> TransformReaderType;
   typename TransformReaderType::Pointer reader = TransformReaderType::New();
   reader->SetFileName("IllegalTransform.txt");
   try
     {
     reader->Update();
     std::cerr << "FAILED to throw expected exception" << std::endl;
-    typename TransformReaderType::TransformListType *list;
-    list = reader->GetTransformList();
-    typename TransformReaderType::TransformListType::iterator lit =
+    const typename TransformReaderType::TransformListType * list = reader->GetTransformList();
+    typename TransformReaderType::TransformListType::const_iterator lit =
       list->begin();
     while ( lit != list->end() )
       {

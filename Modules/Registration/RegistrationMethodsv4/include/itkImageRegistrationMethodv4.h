@@ -28,7 +28,7 @@
 #include "itkImageToImageMetricv4.h"
 #include "itkPointSetToPointSetMetricv4.h"
 #include "itkShrinkImageFilter.h"
-#include "itkTransform.h"
+#include "itkIdentityTransform.h"
 #include "itkTransformParametersAdaptorBase.h"
 
 #include <vector>
@@ -88,8 +88,9 @@ namespace itk
  */
 template<typename TFixedImage,
          typename TMovingImage,
-         typename TOutputTransform=Transform<double, TFixedImage::ImageDimension,  TFixedImage::ImageDimension >,
-         typename TVirtualImage = TFixedImage>
+         typename TOutputTransform = Transform<double, TFixedImage::ImageDimension, TFixedImage::ImageDimension>,
+         typename TVirtualImage = TFixedImage,
+         typename TPointSet = PointSet<unsigned int, TFixedImage::ImageDimension> >
 class ImageRegistrationMethodv4
 :public ProcessObject
 {
@@ -117,6 +118,10 @@ public:
   typedef typename MovingImageType::Pointer                           MovingImagePointer;
   typedef std::vector<MovingImagePointer>                             MovingImagesContainerType;
 
+  typedef TPointSet                                                   PointSetType;
+  typedef typename PointSetType::ConstPointer                         PointSetConstPointer;
+  typedef std::vector<PointSetConstPointer>                           PointSetsContainerType;
+
   /** Metric and transform typedefs */
   typedef TOutputTransform                                            OutputTransformType;
   typedef typename OutputTransformType::Pointer                       OutputTransformPointer;
@@ -133,9 +138,12 @@ public:
   typedef ObjectToObjectMetricBaseTemplate<RealType>                  MetricType;
   typedef typename MetricType::Pointer                                MetricPointer;
 
-  typedef PointSet<unsigned int, ImageDimension>                      PointSetType;
+  typedef Vector<RealType, ImageDimension>                            VectorType;
 
   typedef TVirtualImage                                               VirtualImageType;
+  typedef typename VirtualImageType::Pointer                          VirtualImagePointer;
+  typedef ImageBase<ImageDimension>                                   VirtualImageBaseType;
+  typedef typename VirtualImageBaseType::ConstPointer                 VirtualImageBaseConstPointer;
 
   typedef ObjectToObjectMultiMetricv4<ImageDimension, ImageDimension, VirtualImageType, RealType>  MultiMetricType;
   typedef ImageToImageMetricv4<FixedImageType, MovingImageType, VirtualImageType, RealType>        ImageMetricType;
@@ -149,7 +157,6 @@ public:
   typedef typename DecoratedOutputTransformType::Pointer              DecoratedOutputTransformPointer;
   typedef DataObjectDecorator<InitialTransformType>                   DecoratedInitialTransformType;
   typedef typename DecoratedInitialTransformType::Pointer             DecoratedInitialTransformPointer;
-
 
   typedef ShrinkImageFilter<FixedImageType, VirtualImageType>         ShrinkFilterType;
   typedef typename ShrinkFilterType::ShrinkFactorsType                ShrinkFactorsPerDimensionContainerType;
@@ -441,6 +448,9 @@ protected:
   /** Initialize by setting the interconnects between the components. */
   virtual void InitializeRegistrationAtEachLevel( const SizeValueType );
 
+  /** Initialize by setting the interconnects between the components. */
+  virtual VirtualImageBaseConstPointer GetCurrentLevelVirtualDomainImage();
+
   /** Get metric samples. */
   virtual void SetMetricSamplePoints();
 
@@ -453,6 +463,9 @@ protected:
 
   FixedImagesContainerType                                        m_FixedSmoothImages;
   MovingImagesContainerType                                       m_MovingSmoothImages;
+  VirtualImagePointer                                             m_VirtualDomainImage;
+  PointSetsContainerType                                          m_FixedPointSets;
+  PointSetsContainerType                                          m_MovingPointSets;
   SizeValueType                                                   m_NumberOfFixedObjects;
   SizeValueType                                                   m_NumberOfMovingObjects;
 
@@ -479,8 +492,8 @@ protected:
 
 
 private:
-  ImageRegistrationMethodv4( const Self & );   //purposely not implemented
-  void operator=( const Self & );              //purposely not implemented
+  ImageRegistrationMethodv4( const Self & ) ITK_DELETE_FUNCTION;
+  void operator=( const Self & ) ITK_DELETE_FUNCTION;
 
   bool                                                            m_InPlace;
 

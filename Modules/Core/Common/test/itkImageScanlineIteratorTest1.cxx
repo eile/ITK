@@ -50,8 +50,8 @@ int itkImageScanlineIteratorTest1(int, char* [] )
 
   int status = EXIT_SUCCESS;
 
-  float origin3D[3] = { 5, 2.1, 8.1};
-  float spacing3D[3] = { 1.5, 2.1, 1};
+  float origin3D[3] = { 5.0f, 2.1f, 8.1f};
+  float spacing3D[3] = { 1.5f, 2.1f, 1.0f};
 
   typedef itk::Image<itk::Vector<unsigned short, 5>, 3> ImageType;
 
@@ -108,6 +108,17 @@ int itkImageScanlineIteratorTest1(int, char* [] )
       ++it;
       }
     it.NextLine();
+    }
+
+  itk::ImageScanlineIterator<ImageType > it2(o3, o3->GetBufferedRegion());
+  std::cout << "Simple iterator loop 1 (BufferedRegion)\n";
+  while (!it2.IsAtEnd())
+    {
+    while (!it2.IsAtEndOfLine())
+      {
+      ++it2;
+      }
+    it2.NextLine();
     }
 
   itk::ImageScanlineConstIterator<ImageType > testBeginEnd(o3, region);

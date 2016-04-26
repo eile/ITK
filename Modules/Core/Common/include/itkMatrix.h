@@ -25,6 +25,7 @@
 #include "vnl/algo/vnl_matrix_inverse.h"
 #include "vnl/vnl_matrix.h"
 #include "vnl/algo/vnl_determinant.h"
+#include "itkMath.h"
 
 namespace itk
 {
@@ -114,7 +115,7 @@ public:
   { m_Matrix *= value; }
 
   /** Matrix by scalar multiplication.  */
-  Self operator*(const T & value)
+  Self operator*(const T & value) const
   {
     Self result(*this);
 
@@ -129,7 +130,7 @@ public:
   }
 
   /** Matrix by scalar division. */
-  Self operator/(const T & value)
+  Self operator/(const T & value) const
   {
     Self result(*this);
 
@@ -207,7 +208,7 @@ public:
       {
       for ( unsigned int c = 0; c < NColumns; c++ )
         {
-        if ( m_Matrix(r, c) != matrix.m_Matrix(r, c) )
+        if ( Math::NotExactlyEquals(m_Matrix(r, c), matrix.m_Matrix(r, c)) )
           {
           equal = false;
           break;
@@ -259,7 +260,7 @@ public:
   }
 
   /** Default constructor. */
-  Matrix():m_Matrix(NumericTraits< T >::Zero) {}
+  Matrix():m_Matrix(NumericTraits< T >::ZeroValue()) {}
 
   /** Copy constructor. */
   Matrix(const Self & matrix):m_Matrix(matrix.m_Matrix) {}

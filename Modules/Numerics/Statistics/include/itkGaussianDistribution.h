@@ -19,6 +19,7 @@
 #define itkGaussianDistribution_h
 
 #include "itkProbabilityDistribution.h"
+#include "ITKStatisticsExport.h"
 
 namespace itk
 {
@@ -57,7 +58,7 @@ namespace Statistics
  * \wikiexample{Statistics/GaussianDistribution,Create a Gaussian distribution}
  * \endwiki
  */
-class GaussianDistribution:
+class ITKStatistics_EXPORT GaussianDistribution:
   public ProbabilityDistribution
 {
 public:
@@ -236,8 +237,8 @@ protected:
   virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  GaussianDistribution(const Self &); //purposely not implemented
-  void operator=(const Self &);       //purposely not implemented
+  GaussianDistribution(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };                                    // end of class
 } // end of namespace Statistics
 } // end namespace itk

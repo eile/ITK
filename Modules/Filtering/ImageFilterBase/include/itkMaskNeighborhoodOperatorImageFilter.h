@@ -151,7 +151,7 @@ public:
 #endif
 
 protected:
-  MaskNeighborhoodOperatorImageFilter():m_DefaultValue(NumericTraits< OutputPixelType >::Zero),
+  MaskNeighborhoodOperatorImageFilter():m_DefaultValue(NumericTraits< OutputPixelType >::ZeroValue()),
     m_UseDefaultValue(true) {}
   virtual ~MaskNeighborhoodOperatorImageFilter() {}
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
@@ -178,8 +178,8 @@ protected:
                             ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
-  MaskNeighborhoodOperatorImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                      //purposely not implemented
+  MaskNeighborhoodOperatorImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   OutputPixelType m_DefaultValue;
   bool            m_UseDefaultValue;

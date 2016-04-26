@@ -30,6 +30,7 @@
 
 // Software Guide : BeginCodeSnippet
 #include "itkVector.h"
+#include "itkMath.h"
 #include "itkListSample.h"
 #include "itkWeightedCentroidKdTreeGenerator.h"
 #include "itkEuclideanDistanceMetric.h"
@@ -256,10 +257,10 @@ int main()
               << "] : "
               << distances2[i]
               << std::endl;
-    if ( distances2[i] != distances1[i] )
+    if ( itk::Math::NotAlmostEquals( distances2[i], distances1[i] ) )
       {
       std::cerr << "Mismatched distance values by tree." << std::endl;
-      return -1;
+      return EXIT_FAILURE;
       }
     }
   // Software Guide : EndCodeSnippet
@@ -295,10 +296,10 @@ int main()
               << "            :       "
               << distances3[i]
               << std::endl;
-    if ( distances2[i] != distances1[i] )
+    if ( itk::Math::NotAlmostEquals( distances2[i], distances1[i] ) )
       {
       std::cerr << "Mismatched distance values by centroid tree." << std::endl;
-      return -1;
+      return EXIT_FAILURE;
       }
     }
   // Software Guide : EndCodeSnippet
@@ -357,5 +358,5 @@ int main()
               << std::endl;
     }
   // Software Guide : EndCodeSnippet
-  return 0;
+  return EXIT_SUCCESS;
 }

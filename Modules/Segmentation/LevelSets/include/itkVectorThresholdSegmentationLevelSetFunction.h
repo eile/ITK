@@ -117,9 +117,9 @@ public:
   {
     Superclass::Initialize(r);
 
-    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::Zero);
-    this->SetPropagationWeight(-1.0 * NumericTraits< ScalarValueType >::One);
-    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::One);
+    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::ZeroValue());
+    this->SetPropagationWeight(-1.0 * NumericTraits< ScalarValueType >::OneValue());
+    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::OneValue());
   }
 
 protected:
@@ -128,8 +128,8 @@ protected:
     MeanVectorType       mean(NumberOfComponents);
     CovarianceMatrixType covariance(NumberOfComponents, NumberOfComponents);
 
-    mean.Fill(NumericTraits< typename FeatureScalarType::ValueType >::Zero);
-    covariance.Fill(NumericTraits< typename FeatureScalarType::ValueType >::Zero);
+    mean.Fill(NumericTraits< typename FeatureScalarType::ValueType >::ZeroValue());
+    covariance.Fill(NumericTraits< typename FeatureScalarType::ValueType >::ZeroValue());
 
     m_Mahalanobis = MahalanobisFunctionType::New();
     m_Mahalanobis->SetMean(mean);
@@ -142,11 +142,8 @@ protected:
 
   virtual ~VectorThresholdSegmentationLevelSetFunction(){}
 
-  VectorThresholdSegmentationLevelSetFunction(const Self &); //purposely not
-                                                             // implemented
-  void operator=(const Self &);                              //purposely not
-
-  // implemented
+  VectorThresholdSegmentationLevelSetFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {

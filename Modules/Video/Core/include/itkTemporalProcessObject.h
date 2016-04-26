@@ -20,6 +20,7 @@
 
 #include "itkProcessObject.h"
 #include "itkTemporalRegion.h"
+#include "ITKVideoCoreExport.h"
 
 namespace itk
 {
@@ -62,7 +63,7 @@ class TemporalDataObject;
  *
  * \ingroup ITKVideoCore
  */
-class TemporalProcessObject : public ProcessObject
+class ITKVideoCore_EXPORT TemporalProcessObject : public ProcessObject
 {
 public:
 
@@ -234,8 +235,8 @@ protected:
   SizeValueType  m_InputStencilCurrentFrameIndex;
 
 private:
-  TemporalProcessObject(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
+  TemporalProcessObject(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };  // end class TemporalProcessObject
 

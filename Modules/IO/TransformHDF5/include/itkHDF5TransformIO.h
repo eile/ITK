@@ -17,6 +17,9 @@
  *=========================================================================*/
 #ifndef itkHDF5TransformIO_h
 #define itkHDF5TransformIO_h
+
+#include "ITKIOTransformHDF5Export.h"
+
 #include "itkTransformIOBase.h"
 #include "itkAutoPointer.h"
 #include <string>
@@ -49,7 +52,7 @@ namespace itk
  * \ingroup ITKIOTransformHDF5
  *
  */
-struct HDF5CommonPathNames
+struct ITKIOTransformHDF5_EXPORT HDF5CommonPathNames
   {
   //
   // HDF uses hierarchical paths to find particular data
@@ -75,21 +78,24 @@ struct HDF5CommonPathNames
  *
  * \ingroup ITKIOTransformHDF5
  */
-template< typename TInternalComputationValueType >
-class HDF5TransformIOTemplate:public TransformIOBaseTemplate< TInternalComputationValueType >,
+template<typename TParametersValueType>
+class ITKIOTransformBase_TEMPLATE_EXPORT HDF5TransformIOTemplate:public TransformIOBaseTemplate<TParametersValueType>,
 private HDF5CommonPathNames
 {
 public:
-  typedef HDF5TransformIOTemplate                                  Self;
-  typedef TransformIOBaseTemplate< TInternalComputationValueType > Superclass;
-  typedef SmartPointer< Self >                                     Pointer;
-  typedef typename Superclass::TransformType                       TransformType;
-  typedef typename Superclass::TransformPointer                    TransformPointer;
-  typedef typename Superclass::TransformListType                   TransformListType;
-  typedef typename TransformType::ParametersType                   ParametersType;
+  typedef HDF5TransformIOTemplate                          Self;
+  typedef TransformIOBaseTemplate<TParametersValueType>    Superclass;
+  typedef SmartPointer<Self>                               Pointer;
+  typedef typename Superclass::TransformType               TransformType;
+  typedef typename Superclass::TransformPointer            TransformPointer;
+  typedef typename Superclass::TransformListType           TransformListType;
+  typedef typename TransformType::ParametersType           ParametersType;
+  typedef typename TransformType::ParametersValueType      ParametersValueType;
+  typedef typename TransformType::FixedParametersType      FixedParametersType;
+  typedef typename TransformType::FixedParametersValueType FixedParametersValueType;
 
   typedef typename TransformIOBaseTemplate
-                      <TInternalComputationValueType>::ConstTransformListType
+                      <ParametersValueType>::ConstTransformListType
                                                                 ConstTransformListType;
 
   /** Run-time type information (and related methods). */
@@ -118,11 +124,14 @@ protected:
 
 private:
   /** Read a parameter array from the file location name */
-  ParametersType ReadParameters(const std::string &DataSetName);
+  ParametersType ReadParameters(const std::string &DataSetName) const;
+  FixedParametersType ReadFixedParameters(const std::string &DataSetName) const;
 
   /** Write a parameter array to the file location name */
   void WriteParameters(const std::string &name,
                        const ParametersType &parameters);
+  void WriteFixedParameters(const std::string &name,
+                       const FixedParametersType &parameters);
 
   /** write a string variable */
   void WriteString(const std::string &path, const std::string &value);
@@ -132,15 +141,50 @@ private:
 
   AutoPointer<H5::H5File> m_H5File;
 };
-extern const std::string  GetTransformName(int);
+const std::string ITKIOTransformHDF5_EXPORT GetTransformName(int);
 
 /** This helps to meet backward compatibility */
-typedef HDF5TransformIOTemplate< double > HDF5TransformIO;
+typedef HDF5TransformIOTemplate<double> HDF5TransformIO;
 
 } // end namespace itk
 
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "itkHDF5TransformIO.hxx"
-#endif
+// Note: Explicit instantiation is done in itkHDF5TransformIO.cxx
 
 #endif // itkHDF5TransformIO_h
+
+/** Explicit instantiations */
+#ifndef ITK_TEMPLATE_EXPLICIT_HDF5TransformIO
+// Explicit instantiation is required to ensure correct dynamic_cast
+// behavior across shared libraries.
+//
+// IMPORTANT: Since within the same compilation unit,
+//            ITK_TEMPLATE_EXPLICIT_<classname> defined and undefined states
+//            need to be considered. This code *MUST* be *OUTSIDE* the header
+//            guards.
+//
+#  if defined( ITKIOTransformHDF5_EXPORTS )
+//   We are building this library
+#    define ITKIOTransformHDF5_EXPORT_EXPLICIT
+#  else
+//   We are using this library
+#    define ITKIOTransformHDF5_EXPORT_EXPLICIT ITKIOTransformHDF5_EXPORT
+#  endif
+namespace itk
+{
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_PUSH()
+#endif
+ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
+
+extern template class ITKIOTransformHDF5_EXPORT_EXPLICIT HDF5TransformIOTemplate< double >;
+extern template class ITKIOTransformHDF5_EXPORT_EXPLICIT HDF5TransformIOTemplate< float >;
+
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_POP()
+#else
+  ITK_GCC_PRAGMA_DIAG(warning "-Wattributes")
+#endif
+
+} // end namespace itk
+#  undef ITKIOTransformHDF5_EXPORT_EXPLICIT
+#endif

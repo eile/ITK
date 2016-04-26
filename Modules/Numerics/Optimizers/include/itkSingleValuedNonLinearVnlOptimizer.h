@@ -21,6 +21,7 @@
 #include "itkSingleValuedNonLinearOptimizer.h"
 #include "itkSingleValuedVnlCostFunctionAdaptor.h"
 #include "itkCommand.h"
+#include "ITKOptimizersExport.h"
 
 namespace itk
 {
@@ -33,7 +34,7 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class SingleValuedNonLinearVnlOptimizer:
+class ITKOptimizers_EXPORT SingleValuedNonLinearVnlOptimizer:
   public SingleValuedNonLinearOptimizer
 {
 public:
@@ -110,8 +111,8 @@ private:
   /** Callback function for the Command Observer */
   void IterationReport(const EventObject & event);
 
-  SingleValuedNonLinearVnlOptimizer(const Self &); //purposely not implemented
-  void operator=(const Self &);                    //purposely not implemented
+  SingleValuedNonLinearVnlOptimizer(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   CostFunctionAdaptorType *m_CostFunctionAdaptor;
 

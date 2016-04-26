@@ -365,7 +365,7 @@ protected:
   CoordRepType * GetBoundingBox(CoordRepType[PointDimension * 2]) { return ITK_NULLPTR; }
 
   /** Compute the square of the diagonal length of the bounding box. */
-  CoordRepType GetBoundingBoxDiagonalLength2(void) { return 0; }
+  CoordRepType GetBoundingBoxDiagonalLength2(void) { return NumericTraits< CoordRepType >::ZeroValue(); }
 
   /** Intersect the given bounding box (bounds[PointDimension*2]) with a line
    * given by an origin (origin[PointDimension]) and direction
@@ -415,7 +415,7 @@ protected:
    */
   virtual unsigned int GetNumberOfUsingCells();
 
-#if !defined( CABLE_CONFIGURATION )
+#if !defined( ITK_WRAPPING_PARSER )
   /**
    * Get a begin iterator for the UsingCellsContainer.
    */
@@ -444,8 +444,8 @@ protected:
   UsingCellsContainer m_UsingCells;
 
 private:
-  CellInterface(const Self &);  //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  CellInterface(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** \class CellTraitsInfo
@@ -495,7 +495,7 @@ public:
   PointType, PointsContainer, UsingCellsContainer >
 } // end namespace itk
 
-#if !defined( CABLE_CONFIGURATION )
+#if !defined( ITK_WRAPPING_PARSER )
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "itkCellInterface.hxx"
 #endif

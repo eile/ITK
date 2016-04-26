@@ -20,6 +20,7 @@
 
 #include "itkNonLinearOptimizer.h"
 #include "itkMultipleValuedCostFunction.h"
+#include "ITKOptimizersExport.h"
 
 namespace itk
 {
@@ -30,7 +31,7 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class MultipleValuedNonLinearOptimizer:
+class ITKOptimizers_EXPORT MultipleValuedNonLinearOptimizer:
   public NonLinearOptimizer
 {
 public:
@@ -75,8 +76,8 @@ protected:
   CostFunctionPointer m_CostFunction;
 
 private:
-  MultipleValuedNonLinearOptimizer(const Self &); //purposely not implemented
-  void operator=(const Self &);                   //purposely not implemented
+  MultipleValuedNonLinearOptimizer(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

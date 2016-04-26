@@ -52,7 +52,7 @@ namespace itk
  * \ingroup ITKDisplacementField
  */
 template< typename TOutputImage,
-          typename TScalar = double >
+          typename TParametersValueType = double>
 class TransformToDisplacementFieldFilter:
   public ImageSource< TOutputImage >
 {
@@ -60,8 +60,8 @@ public:
   /** Standard class typedefs. */
   typedef TransformToDisplacementFieldFilter Self;
   typedef ImageSource< TOutputImage >        Superclass;
-  typedef SmartPointer< Self >               Pointer;
-  typedef SmartPointer< const Self >         ConstPointer;
+  typedef SmartPointer<Self>                 Pointer;
+  typedef SmartPointer<const Self>           ConstPointer;
 
   typedef TOutputImage                           OutputImageType;
   typedef typename OutputImageType::RegionType   OutputImageRegionType;
@@ -76,8 +76,8 @@ public:
   itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** Typedefs for transform. */
-  typedef Transform< TScalar, ImageDimension, ImageDimension >  TransformType;
-  typedef DataObjectDecorator< TransformType >                  TransformInputType;
+  typedef Transform<TParametersValueType, ImageDimension, ImageDimension> TransformType;
+  typedef DataObjectDecorator< TransformType >                            TransformInputType;
 
   /** Typedefs for output image. */
   typedef typename OutputImageType::PixelType     PixelType;
@@ -180,8 +180,8 @@ protected:
   virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  TransformToDisplacementFieldFilter( const Self & ); //purposely not implemented
-  void operator=( const Self & );                    //purposely not implemented
+  TransformToDisplacementFieldFilter( const Self & ) ITK_DELETE_FUNCTION;
+  void operator=( const Self & ) ITK_DELETE_FUNCTION;
 
   /** Member variables. */
   SizeType             m_Size;            // size of the output region

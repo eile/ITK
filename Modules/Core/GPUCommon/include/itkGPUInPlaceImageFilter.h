@@ -83,7 +83,7 @@ protected:
    * an InPlaceFilter is not threaded (i.e. it provides an
    * implementation of GenerateData()), then this method (or
    * equivalent) must be called in GenerateData(). */
-  virtual void AllocateOutputs();
+  virtual void AllocateOutputs() ITK_OVERRIDE;
 
   /** InPlaceImageFilter may transfer ownership of the input bulk data
    * to the output object.  Once the output object owns the bulk data
@@ -94,11 +94,11 @@ protected:
    * releases the input that it has overwritten.
    *
    * \sa ProcessObject::ReleaseInputs() */
-  virtual void ReleaseInputs();
+  virtual void ReleaseInputs() ITK_OVERRIDE;
 
 private:
-  GPUInPlaceImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
+  GPUInPlaceImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };
 

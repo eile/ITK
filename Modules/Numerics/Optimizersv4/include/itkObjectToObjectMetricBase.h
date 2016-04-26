@@ -162,7 +162,7 @@ public:
    * \c derivative must be the proper size, as retrieved
    * from GetNumberOfParameters. */
   virtual void UpdateTransformParameters( const DerivativeType & derivative,
-                                         ParametersValueType factor = NumericTraits<ParametersValueType>::One) = 0;
+                                         ParametersValueType factor = NumericTraits<ParametersValueType>::OneValue()) = 0;
 
   /** Get the current metric value stored in m_Value. This is only
    * meaningful after a call to GetValue() or GetValueAndDerivative().
@@ -201,8 +201,8 @@ protected:
   mutable MeasureType             m_Value;
 
 private:
-  ObjectToObjectMetricBaseTemplate(const Self &); //purposely not implemented
-  void operator=(const Self &);     //purposely not implemented
+  ObjectToObjectMetricBaseTemplate(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** This helps to meet backward compatibility */

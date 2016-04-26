@@ -7,12 +7,17 @@ to scene graphs.")
 
 itk_module(ITKSpatialObjects
   DEPENDS
-    ITKImageFunction
+    ITKTransform
+  PRIVATE_DEPENDS
     ITKMesh
-    ITKIOImageBase
+    ITKCommon
+  COMPILE_DEPENDS
+    ITKImageFunction
     ITKMetaIO
   TEST_DEPENDS
     ITKTestKernel
+    ITKMetaIO
+    ITKMesh
   DESCRIPTION
     "${DOCUMENTATION}"
 )

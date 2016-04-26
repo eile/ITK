@@ -53,21 +53,9 @@ bool
 LBFGSBOptimizerHelperv4
 ::report_iter()
 {
-  Superclass::report_iter();
-
+  const bool ret = Superclass::report_iter();
   m_ItkObj->m_InfinityNormOfProjectedGradient = this->get_inf_norm_projected_gradient();
-  m_ItkObj->InvokeEvent( IterationEvent() );
-  m_ItkObj->m_CurrentIteration = this->num_iterations_;
-
-    // Return true to terminate the optimization loop.
-  if ( this->num_iterations_ > m_ItkObj->m_MaximumNumberOfIterations )
-    {
-    return true;
-    }
-  else
-    {
-    return false;
-    }
+  return ret;
 }
 //-------------------------------------------------------------------------
 
@@ -125,7 +113,7 @@ void
 LBFGSBOptimizerv4
 ::SetScales(const ScalesType &)
 {
-  std::cout << "WARNING: LBFGSB optimizer does not support scaling. All scales are set to one." << std::endl;
+  itkWarningMacro( << "LBFGSB optimizer does not support scaling. All scales are set to one." )
   m_Scales.SetSize( this->m_Metric->GetNumberOfLocalParameters() );
   m_Scales.Fill( NumericTraits<ScalesType::ValueType>::OneValue() );
   this->m_ScalesAreIdentity = true;
@@ -248,7 +236,6 @@ LBFGSBOptimizerv4
 
   if ( this->GetInitialPosition().Size() < numberOfParameters )
     {
-    std::cout << "Set the initial position of the optimizer:" << std::endl;
     this->SetInitialPosition( m_Metric->GetParameters() );
     }
 

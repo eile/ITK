@@ -126,11 +126,10 @@ private:
   std::string m_DataFileName;
   char m_SdtOrient[256];
   float m_DisplayRange[2];
-  float m_DisplayThresh;
   char m_FidName[256];
 
-  StimulateImageIO(const Self &); //purposely not implemented
-  void operator=(const Self &);   //purposely not implemented
+  StimulateImageIO(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

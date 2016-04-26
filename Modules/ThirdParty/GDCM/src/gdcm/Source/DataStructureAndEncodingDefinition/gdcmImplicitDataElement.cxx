@@ -1,9 +1,8 @@
 /*=========================================================================
 
   Program: GDCM (Grassroots DICOM). A DICOM library
-  Module:  $URL$
 
-  Copyright (c) 2006-2010 Mathieu Malaterre
+  Copyright (c) 2006-2011 Mathieu Malaterre
   All rights reserved.
   See Copyright.txt or http://gdcm.sourceforge.net/Copyright.html for details.
 
@@ -17,12 +16,11 @@
 #include "gdcmByteValue.h"
 #include "gdcmSequenceOfItems.h"
 
-namespace gdcm
+namespace gdcm_ns
 {
 
 VL ImplicitDataElement::GetLength() const
 {
-  const Value &v = GetValue();
   if( ValueLengthField.IsUndefined() )
     {
     assert( ValueField->GetLength().IsUndefined() );
@@ -46,7 +44,7 @@ VL ImplicitDataElement::GetLength() const
     return ValueLengthField;
     }
   //else if( const SequenceOfItems *sqi = GetSequenceOfItems() )
-  else if( const SequenceOfItems *sqi = dynamic_cast<const SequenceOfItems*>(&v) )
+  else if( const SequenceOfItems *sqi = dynamic_cast<const SequenceOfItems*>( ValueField.GetPointer() ) )
     {
     // TestWrite2
     return TagField.GetLength() + ValueLengthField.GetLength()
@@ -60,4 +58,4 @@ VL ImplicitDataElement::GetLength() const
     }
 }
 
-} // end namespace gdcm
+} // end namespace gdcm_ns

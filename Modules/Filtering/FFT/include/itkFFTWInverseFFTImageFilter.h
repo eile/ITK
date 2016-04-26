@@ -105,19 +105,22 @@ public:
     this->SetPlanRigor( FFTWGlobalConfiguration::GetPlanRigorValue( name ) );
   }
 
+  SizeValueType GetSizeGreatestPrimeFactor() const ITK_OVERRIDE;
+
 protected:
   FFTWInverseFFTImageFilter();
   virtual ~FFTWInverseFFTImageFilter() {}
 
-  virtual void BeforeThreadedGenerateData();
+  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
+                            ThreadIdType threadId ) ITK_OVERRIDE;
 
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  FFTWInverseFFTImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  FFTWInverseFFTImageFilter(const Self&) ITK_DELETE_FUNCTION;
+  void operator=(const Self&) ITK_DELETE_FUNCTION;
 
   int m_PlanRigor;
 

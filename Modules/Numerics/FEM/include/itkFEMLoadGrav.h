@@ -20,6 +20,7 @@
 #define itkFEMLoadGrav_h
 
 #include "itkFEMLoadElementBase.h"
+#include "ITKFEMExport.h"
 #include "vnl/vnl_vector.h"
 
 namespace itk
@@ -36,7 +37,7 @@ namespace fem
  * defined at the point. Derived LoadClasses must define this function.
  * \ingroup ITKFEM
  */
-class LoadGrav : public LoadElement
+class ITKFEM_EXPORT LoadGrav : public LoadElement
 {
 public:
   /** Standard class typedefs. */
@@ -51,10 +52,7 @@ public:
   virtual vnl_vector<Float> GetGravitationalForceAtPoint(vnl_vector<Float> ) = 0;
 
 protected:
-  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE
-  {
-    Superclass::PrintSelf(os, indent);
-  }
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
 };
 
@@ -66,7 +64,7 @@ protected:
  * every point in space.
  * \ingroup ITKFEM
  */
-class LoadGravConst : public LoadGrav
+class ITKFEM_EXPORT LoadGravConst : public LoadGrav
 {
 public:
   /** Standard class typedefs. */
@@ -85,10 +83,7 @@ public:
    * including its internal member variables. */
   virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
 
-  virtual vnl_vector<Float> GetGravitationalForceAtPoint(vnl_vector<Float> ) ITK_OVERRIDE
-  {
-    return m_GravityForce;
-  }
+  virtual vnl_vector<Float> GetGravitationalForceAtPoint(vnl_vector<Float> ) ITK_OVERRIDE;
 
   /**
    * Set the gravity force that exists at every point

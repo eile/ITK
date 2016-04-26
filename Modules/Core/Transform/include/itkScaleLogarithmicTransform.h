@@ -31,21 +31,17 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <
-  typename TScalar = float, // Type for cordinate representation type (float or
-                             // double)
+template<typename TParametersValueType=float,
   unsigned int NDimensions = 3>
-// Number of dimensions
 class ScaleLogarithmicTransform :
-  public ScaleTransform< TScalar,
-                         NDimensions >
+  public ScaleTransform<TParametersValueType, NDimensions>
 {
 public:
   /** Standard class typedefs.   */
-  typedef ScaleLogarithmicTransform              Self;
-  typedef ScaleTransform< TScalar, NDimensions > Superclass;
-  typedef SmartPointer< Self >                   Pointer;
-  typedef SmartPointer< const Self >             ConstPointer;
+  typedef ScaleLogarithmicTransform                         Self;
+  typedef ScaleTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                Pointer;
+  typedef SmartPointer<const Self>                          ConstPointer;
 
   /** New macro for creation of through a smart pointer. */
   itkNewMacro(Self);
@@ -61,8 +57,10 @@ public:
   typedef typename Superclass::ScalarType ScalarType;
 
   /** Parameters type. */
-  typedef typename Superclass::ParametersType ParametersType;
-  typedef typename ParametersType::ValueType  ParametersValueType;
+  typedef typename Superclass::ParametersType      ParametersType;
+  typedef typename ParametersType::ValueType       ParametersValueType;
+  typedef typename Superclass::FixedParametersType FixedParametersType;
+  typedef typename FixedParametersType::ValueType  FixedParametersValueType;
 
   /** Jacobian type. */
   typedef typename Superclass::JacobianType JacobianType;
@@ -114,8 +112,8 @@ protected:
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  ScaleLogarithmicTransform(const Self & other); // purposely not implemented
-  const Self & operator=(const Self &);          // purposely not implemented
+  ScaleLogarithmicTransform(const Self & other) ITK_DELETE_FUNCTION;
+  const Self & operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };                                               // class
                                                  // ScaleLogarithmicTransform

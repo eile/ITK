@@ -52,17 +52,16 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template
-  <class TScalar, unsigned int NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
 class GaussianExponentialDiffeomorphicTransform :
-  public ConstantVelocityFieldTransform<TScalar, NDimensions>
+  public ConstantVelocityFieldTransform<TParametersValueType, NDimensions>
 {
 public:
   /** Standard class typedefs. */
-  typedef GaussianExponentialDiffeomorphicTransform                 Self;
-  typedef ConstantVelocityFieldTransform<TScalar, NDimensions>      Superclass;
-  typedef SmartPointer<Self>                                        Pointer;
-  typedef SmartPointer<const Self>                                  ConstPointer;
+  typedef GaussianExponentialDiffeomorphicTransform                         Self;
+  typedef ConstantVelocityFieldTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                                Pointer;
+  typedef SmartPointer<const Self>                                          ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro( GaussianExponentialDiffeomorphicTransform, ConstantVelocityFieldTransform );
@@ -129,8 +128,8 @@ protected:
   void PrintSelf( std::ostream &, Indent ) const ITK_OVERRIDE;
 
 private:
-  GaussianExponentialDiffeomorphicTransform( const Self& ); //purposely not implemented
-  void operator=( const Self& ); //purposely not implemented
+  GaussianExponentialDiffeomorphicTransform( const Self& ) ITK_DELETE_FUNCTION;
+  void operator=( const Self& ) ITK_DELETE_FUNCTION;
 
   ScalarType                              m_GaussianSmoothingVarianceForTheUpdateField;
   ScalarType                              m_GaussianSmoothingVarianceForTheConstantVelocityField;

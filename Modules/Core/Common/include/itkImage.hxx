@@ -34,15 +34,14 @@
 
 namespace itk
 {
-/**
- *
- */
+
 template< typename TPixel, unsigned int VImageDimension >
 Image< TPixel, VImageDimension >
 ::Image()
 {
   m_Buffer = PixelContainer::New();
 }
+
 
 template< typename TPixel, unsigned int VImageDimension >
 void
@@ -56,6 +55,7 @@ Image< TPixel, VImageDimension >
 
   m_Buffer->Reserve(num, initializePixels);
 }
+
 
 template< typename TPixel, unsigned int VImageDimension >
 void
@@ -76,6 +76,7 @@ Image< TPixel, VImageDimension >
   m_Buffer = PixelContainer::New();
 }
 
+
 template< typename TPixel, unsigned int VImageDimension >
 void
 Image< TPixel, VImageDimension >
@@ -85,8 +86,8 @@ Image< TPixel, VImageDimension >
     this->GetBufferedRegion().GetNumberOfPixels();
 
   std::fill_n( &( *m_Buffer )[0], numberOfPixels, value );
-
 }
+
 
 template< typename TPixel, unsigned int VImageDimension >
 void
@@ -100,7 +101,7 @@ Image< TPixel, VImageDimension >
     }
 }
 
-//----------------------------------------------------------------------------
+
 template< typename TPixel, unsigned int VImageDimension >
 void
 Image< TPixel, VImageDimension >
@@ -114,7 +115,7 @@ Image< TPixel, VImageDimension >
     // Attempt to cast data to an Image
     const Self * const imgData = dynamic_cast< const Self * >( data );
 
-    if ( imgData )
+    if ( imgData != ITK_NULLPTR )
       {
       // Now copy anything remaining that is needed
       this->SetPixelContainer( const_cast< PixelContainer * >
@@ -130,7 +131,7 @@ Image< TPixel, VImageDimension >
     }
 }
 
-//----------------------------------------------------------------------------
+
 template< typename TPixel, unsigned int VImageDimension >
 void
 Image< TPixel, VImageDimension >
@@ -138,6 +139,7 @@ Image< TPixel, VImageDimension >
 {
   this->Superclass::ComputeIndexToPhysicalPointMatrices();
 }
+
 
 template< typename TPixel, unsigned int VImageDimension >
 unsigned int
@@ -150,9 +152,7 @@ Image< TPixel, VImageDimension >
   return NumericTraits< PixelType >::GetLength(p);
 }
 
-/**
- *
- */
+
 template< typename TPixel, unsigned int VImageDimension >
 void
 Image< TPixel, VImageDimension >
@@ -165,6 +165,7 @@ Image< TPixel, VImageDimension >
 
   // m_Origin and m_Spacing are printed in the Superclass
 }
+
 } // end namespace itk
 
 #endif

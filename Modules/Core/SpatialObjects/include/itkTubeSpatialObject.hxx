@@ -19,6 +19,7 @@
 #define itkTubeSpatialObject_hxx
 
 
+#include "itkMath.h"
 #include "itkTubeSpatialObject.h"
 
 namespace itk
@@ -152,7 +153,7 @@ TubeSpatialObject< TDimension, TTubePointType >
       {
       // First we compute the bounding box in the index space
       typename BoundingBoxType::Pointer bb = BoundingBoxType::New();
-      VectorType rad = ( *it ).GetRadius();
+      VectorType rad(( *it ).GetRadius());
       PointType ptMin = ( *it ).GetPosition() - rad;
       PointType ptMax = ( *it ).GetPosition() + rad;
       bb->SetMinimum(ptMin);
@@ -166,7 +167,7 @@ TubeSpatialObject< TDimension, TTubePointType >
       it++;
       while ( it != end )
         {
-        rad = ( *it ).GetRadius();
+        rad = VectorType(( *it ).GetRadius());
         ptMin = ( *it ).GetPosition() - rad;
         ptMax = ( *it ).GetPosition() + rad;
         bb->ConsiderPoint(ptMin);
@@ -409,7 +410,7 @@ TubeSpatialObject< TDimension, TTubePointType >
       }
 
     l = std::sqrt(l);
-    if ( l == 0 )
+    if ( Math::AlmostEquals( l, 0.0 ) )
       {
       std::cerr << "TubeSpatialObject::ComputeTangentAndNormals() : ";
       std::cerr << "length between two consecutive points is 0";

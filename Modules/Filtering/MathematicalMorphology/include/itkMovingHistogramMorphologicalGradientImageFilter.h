@@ -179,7 +179,7 @@ public:
   SizeValueType                m_Count;
 };
 
-/** \cond HIDE_SPECIALIZATION_DOCUMENTATION */
+/// \cond HIDE_SPECIALIZATION_DOCUMENTATION
 
 // now create MorphologicalGradientHistogram specilizations using the VectorMorphologicalGradientHistogram
 // as base class
@@ -202,7 +202,7 @@ class MorphologicalGradientHistogram<bool>:
 {
 };
 
-/** \endcond */
+/// \endcond
 
 } // end namespace Function
 
@@ -270,10 +270,8 @@ protected:
   ~MovingHistogramMorphologicalGradientImageFilter() {}
 
 private:
-  MovingHistogramMorphologicalGradientImageFilter(const Self &); //purposely not
-                                                                 // implemented
-  void operator=(const Self &);                                  //purposely not
-                                                                 // implemented
+  MovingHistogramMorphologicalGradientImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };                                                               // end of class
 } // end namespace itk
 

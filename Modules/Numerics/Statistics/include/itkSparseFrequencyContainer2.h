@@ -23,6 +23,7 @@
 #include "itkObject.h"
 #include "itkNumericTraits.h"
 #include "itkMeasurementVectorTraits.h"
+#include "ITKStatisticsExport.h"
 
 namespace itk
 {
@@ -37,7 +38,7 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-class SparseFrequencyContainer2:public Object
+class ITKStatistics_EXPORT SparseFrequencyContainer2:public Object
 {
 public:
   /** Standard class typedefs. */
@@ -101,8 +102,8 @@ protected:
   virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  SparseFrequencyContainer2(const Self &); //purposely not implemented
-  void operator=(const Self &);            //purposely not implemented
+  SparseFrequencyContainer2(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   // Container of histogram
   FrequencyContainerType     m_FrequencyContainer;

@@ -22,17 +22,19 @@ if(ITK_USE_FFTWD OR ITK_USE_FFTWF)
   find_path(FFTW_INCLUDE_PATH fftw3.h ${FFTW_INC_SEARCHPATH})
 
   if(FFTW_INCLUDE_PATH)
+    file(TO_CMAKE_PATH "${FFTW_INCLUDE_PATH}" FFTW_INCLUDE_PATH)
     set(FFTW_INCLUDE ${FFTW_INCLUDE_PATH})
   endif()
 
   if(FFTW_INCLUDE)
-    include_directories( ${FFTW_INCLUDE})
+    include_directories(${FFTW_INCLUDE})
   endif()
 
   get_filename_component(FFTW_INSTALL_BASE_PATH ${FFTW_INCLUDE_PATH} PATH)
 
   set(FFTW_LIB_SEARCHPATH
     ${FFTW_INSTALL_BASE_PATH}/lib
+    ${FFTW_INSTALL_BASE_PATH}/lib64
     /usr/lib/fftw
     /usr/local/lib/fftw
   )

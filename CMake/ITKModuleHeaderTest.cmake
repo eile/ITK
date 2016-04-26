@@ -8,11 +8,16 @@
 # The tests will simply not be run if python is unavailable.
 find_package(PythonInterp)
 
+# Improve performance of MSVC GUI, by reducing number of header tests.
+set( MAXIMUM_NUMBER_OF_HEADERS_default 35 )
+if( MSVC )
+  set( MAXIMUM_NUMBER_OF_HEADERS_default 9999 )
+endif()
+
 # The maximum number of headers in a test.  This helps limit memory issues,
 # and the cppcheck tests.  However, if this is not unity, there is a slight
 # chance that problems may be hidden.  For a complete header check, set to "1".
-set( MAXIMUM_NUMBER_OF_HEADERS 35
-  CACHE STRING "The number of headers in a HeaderTest code." )
+set( MAXIMUM_NUMBER_OF_HEADERS ${MAXIMUM_NUMBER_OF_HEADERS_default} CACHE STRING "The number of headers in a HeaderTest code." )
 mark_as_advanced( MAXIMUM_NUMBER_OF_HEADERS )
 
 add_custom_target( ITKHeaderTests
@@ -20,8 +25,8 @@ add_custom_target( ITKHeaderTests
   COMMENT "Regenerating and building the header tests." )
 
 macro( itk_module_headertest _name )
-  if( NOT ${_name}_THIRD_PARTY AND
-      EXISTS ${${_name}_SOURCE_DIR}/include
+  if( NOT ${_name}_THIRD_PARTY
+      AND EXISTS ${${_name}_SOURCE_DIR}/include
       AND PYTHON_EXECUTABLE
       AND NOT (PYTHON_VERSION_STRING VERSION_LESS 2.6)
       AND NOT (${_name} STREQUAL ITKTestKernel)
@@ -53,23 +58,21 @@ macro( itk_module_headertest _name )
 
     # We check to see if the headers are changed.  If so, remove the header test
     # source files so they are regenerated.
-    if( ${CMAKE_VERSION} VERSION_GREATER 2.8.6 ) # for string( MD5
-      set( _headers_list_md5 "${${_name}_BINARY_DIR}/test/CMakeFiles/HeadersList.md5" )
-      list( SORT _header_files )
-      string( MD5 _new_md5 "${_header_files}" )
-      set( _regenerate_sources FALSE )
-      if( NOT EXISTS "${_headers_list_md5}" )
+    set( _headers_list_md5 "${${_name}_BINARY_DIR}/test/CMakeFiles/HeadersList.md5" )
+    list( SORT _header_files )
+    string( MD5 _new_md5 "${_header_files}" )
+    set( _regenerate_sources FALSE )
+    if( NOT EXISTS "${_headers_list_md5}" )
+      set( _regenerate_sources TRUE )
+    else()
+      file( READ "${_headers_list_md5}" _old_md5 )
+      if( NOT ("${_old_md5}" STREQUAL "${_new_md5}"))
         set( _regenerate_sources TRUE )
-      else()
-        file( READ "${_headers_list_md5}" _old_md5 )
-        if( NOT ("${_old_md5}" STREQUAL "${_new_md5}"))
-          set( _regenerate_sources TRUE )
-        endif()
       endif()
-      file( WRITE "${_headers_list_md5}" "${_new_md5}" )
-      if( ${_regenerate_sources} )
-        file( REMOVE ${_outputs} )
-      endif()
+    endif()
+    file( WRITE "${_headers_list_md5}" "${_new_md5}" )
+    if( ${_regenerate_sources} )
+      file( REMOVE ${_outputs} )
     endif()
 
     set( _test_num 1 )
@@ -77,7 +80,7 @@ macro( itk_module_headertest _name )
       get_filename_component( _test_name ${_header_test_src} NAME_WE )
       add_custom_command(
         OUTPUT ${_header_test_src}
-        COMMAND ${PYTHON_EXECUTABLE} ${ITK_SOURCE_DIR}/Utilities/Maintenance/BuildHeaderTest.py
+        COMMAND ${PYTHON_EXECUTABLE} ${ITK_CMAKE_DIR}/../Utilities/Maintenance/BuildHeaderTest.py
         ${_name}
         ${${_name}_SOURCE_DIR}
         ${${_name}_BINARY_DIR}
@@ -85,8 +88,8 @@ macro( itk_module_headertest _name )
         ${_test_num}
         )
       add_executable( ${_test_name} ${_header_test_src} )
-      target_link_libraries( ${_test_name} ITKCommon )
-      add_dependencies(${_test_name} ${${_name}_LIBRARIES})
+      target_link_libraries( ${_test_name} ${${_name}_LIBRARIES} itksys )
+
       add_dependencies(${_name}-all ${_test_name})
       math( EXPR _test_num "${_test_num} + 1" )
     endforeach()

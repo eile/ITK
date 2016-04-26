@@ -20,6 +20,7 @@
 
 #include "itkIntTypes.h"
 #include "itkSingleValuedNonLinearOptimizer.h"
+#include "ITKOptimizersExport.h"
 #include <string>
 namespace itk
 {
@@ -48,7 +49,7 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class GradientDescentOptimizer:
+class ITKOptimizers_EXPORT GradientDescentOptimizer:
   public SingleValuedNonLinearOptimizer
 {
 public:
@@ -135,8 +136,8 @@ protected:
   double m_LearningRate;
 
 private:
-  GradientDescentOptimizer(const Self &); //purposely not implemented
-  void operator=(const Self &);           //purposely not implemented
+  GradientDescentOptimizer(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   bool               m_Stop;
   double             m_Value;

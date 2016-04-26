@@ -69,8 +69,8 @@ public:
   static cv::Mat ITKImageToCVMat(const TInputImageType* in, bool force3Channels = false);
 
 private:
-  OpenCVImageBridge(const Self &); //purposely not implemented
-  void operator=(const Self &);    //purposely not implemented
+  OpenCVImageBridge(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   /** Steps involved in this method are:
     1) Handle converting between colorspaces
@@ -142,8 +142,8 @@ private:
     for (int i = 0; i < current->height; ++i)
       {
       memcpy(&(reinterpret_cast<TPixel*>(unpaddedBuffer)[unpaddedBufPos]),
-             &(reinterpret_cast<TPixel*>(current->imageData)[paddedBufPos]),
-             lineLength);
+             reinterpret_cast<TPixel*>(current->imageData + paddedBufPos),
+             lineLength*sizeof(TPixel) );
       paddedBufPos += current->widthStep;
       unpaddedBufPos += lineLength;
       }

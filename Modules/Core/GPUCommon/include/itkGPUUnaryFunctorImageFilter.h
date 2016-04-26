@@ -87,17 +87,17 @@ protected:
   virtual ~GPUUnaryFunctorImageFilter() {
   }
 
-  virtual void GenerateOutputInformation();
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
-  virtual void GPUGenerateData();
+  virtual void GPUGenerateData() ITK_OVERRIDE;
 
   /** GPU kernel handle is defined here instead of in the child class
    * because GPUGenerateData() in this base class is used. */
   int m_UnaryFunctorImageFilterGPUKernelHandle;
 
 private:
-  GPUUnaryFunctorImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);             //purposely not implemented
+  GPUUnaryFunctorImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   FunctorType m_Functor;
 

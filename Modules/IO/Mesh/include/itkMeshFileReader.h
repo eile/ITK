@@ -19,6 +19,7 @@
 #define itkMeshFileReader_h
 #include "ITKIOMeshExport.h"
 
+#include "itkMeshFileReaderException.h"
 #include "itkMacro.h"
 #include "itkHexahedronCell.h"
 #include "itkLineCell.h"
@@ -37,35 +38,6 @@
 
 namespace itk
 {
-/** \class MeshFileReaderException
- *
- * \brief Base exception class for IO conflicts.
- * \ingroup ITKIOMesh
- */
-class ITKIOMesh_HIDDEN MeshFileReaderException:public ExceptionObject
-{
-public:
-  /** Has to have empty throw(). */
-  virtual ~MeshFileReaderException() throw() {};
-
-  /** Run-time information. */
-  itkTypeMacro(MeshFileReaderException, ExceptionObject);
-
-  /** Constructor. */
-  MeshFileReaderException(const char *file, unsigned int line,
-                          const char *message = "Error in IO",
-                          const char *loc = "Unknown"):
-    ExceptionObject(file, line, message, loc)
-  {}
-
-  /** Constructor. */
-  MeshFileReaderException(const std::string & file, unsigned int line,
-                          const char *message = "Error in IO",
-                          const char *loc = "Unknown"):
-    ExceptionObject(file, line, message, loc)
-  {}
-
-};
 
 /** \class MeshFileReader
  * \brief Mesh source that reads mesh data from a single file.
@@ -101,7 +73,7 @@ public:
 template< typename TOutputMesh,
           typename ConvertPointPixelTraits = MeshConvertPixelTraits< typename TOutputMesh::PixelType >,
           class ConvertCellPixelTraits = MeshConvertPixelTraits< typename TOutputMesh::CellPixelType > >
-class ITKIOMesh_HIDDEN MeshFileReader:public MeshSource< TOutputMesh >
+class MeshFileReader:public MeshSource< TOutputMesh >
 {
 public:
   /** Standard class typedefs. */
@@ -196,8 +168,8 @@ protected:
   std::string m_FileName;                    // The file to be read
 
 private:
-  MeshFileReader(const Self &); // purposely not implemented
-  void operator=(const Self &); // purposely not implemented
+  MeshFileReader(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   std::string m_ExceptionMessage;
 };

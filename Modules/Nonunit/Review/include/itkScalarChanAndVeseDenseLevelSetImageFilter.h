@@ -140,16 +140,13 @@ protected:
 
   SharedDataPointer m_SharedData;
 
-  virtual void Initialize();
+  virtual void Initialize() ITK_OVERRIDE;
 
-  virtual void InitializeIteration();
+  virtual void InitializeIteration() ITK_OVERRIDE;
 
 private:
-  ScalarChanAndVeseDenseLevelSetImageFilter(const Self &); //purposely not
-                                                           // implemented
-  void operator=(const Self &);                            //purposely not
-
-  // implemented
+  ScalarChanAndVeseDenseLevelSetImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } //end namespace itk
 

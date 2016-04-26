@@ -29,7 +29,7 @@
 #ifndef itk_minc2_h
 #define itk_minc2_h
 
-/* Use the tiff library configured for ITK.  */
+/* Use the LIBMINC library configured for ITK.  */
 #cmakedefine ITK_USE_SYSTEM_MINC
 
 #ifndef HAVE_MINC1
@@ -40,7 +40,7 @@
 # include <minc2.h>
 # include <volume_io.h>
 #else
-# include "libsrc2/minc2.h"
+# include "minc2.h"
 # include "volume_io.h"
 #endif
 

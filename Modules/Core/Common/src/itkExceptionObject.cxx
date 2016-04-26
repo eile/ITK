@@ -49,7 +49,7 @@ protected:
     }
 
 private:
-  void operator=(const ExceptionData &); //purposely not implemented
+  void operator=(const ExceptionData &) ITK_DELETE_FUNCTION;
 
   friend class ExceptionObject;
 
@@ -121,8 +121,8 @@ private:
   ~ReferenceCountedExceptionData()
          {}
 
-  ReferenceCountedExceptionData(const Self &); //purposely not implemented
-  void operator=(const Self &);                //purposely not implemented
+  ReferenceCountedExceptionData(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 ExceptionObject::ExceptionObject()
@@ -155,8 +155,7 @@ ExceptionObject::ExceptionObject(const ExceptionObject & orig):
   // pointer.
 }
 
-ExceptionObject::~ExceptionObject()
-throw( )
+ExceptionObject::~ExceptionObject() ITK_NOEXCEPT
 {
   // During destruction, the reference count of the
   // ReferenceCountedExceptionData will be decreased
@@ -297,8 +296,7 @@ ExceptionObject::GetLine() const
 }
 
 const char *
-ExceptionObject::what() const
-throw( )
+ExceptionObject::what() const ITK_NOEXCEPT
 {
   const ExceptionData *const thisData = this->GetExceptionData();
 
@@ -344,29 +342,27 @@ ExceptionObject
   os << indent << std::endl;
 }
 
-MemoryAllocationError::~MemoryAllocationError()
-  throw( )
+MemoryAllocationError::~MemoryAllocationError() ITK_NOEXCEPT
 {
 }
 
-RangeError::~RangeError()
-  throw( )
+RangeError::~RangeError() ITK_NOEXCEPT
 {
 }
 
-InvalidArgumentError::~InvalidArgumentError()
-  throw( )
+InvalidArgumentError::~InvalidArgumentError() ITK_NOEXCEPT
 {
 }
 
-IncompatibleOperandsError::~IncompatibleOperandsError()
-  throw( )
+IncompatibleOperandsError::~IncompatibleOperandsError() ITK_NOEXCEPT
 {
 }
 
-ProcessAborted::~ProcessAborted() throw( )
+ProcessAborted::~ProcessAborted() ITK_NOEXCEPT
 {
 }
 
+ExceptionObject::ReferenceCounterInterface::ReferenceCounterInterface() {}
+ExceptionObject::ReferenceCounterInterface::~ReferenceCounterInterface() {}
 
 } // end namespace itk

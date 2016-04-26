@@ -95,7 +95,7 @@ public:
                       TOutputImage::ImageDimension);
 
   /** Set the "outside" pixel value. The default value
-   * NumericTraits<OutputPixelType>::Zero. */
+   * NumericTraits<OutputPixelType>::ZeroValue(). */
   itkSetMacro(OutsideValue, OutputPixelType);
 
   /** Get the "outside" pixel value. */
@@ -153,13 +153,13 @@ protected:
   ~RobustAutomaticThresholdImageFilter(){}
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
 private:
-  RobustAutomaticThresholdImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                      //purposely not implemented
+  RobustAutomaticThresholdImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   double          m_Pow;
   InputPixelType  m_Threshold;

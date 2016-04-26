@@ -110,6 +110,9 @@ protected:
 
   void InternalReadImageInformation(std::ifstream & file);
 
+  // Internal function to get next line from a given file (*.vtk)
+  int GetNextLine(std::ifstream& ifs, std::string& line, bool lowerCase = true, SizeValueType count= 0);
+
   void WriteImageInformation(const void *buffer);
 
   void ReadHeaderSize(std::ifstream & file);
@@ -137,8 +140,8 @@ protected:
     StreamingImageIOBase::SizeType num);
 
 private:
-  VTKImageIO(const Self &);    //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  VTKImageIO(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
   void SetPixelTypeFromString(const std::string & pixelType);
 
   /** Return the number of pixels in the IOregion. */

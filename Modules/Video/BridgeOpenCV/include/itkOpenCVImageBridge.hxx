@@ -220,7 +220,7 @@ OpenCVImageBridge::ITKImageToIplImage(const TInputImageType* in, bool force3Chan
              paddedRowBytes);
        }
     }
-  // BGR output
+  // RGB output
   else
     {
     // Set up an IplImage ponting at the input's buffer. It's ok to do the
@@ -258,7 +258,7 @@ OpenCVImageBridge::ITKImageToCVMat(const TInputImageType* in, bool force3Channel
 {
   // Extra copy, but necessary to prevent memory leaks
   IplImage* temp = ITKImageToIplImage<TInputImageType>(in, force3Channels);
-  cv::Mat out(temp, true);
+  cv::Mat out = cv::cvarrToMat( temp, true );
   cvReleaseImage(&temp);
   return out;
 }

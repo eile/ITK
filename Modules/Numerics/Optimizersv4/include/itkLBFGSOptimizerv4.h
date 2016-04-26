@@ -20,6 +20,7 @@
 
 #include "itkLBFGSOptimizerBasev4.h"
 #include "vnl/algo/vnl_lbfgs.h"
+#include "ITKOptimizersv4Export.h"
 
 namespace itk
 {
@@ -29,7 +30,7 @@ namespace itk
  * \ingroup ITKOptimizersv4
  */
 
-class LBFGSOptimizerv4:
+class ITKOptimizersv4_EXPORT LBFGSOptimizerv4:
     public LBFGSOptimizerBasev4< vnl_lbfgs >
 {
 public:
@@ -88,8 +89,8 @@ protected:
   typedef   vnl_lbfgs           InternalOptimizerType;
 
 private:
-  LBFGSOptimizerv4(const Self &); //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  LBFGSOptimizerv4(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   bool         m_Verbose;
   double       m_LineSearchAccuracy;

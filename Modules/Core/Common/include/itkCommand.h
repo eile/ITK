@@ -66,8 +66,8 @@ protected:
   ~Command();
 
 private:
-  Command(const Self &);        //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  Command(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 // some implementations for several callback types
@@ -148,8 +148,8 @@ protected:
   virtual ~MemberCommand(){}
 
 private:
-  MemberCommand(const Self &);  //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  MemberCommand(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** \class ReceptorMemberCommand
@@ -217,8 +217,8 @@ protected:
   virtual ~ReceptorMemberCommand() {}
 
 private:
-  ReceptorMemberCommand(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
+  ReceptorMemberCommand(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** \class SimpleMemberCommand
@@ -284,8 +284,8 @@ protected:
   virtual ~SimpleMemberCommand() {}
 
 private:
-  SimpleMemberCommand(const Self &); //purposely not implemented
-  void operator=(const Self &);      //purposely not implemented
+  SimpleMemberCommand(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** \class SimpleConstMemberCommand
@@ -351,8 +351,8 @@ protected:
   virtual ~SimpleConstMemberCommand() {}
 
 private:
-  SimpleConstMemberCommand(const Self &); //purposely not implemented
-  void operator=(const Self &);           //purposely not implemented
+  SimpleConstMemberCommand(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** \class CStyleCommand
@@ -367,7 +367,7 @@ private:
  * \ingroup ITKCommon
  */
 
-class CStyleCommand:public Command
+class ITKCommon_EXPORT CStyleCommand:public Command
 {
 public:
   /** Typedefs for C-style callbacks. */
@@ -388,51 +388,24 @@ public:
 
   /** Set the client data that will be passed into the C function when
    * it is called. */
-  void SetClientData(void *cd) { m_ClientData = cd; }
+  void SetClientData(void *cd);
 
   /** Set the C callback function pointer to be called at Execute time. */
-  void SetCallback(FunctionPointer f)
-  { m_Callback = f; }
-  void SetConstCallback(ConstFunctionPointer f)
-  { m_ConstCallback = f; }
+  void SetCallback(FunctionPointer f);
+  void SetConstCallback(ConstFunctionPointer f);
 
   /** Set the callback to delete the client data. */
-  void SetClientDataDeleteCallback(DeleteDataFunctionPointer f)
-  { m_ClientDataDeleteCallback = f; }
+  void SetClientDataDeleteCallback(DeleteDataFunctionPointer f);
 
   /** Execute the callback function. */
-  virtual void Execute(Object *caller, const EventObject & event) ITK_OVERRIDE
-  {
-    if ( m_Callback )
-      {
-      m_Callback(caller, event, m_ClientData);
-      }
-  }
+  virtual void Execute(Object *caller, const EventObject & event) ITK_OVERRIDE;
 
   /** Execute the callback function with a const Object */
-  virtual void Execute(const Object *caller, const EventObject & event) ITK_OVERRIDE
-  {
-    if ( m_ConstCallback )
-      {
-      m_ConstCallback(caller, event, m_ClientData);
-      }
-  }
+  virtual void Execute(const Object *caller, const EventObject & event) ITK_OVERRIDE;
 
 protected:
-  CStyleCommand() :
-    m_ClientData( ITK_NULLPTR ),
-    m_Callback( ITK_NULLPTR ),
-    m_ConstCallback( ITK_NULLPTR ),
-    m_ClientDataDeleteCallback( ITK_NULLPTR )
-  {}
-
-  ~CStyleCommand()
-  {
-    if ( m_ClientDataDeleteCallback )
-      {
-      m_ClientDataDeleteCallback(m_ClientData);
-      }
-  }
+  CStyleCommand();
+  ~CStyleCommand();
 
   void *                    m_ClientData;
   FunctionPointer           m_Callback;

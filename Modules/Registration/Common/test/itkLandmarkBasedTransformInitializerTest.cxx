@@ -128,7 +128,8 @@ int itkLandmarkBasedTransformInitializerTest(int, char * [])
   typedef itk::VersorRigid3DTransform< double > TransformType;
   TransformType::Pointer transform = TransformType::New();
   typedef itk::LandmarkBasedTransformInitializer< TransformType,
-                                                  FixedImageType, MovingImageType > TransformInitializerType;
+                                                  FixedImageType,
+                                                  MovingImageType > TransformInitializerType;
   TransformInitializerType::Pointer initializer = TransformInitializerType::New();
 
   // Set fixed and moving landmarks
@@ -378,7 +379,24 @@ int itkLandmarkBasedTransformInitializerTest(int, char * [])
   typedef itk::LandmarkBasedTransformInitializer< TransformType,
                                                   ImageType, ImageType > TransformInitializerType;
   TransformInitializerType::Pointer initializer = TransformInitializerType::New();
+  bool pass = false;
 
+  //Test that an exception is thrown if there aren't enough points
+  try {
+    initializer->SetTransform(transform);
+    initializer->InitializeTransform();
+    }
+    catch( itk::ExceptionObject & err )
+    {
+    std::cout << "Caught expected ExceptionObject";
+    std::cout << err << std::endl;
+    pass = true;
+    }
+  if( !pass )
+    {
+    std::cout << "LandmarkBasedTransformInitializer did not throw expected exception [FAILED]" << std::endl;
+    return EXIT_FAILURE;
+    }
 
   const unsigned int numLandmarks(8);
   double fixedLandMarkInit[numLandmarks][3] =
@@ -626,8 +644,29 @@ int itkLandmarkBasedTransformInitializerTest(int, char * [])
   initializer->SetMovingLandmarks(movingLandmarks);
   initializer->SetLandmarkWeight(landmarkWeights);
   initializer->SetTransform(transform);
-  initializer->SetReferenceImage(fixedImage);
   initializer->SetBSplineNumberOfControlPoints(8);
+
+  bool pass = false;
+
+  //Test that an exception is thrown if the reference image isn't set
+  try
+    {
+    initializer->InitializeTransform();
+    }
+    catch( itk::ExceptionObject & err )
+    {
+    std::cout << "Caught expected ExceptionObject";
+    std::cout << err << std::endl;
+    pass = true;
+    }
+  if( !pass )
+    {
+    std::cout << "LandmarkBasedTransformInitializer did not throw expected exception [FAILED]" << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  //Now set the reference image and initialization should work
+  initializer->SetReferenceImage(fixedImage);
   initializer->InitializeTransform();
 
   // Transform the landmarks now and check for the mismatches.
@@ -671,6 +710,14 @@ int itkLandmarkBasedTransformInitializerTest(int, char * [])
     {
     std::cout << "  Landmark alignment using BSplineTransform transform [PASSED]" << std::endl;
     }
+  }
+
+  {
+  typedef itk::Transform< float, 3, 3 > TransformType;
+
+  typedef itk::LandmarkBasedTransformInitializer< TransformType > TransformInitializerType;
+
+  TransformInitializerType::Pointer initializer = TransformInitializerType::New();
   }
 
   return EXIT_SUCCESS;

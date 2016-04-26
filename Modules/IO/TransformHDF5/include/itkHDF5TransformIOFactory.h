@@ -17,7 +17,7 @@
  *=========================================================================*/
 #ifndef itkHDF5TransformIOFactory_h
 #define itkHDF5TransformIOFactory_h
-
+#include "ITKIOTransformHDF5Export.h"
 
 #include "itkObjectFactoryBase.h"
 #include "itkTransformIOBase.h"
@@ -29,7 +29,7 @@ namespace itk
    *
    * \ingroup ITKIOTransformHDF5
    */
-class HDF5TransformIOFactory:public ObjectFactoryBase
+class ITKIOTransformHDF5_EXPORT HDF5TransformIOFactory:public ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */
@@ -63,8 +63,8 @@ protected:
   virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  HDF5TransformIOFactory(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
+  HDF5TransformIOFactory(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

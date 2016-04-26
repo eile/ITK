@@ -68,8 +68,8 @@ int Test3dImageMask()
   box1->ComputeBoundingBox();
   BoxType::BoundingBoxType::Pointer box1BoundingBox = box1->GetBoundingBox();
   BoxType::BoundingBoxType::BoundsArrayType box1Bounds = box1BoundingBox->GetBounds();
-  if ( box1Bounds[0] != 7 || box1Bounds[2] != 7 || box1Bounds[4] != 7 ||
-       box1Bounds[1] != 8 || box1Bounds[3] != 8 || box1Bounds[5] != 8 )
+  if ( itk::Math::NotAlmostEquals( box1Bounds[0], 7.0 ) || itk::Math::NotAlmostEquals( box1Bounds[2], 7.0 ) || itk::Math::NotAlmostEquals( box1Bounds[4], 7.0 ) ||
+       itk::Math::NotAlmostEquals( box1Bounds[1], 8.0 ) || itk::Math::NotAlmostEquals( box1Bounds[3], 8.0 ) || itk::Math::NotAlmostEquals( box1Bounds[5], 8.0 ) )
   {
     std::cout << "Box1 - Bounding box Error"<<std::endl;
     std::cout << " Expecting a bounding box of [7 8 7 8 7 8]" << std::endl;
@@ -88,13 +88,15 @@ int Test3dImageMask()
   SpatialObjectToImageFilterType::Pointer imageFilter =
     SpatialObjectToImageFilterType::New();
 
-  itk::Size<3> size;
-  size.Fill(10);
+  // note visual studio 2015 u1  (release mode) fails to exectute .Fill properly here by not initializing the last member. With initializer it is happy.
+  itk::Size<3> size = { {10, 10 ,10} };
+//size.Fill(10)
+
+
   //  The SpatialObjectToImageFilter requires that the user defines the grid
   //  parameters of the output image. This includes the number of pixels along
   //  each dimension, the pixel spacing, image direction and
   imageFilter->SetSize( size );
-
   double origin[3];
   origin[0] = 5;
   origin[1] = 5;
@@ -137,12 +139,12 @@ int Test3dImageMask()
   point[0] = 9;point[1] = 7;point[2] = 7;
   std::cout << "   " << point << " isInside?  : " << maskSpatialObject->IsInside(point) << std::endl;
 
-  if(    (maskBounds[0] != 7)
-      || (maskBounds[1] != 8.5)
-      || (maskBounds[2] != 7)
-      || (maskBounds[3] != 8.5)
-      || (maskBounds[4] != 7)
-      || (maskBounds[5] != 8.5) )
+  if(    itk::Math::NotAlmostEquals(maskBounds[0], 7.0)
+      || itk::Math::NotAlmostEquals(maskBounds[1], 8.5)
+      || itk::Math::NotAlmostEquals(maskBounds[2], 7.0)
+      || itk::Math::NotAlmostEquals(maskBounds[3], 8.5)
+      || itk::Math::NotAlmostEquals(maskBounds[4], 7.0)
+      || itk::Math::NotAlmostEquals(maskBounds[5], 8.5) )
     {
     std::cout << "[FAILED] " << std::endl;
     std::cout << "Test returned : " << maskSpatialObject->GetBoundingBox()->GetBounds() << std::endl;
@@ -184,8 +186,8 @@ int Test2dImageMask()
   box1->ComputeBoundingBox();
   BoxType::BoundingBoxType::Pointer box1BoundingBox = box1->GetBoundingBox();
   BoxType::BoundingBoxType::BoundsArrayType box1Bounds = box1BoundingBox->GetBounds();
-  if ( box1Bounds[0] != 7 || box1Bounds[2] != 7 ||
-       box1Bounds[1] != 8 || box1Bounds[3] != 8 )
+  if ( itk::Math::NotAlmostEquals( box1Bounds[0], 7.0 ) || itk::Math::NotAlmostEquals( box1Bounds[2], 7.0 ) ||
+       itk::Math::NotAlmostEquals( box1Bounds[1], 8.0 ) || itk::Math::NotAlmostEquals( box1Bounds[3], 8.0 ) )
   {
     std::cout << "Box1 - Bounding box Error"<<std::endl;
     std::cout << " Expecting a bounding box of [7 8 7 8]" << std::endl;
@@ -251,10 +253,10 @@ int Test2dImageMask()
   point[0] = 9;point[1] = 7;
   std::cout << "   " << point << " isInside?  : " << maskSpatialObject->IsInside(point) << std::endl;
 
-  if(    (maskBounds[0] != 7)
-      || (maskBounds[1] != 8.5)
-      || (maskBounds[2] != 7)
-      || (maskBounds[3] != 8.5))
+  if(    itk::Math::NotAlmostEquals(maskBounds[0], 7.0)
+      || itk::Math::NotAlmostEquals(maskBounds[1], 8.5)
+      || itk::Math::NotAlmostEquals(maskBounds[2], 7.0)
+      || itk::Math::NotAlmostEquals(maskBounds[3], 8.5))
     {
     std::cout << "[FAILED] " << std::endl;
     std::cout << "Test returned : " << maskSpatialObject->GetBoundingBox()->GetBounds() << std::endl;

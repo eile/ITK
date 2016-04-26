@@ -95,7 +95,7 @@ int main( int , char *[] )
     {
     std::cout << "Name of the child of the object 1: ";
     std::cout << (*it)->GetProperty()->GetName() << std::endl;
-    it++;
+    ++it;
     }
 // Software Guide : EndCodeSnippet
 
@@ -158,5 +158,5 @@ int main( int , char *[] )
 // \normalsize
 // Software Guide : EndLatex
 
-  return 0;
+  return EXIT_SUCCESS;
 }

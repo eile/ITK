@@ -20,6 +20,7 @@
 
 #include "itkChainCodePath.h"
 #include "itkIndex.h"
+#include "ITKPathExport.h"
 
 #include <vector>
 #include <string>
@@ -47,7 +48,7 @@ namespace itk
  * \ingroup PathObjects
  * \ingroup ITKPath
  */
-class ChainCodePath2D:public
+class ITKPath_EXPORT ChainCodePath2D:public
   ChainCodePath< 2 >
 {
 public:
@@ -153,8 +154,8 @@ protected:
   }
 
 private:
-  ChainCodePath2D(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
+  ChainCodePath2D(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   ChainCode2DType m_Chain2D;    // the Freeman-encoded chain code
 

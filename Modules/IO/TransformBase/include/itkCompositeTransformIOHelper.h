@@ -18,6 +18,8 @@
 #ifndef itkCompositeTransformIOHelper_h
 #define itkCompositeTransformIOHelper_h
 
+#include "ITKIOTransformBaseExport.h"
+
 #include "itkTransformIOBase.h"
 #include "itkCompositeTransform.h"
 
@@ -42,15 +44,15 @@ namespace itk
  *  of CompositeTransform.
  * \ingroup ITKIOTransformBase
  */
-template <typename TScalar>
-class CompositeTransformIOHelperTemplate
+template<typename TParametersValueType>
+class ITKIOTransformBase_TEMPLATE_EXPORT CompositeTransformIOHelperTemplate
 {
 public:
-  typedef typename TransformIOBaseTemplate<TScalar>::TransformType          TransformType;
-  typedef typename TransformIOBaseTemplate<TScalar>::TransformPointer       TransformPointer;
-  typedef typename TransformIOBaseTemplate<TScalar>::TransformListType      TransformListType;
-  typedef typename TransformIOBaseTemplate<TScalar>::ConstTransformPointer  ConstTransformPointer;
-  typedef typename TransformIOBaseTemplate<TScalar>::ConstTransformListType ConstTransformListType;
+  typedef typename TransformIOBaseTemplate<TParametersValueType>::TransformType          TransformType;
+  typedef typename TransformIOBaseTemplate<TParametersValueType>::TransformPointer       TransformPointer;
+  typedef typename TransformIOBaseTemplate<TParametersValueType>::TransformListType      TransformListType;
+  typedef typename TransformIOBaseTemplate<TParametersValueType>::ConstTransformPointer  ConstTransformPointer;
+  typedef typename TransformIOBaseTemplate<TParametersValueType>::ConstTransformListType ConstTransformListType;
 
   /** from a composite transform, recover a
    * TransformIOBase::ConstTransformList.
@@ -75,7 +77,7 @@ private:
    ** queue. A cascade of calls with different template parameters
    ** selects the correct concrete type for CompositeTransform.
    */
-  template <unsigned TDim>
+  template <unsigned int VDimension>
   int BuildTransformList(const TransformType *transform);
 
   /** Sets a CompositeTransform's TransformQueue from the
@@ -83,9 +85,8 @@ private:
    **  if the scalar type or dimension of the transform being added
    **  doesn't match that of the concrete CompositeTransform's type.
    */
-  template <unsigned TDim>
+  template <unsigned int VDimension>
   int InternalSetTransformList(TransformType *transform,TransformListType &transformList);
-
 };
 
 /** This helps to meet backward compatibility */
@@ -93,8 +94,44 @@ typedef CompositeTransformIOHelperTemplate<double> CompositeTransformIOHelper;
 
 } // namespace itk
 
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "itkCompositeTransformIOHelper.hxx"
-#endif
+// Note: Explicit instantiation is done in itkCompositeTransformIOHelper.cxx
 
 #endif //  itkCompositeTransformIOHelper_h
+
+/** Explicit instantiations */
+#ifndef ITK_TEMPLATE_EXPLICIT_CompositeTransformIOHelper
+// Explicit instantiation is required to ensure correct dynamic_cast
+// behavior across shared libraries.
+//
+// IMPORTANT: Since within the same compilation unit,
+//            ITK_TEMPLATE_EXPLICIT_<classname> defined and undefined states
+//            need to be considered. This code *MUST* be *OUTSIDE* the header
+//            guards.
+//
+#  if defined( ITKIOTransformBase_EXPORTS )
+//   We are building this library
+#    define ITKIOTransformBase_EXPORT_EXPLICIT
+#  else
+//   We are using this library
+#    define ITKIOTransformBase_EXPORT_EXPLICIT ITKIOTransformBase_EXPORT
+#  endif
+namespace itk
+{
+
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_PUSH()
+#endif
+ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
+
+  extern template class ITKIOTransformBase_EXPORT_EXPLICIT CompositeTransformIOHelperTemplate< double >;
+extern template class ITKIOTransformBase_EXPORT_EXPLICIT CompositeTransformIOHelperTemplate< float >;
+
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_POP()
+#else
+  ITK_GCC_PRAGMA_DIAG(warning "-Wattributes")
+#endif
+
+} // end namespace itk
+#  undef ITKIOTransformBase_EXPORT_EXPLICIT
+#endif

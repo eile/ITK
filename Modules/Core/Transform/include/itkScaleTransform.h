@@ -37,19 +37,18 @@ namespace itk
  * \wikiexample{ImageProcessing/ScaleTransform,Scale an image}
  * \endwiki
  */
-template < typename TScalar = float, // Type for cordinate representation type (float or
-                             // double)
-           unsigned int NDimensions = 3>
-class ScaleTransform : public MatrixOffsetTransformBase< TScalar,
-                                                         NDimensions,
-                                                         NDimensions >
+template<typename TParametersValueType=float,
+          unsigned int NDimensions=3>
+class ScaleTransform : public MatrixOffsetTransformBase<TParametersValueType,
+                                                        NDimensions,
+                                                        NDimensions>
 {
 public:
   /** Standard class typedefs.   */
-  typedef ScaleTransform                                                 Self;
-  typedef MatrixOffsetTransformBase< TScalar, NDimensions, NDimensions > Superclass;
-  typedef SmartPointer< Self >                                           Pointer;
-  typedef SmartPointer< const Self >                                     ConstPointer;
+  typedef ScaleTransform                                                            Self;
+  typedef MatrixOffsetTransformBase<TParametersValueType, NDimensions, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                                        Pointer;
+  typedef SmartPointer<const Self>                                                  ConstPointer;
 
   /** New macro for creation of through a smart pointer. */
   itkNewMacro(Self);
@@ -65,29 +64,30 @@ public:
   typedef typename Superclass::ScalarType ScalarType;
 
   /** Parameters type. */
-  typedef typename Superclass::ParametersType ParametersType;
+  typedef typename Superclass::FixedParametersType FixedParametersType;
+  typedef typename Superclass::ParametersType      ParametersType;
 
   /** Jacobian type. */
   typedef typename Superclass::JacobianType JacobianType;
 
   /** Standard vector type for this class. */
-  typedef FixedArray<TScalar, NDimensions> ScaleType;
+  typedef FixedArray<TParametersValueType, NDimensions> ScaleType;
 
   /** Standard vector type for this class. */
-  typedef Vector<TScalar, NDimensions> InputVectorType;
-  typedef Vector<TScalar, NDimensions> OutputVectorType;
+  typedef Vector<TParametersValueType, NDimensions> InputVectorType;
+  typedef Vector<TParametersValueType, NDimensions> OutputVectorType;
 
   /** Standard covariant vector type for this class. */
-  typedef CovariantVector<TScalar, NDimensions> InputCovariantVectorType;
-  typedef CovariantVector<TScalar, NDimensions> OutputCovariantVectorType;
+  typedef CovariantVector<TParametersValueType, NDimensions> InputCovariantVectorType;
+  typedef CovariantVector<TParametersValueType, NDimensions> OutputCovariantVectorType;
 
   /** Standard vnl_vector type for this class. */
-  typedef vnl_vector_fixed<TScalar, NDimensions> InputVnlVectorType;
-  typedef vnl_vector_fixed<TScalar, NDimensions> OutputVnlVectorType;
+  typedef vnl_vector_fixed<TParametersValueType, NDimensions> InputVnlVectorType;
+  typedef vnl_vector_fixed<TParametersValueType, NDimensions> OutputVnlVectorType;
 
   /** Standard coordinate point type for this class. */
-  typedef Point<TScalar, NDimensions> InputPointType;
-  typedef Point<TScalar, NDimensions> OutputPointType;
+  typedef Point<TParametersValueType, NDimensions> InputPointType;
+  typedef Point<TParametersValueType, NDimensions> OutputPointType;
 
   /** Base inverse transform type. This type should not be changed to the
    * concrete inverse transform type or inheritance would be lost.*/
@@ -108,15 +108,22 @@ public:
    * parameter[1], parameter[2] } respectively */
   virtual const ParametersType & GetParameters() const ITK_OVERRIDE;
 
-  /** Set the fixed parameters and update internal
-   * transformation. This transform has no fixed paramaters
-   */
-  virtual void SetFixedParameters(const ParametersType &) ITK_OVERRIDE
-  {
-  }
 
-  /** Get the fixed parameters */
-  virtual const ParametersType & GetFixedParameters(void) const ITK_OVERRIDE;
+#if !defined( ITK_LEGACY_REMOVE )
+  /** Set the fixed parameters and update internal
+   * transformation. This transform has the center point as it's fixed
+   * parameters.
+   */
+  virtual void SetFixedParameters(const FixedParametersType &params) ITK_OVERRIDE
+    {
+      if (params.GetSize() != NDimensions)
+        {
+        itkWarningMacro(<< "The ScaleTransform now has " << NDimensions << " fixed parameters for the Center. Ignoring fixed parameters provided.");
+        return;
+        }
+      Superclass::SetFixedParameters(params);
+    }
+#endif
 
   /** Get the Jacobian matrix. */
   virtual void ComputeJacobianWithRespectToParameters(const InputPointType & point, JacobianType & j) const ITK_OVERRIDE;
@@ -135,10 +142,7 @@ public:
    * to be applied to each one of the coordinaates. For example, in 3D,
    * scale[0] corresponds to X, scale[1] corresponds to Y and scale[2]
    * corresponds to Z. */
-  void SetScale(const ScaleType & scale)
-  {
-    m_Scale = scale; this->ComputeMatrix(); this->Modified();
-  }
+  void SetScale(const ScaleType & scale);
 
   virtual void ComputeMatrix(void) ITK_OVERRIDE;
 
@@ -188,27 +192,10 @@ public:
   /** Set the transformation to an Identity
    *
    * This sets all the scales to 1.0 */
-  void SetIdentity() ITK_OVERRIDE
-  {
-    m_Scale.Fill(1.0);
-  }
-
-  /** Set/Get the center used as fixed point for the scaling */
-  itkSetMacro(Center, InputPointType);
-  itkGetConstReferenceMacro(Center, InputPointType);
+  void SetIdentity() ITK_OVERRIDE;
 
   /** Get access to scale values */
   itkGetConstReferenceMacro(Scale, ScaleType);
-
-  /** Indicates that this transform is linear. That is, given two
-   * points P and Q, and scalar coefficients a and b, then
-   *
-   *           T( a*P + b*Q ) = a * T(P) + b * T(Q)
-   */
-  virtual bool IsLinear() const ITK_OVERRIDE
-  {
-    return true;
-  }
 
 protected:
   /** Construct an ScaleTransform object. */
@@ -221,75 +208,12 @@ protected:
   virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  ScaleTransform(const Self & other);   // purposely not implemented
-  const Self & operator=(const Self &); // purposely not implemented
+  ScaleTransform(const Self & other) ITK_DELETE_FUNCTION;
+  const Self & operator=(const Self &) ITK_DELETE_FUNCTION;
 
   ScaleType m_Scale;    // Scales of the transformation
 
-  InputPointType         m_Center; // Scaling center
-  mutable ParametersType m_FixedParameters;
 };                         // class ScaleTransform
-
-// Back transform a point
-template <typename ScalarType, unsigned int NDimensions>
-inline
-typename ScaleTransform<ScalarType, NDimensions>::InputPointType
-ScaleTransform<ScalarType, NDimensions>::BackTransform(const OutputPointType & point) const
-{
-  InputPointType result;
-
-  for( unsigned int i = 0; i < SpaceDimension; i++ )
-    {
-    result[i] = ( point[i] + m_Center[i] ) / m_Scale[i] - m_Center[i];
-    }
-  return result;
-}
-
-// Back transform a vector
-template <typename ScalarType, unsigned int NDimensions>
-inline
-typename ScaleTransform<ScalarType, NDimensions>::InputVectorType
-ScaleTransform<ScalarType, NDimensions>::BackTransform(const OutputVectorType & vect) const
-{
-  InputVectorType result;
-
-  for( unsigned int i = 0; i < SpaceDimension; i++ )
-    {
-    result[i] = vect[i] / m_Scale[i];
-    }
-  return result;
-}
-
-// Back transform a vnl_vector
-template <typename ScalarType, unsigned int NDimensions>
-inline
-typename ScaleTransform<ScalarType, NDimensions>::InputVnlVectorType
-ScaleTransform<ScalarType, NDimensions>::BackTransform(const OutputVnlVectorType & vect) const
-{
-  InputVnlVectorType result;
-
-  for( unsigned int i = 0; i < SpaceDimension; i++ )
-    {
-    result[i] = vect[i] / m_Scale[i];
-    }
-  return result;
-}
-
-// Back Transform a CovariantVector
-template <typename ScalarType, unsigned int NDimensions>
-inline
-typename ScaleTransform<ScalarType, NDimensions>::InputCovariantVectorType
-ScaleTransform<ScalarType, NDimensions>::BackTransform(const OutputCovariantVectorType & vect) const
-{
-  // Covariant Vectors are scaled by the inverse
-  InputCovariantVectorType result;
-
-  for( unsigned int i = 0; i < SpaceDimension; i++ )
-    {
-    result[i] = vect[i] * m_Scale[i];
-    }
-  return result;
-}
 
 } // end namespace itk
 

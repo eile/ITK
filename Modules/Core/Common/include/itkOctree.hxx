@@ -57,12 +57,9 @@ Octree< TPixel, ColorTableSize, MappingFunctionType >::SetTrueDims(const unsigne
  *   6   110
  *   7   111 Contains extents
  *   ....^^^
- *   ....|| \This value is 1 if requested X voxel is greater than X
- *   ....    centerline of subcube
- *   ....| \This value is 1 if requested Y voxel is greater than Y
- *   .......centerline of subcube
- *   ....   \This value is 1 if requested Z voxel is greater than Z centerline
- *   .......of subcube
+ *   ....|| The LSB is 1 if requested X voxel is greater than X centerline of subcube
+ *   ....|  The middle bit is 1 if requested Y voxel is greater than Y centerline of subcube
+ *   ....   The MSB is 1 if requested Z voxel is greater than Z centerline of subcube
  *   \author Hans J. Johnson, adapted from Vincent A. Magnotta
  *   \param VoxX The desired voxel
  *   \param VoxY The desired voxel
@@ -153,13 +150,11 @@ Octree< TPixel, ColorTableSize, MappingFunctionType >::maskToOctree(const TPixel
 {
   if ( ( x >= xsize ) || ( y >= ysize ) || ( z >= zsize ) )
     {
-    return reinterpret_cast< OctreeNodeBranch * >( m_ColorTable
-                                                   + B2_MASKFILE_BLACK );
+    return m_ColorTable + B2_MASKFILE_BLACK;
     }
   if ( width == 1 )
     {
-    return reinterpret_cast< OctreeNodeBranch * >
-           ( m_ColorTable + m_MappingFunction.Evaluate(&Mask[z * ysize * xsize + y * xsize + x]) );
+    return m_ColorTable + m_MappingFunction.Evaluate(&Mask[z * ysize * xsize + y * xsize + x]);
     }
   width /= 2;
   OctreeNodeBranch *nodeArray[8];
@@ -337,7 +332,7 @@ Octree< TPixel, ColorTableSize, MappingFunctionType >::GetDepth()
 }
 
 template< typename TPixel, unsigned int ColorTableSize, typename MappingFunctionType >
-const char *
+const OctreeNodeBranch *
 Octree< TPixel, ColorTableSize, MappingFunctionType >::GetColorTable() const
 {
   return m_ColorTable;

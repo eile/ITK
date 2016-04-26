@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include <iostream>
+#include "itkMath.h"
 
 
 namespace
@@ -38,7 +39,7 @@ bool DoCastWithRangeCheckTestVerify( const T2 value, const T1 = 0 )
     {
     ret = itk::Math::CastWithRangeCheck<T1>( value );
     // value should match
-    if ( double(ret) != double(value) )
+    if ( itk::Math::NotExactlyEquals(double(ret), double(value)) )
       {
       std::cout << "casting error with input value: "
                 << static_cast<typename itk::NumericTraits<T2>::PrintType>(value)
@@ -51,7 +52,7 @@ bool DoCastWithRangeCheckTestVerify( const T2 value, const T1 = 0 )
     {
     // conversion should result in some overflow problem
     T1 retCheck =  static_cast<T1>( value );
-    if ( double(retCheck) == double(value) )
+    if ( itk::Math::ExactlyEquals(double(retCheck), double(value)) )
       {
       std::cout << "unexpected exception with value: " << value << std::endl;
       return false;
@@ -88,7 +89,7 @@ bool DoCastWithRangeCheckTest( const T1* = 0, const T2* = 0 )
   pass &= DoCastWithRangeCheckTestVerify<T1, T2>( itk::NumericTraits<T2>::max() );
   pass &= DoCastWithRangeCheckTestVerify<T1, T2>( itk::NumericTraits<T2>::ZeroValue() );
   pass &= DoCastWithRangeCheckTestVerify<T1, T2>( itk::NumericTraits<T2>::OneValue() );
-  pass &= DoCastWithRangeCheckTestVerify<T1, T2>( static_cast<T2>(itk::NumericTraits<T2>::One*minus_one) );
+  pass &= DoCastWithRangeCheckTestVerify<T1, T2>( static_cast<T2>(itk::NumericTraits<T2>::OneValue()*minus_one) );
 
   return pass;
 }

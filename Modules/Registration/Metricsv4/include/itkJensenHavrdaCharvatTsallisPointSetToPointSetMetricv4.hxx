@@ -18,6 +18,7 @@
 #ifndef itkJensenHavrdaCharvatTsallisPointSetToPointSetMetricv4_hxx
 #define itkJensenHavrdaCharvatTsallisPointSetToPointSetMetricv4_hxx
 
+#include "itkMath.h"
 #include "itkJensenHavrdaCharvatTsallisPointSetToPointSetMetricv4.h"
 
 namespace itk {
@@ -31,10 +32,10 @@ JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputa
   m_KernelSigma( static_cast<RealType>( 10.0 ) ),
   m_CovarianceKNeighborhood( static_cast<unsigned int>( 5 ) ),
   m_EvaluationKNeighborhood( static_cast<unsigned int>( 50 ) ),
-  m_Alpha( static_cast<RealType>(1.0) ),
-  m_TotalNumberOfPoints(0),
-  m_Prefactor0(0.0),
-  m_Prefactor1(0.0)
+  m_Alpha( static_cast<RealType>( 1.0 ) ),
+  m_TotalNumberOfPoints( 0 ),
+  m_Prefactor0( 0.0 ),
+  m_Prefactor1( 0.0 )
 {
 }
 
@@ -109,8 +110,6 @@ void
 JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputationValueType>
 ::ComputeValueAndDerivative( const PointType & samplePoint, MeasureType & value, LocalDerivativeType & derivativeReturn, bool calcValue, bool calcDerivative ) const
 {
-
-
   if( calcDerivative )
     {
     derivativeReturn.Fill( NumericTraits<DerivativeValueType>::ZeroValue() );
@@ -125,7 +124,7 @@ JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputa
 
   probabilityStar /= this->m_TotalNumberOfPoints;
 
-  if( probabilityStar == NumericTraits<RealType>::ZeroValue() )
+  if( Math::AlmostEquals( probabilityStar, NumericTraits<RealType>::ZeroValue() ) )
     {
     return;
     }
@@ -133,13 +132,13 @@ JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputa
   if( calcValue )
     {
     RealType realOne = NumericTraits<RealType>::OneValue();
-    if( this->m_Alpha == realOne )
+    if( Math::AlmostEquals( this->m_Alpha, realOne ) )
       {
       value = ( std::log( probabilityStar ) );
       }
     else
       {
-      value = -realOne * ( std::pow( probabilityStar, static_cast<RealType>( this->m_Alpha - realOne ) ) );
+      value = realOne * ( std::pow( probabilityStar, static_cast<RealType>( this->m_Alpha - realOne ) ) );
       }
     value *= this->m_Prefactor0;
     }
@@ -155,7 +154,7 @@ JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputa
       {
       RealType gaussian = this->m_MovingDensityFunction->GetGaussian( neighbors[n] )->Evaluate( samplePoint );
 
-      if( gaussian == NumericTraits<RealType>::ZeroValue() )
+      if( Math::AlmostEquals( gaussian, NumericTraits<RealType>::ZeroValue() ) )
         {
         continue;
         }
@@ -175,7 +174,7 @@ JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputa
         }
       else
         {
-        diffMean /= this->m_FixedDensityFunction->GetGaussian( neighbors[n] )->GetCovariance()(0, 0);
+        diffMean /= this->m_MovingDensityFunction->GetGaussian( neighbors[n] )->GetCovariance()( 0, 0 );
         }
 
       DerivativeValueType factor = this->m_Prefactor1 * gaussian / probabilityStarFactor;

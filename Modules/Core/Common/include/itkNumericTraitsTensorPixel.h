@@ -135,6 +135,10 @@ public:
     return OneValue();
   }
 
+  static const bool IsSigned = NumericTraits< ValueType >::IsSigned;
+  static const bool IsInteger = NumericTraits< ValueType >::IsInteger;
+  static const bool IsComplex = NumericTraits< ValueType >::IsComplex;
+
   /** Fixed length vectors cannot be resized, so an exception will
    *  be thrown if the input size is not valid.  Here, the size refers
    *  to the dimensionality of the unerlying FixedArray, not the
@@ -147,7 +151,7 @@ public:
                                "of dimension " << D << " ( = size of "
                                << D *( D + 1 ) / 2 << ") to " << s);
       }
-    m.Fill(NumericTraits< T >::Zero);
+    m.Fill(NumericTraits< T >::ZeroValue());
   }
 
   /** Return the size of the underlying FixedArray. */

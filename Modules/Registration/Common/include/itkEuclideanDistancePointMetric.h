@@ -75,8 +75,11 @@ public:
   typedef typename Superclass::FixedPointSetConstPointer  FixedPointSetConstPointer;
   typedef typename Superclass::MovingPointSetConstPointer MovingPointSetConstPointer;
 
-  typedef typename Superclass::PointIterator     PointIterator;
-  typedef typename Superclass::PointDataIterator PointDataIterator;
+  typedef typename Superclass::FixedPointIterator     FixedPointIterator;
+  typedef typename Superclass::FixedPointDataIterator FixedPointDataIterator;
+
+  typedef typename Superclass::MovingPointIterator     MovingPointIterator;
+  typedef typename Superclass::MovingPointDataIterator MovingPointDataIterator;
 
   typedef TDistanceMap                           DistanceMapType;
   typedef typename DistanceMapType::ConstPointer DistanceMapPointer;
@@ -113,8 +116,8 @@ protected:
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  EuclideanDistancePointMetric(const Self &); //purposely not implemented
-  void operator=(const Self &);               //purposely not implemented
+  EuclideanDistancePointMetric(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   DistanceMapPointer m_DistanceMap;
   bool               m_ComputeSquaredDistance;

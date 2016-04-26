@@ -24,6 +24,7 @@ This program tests operations of itk::FancyString.
 
 #include <iostream>
 #include "itkMacro.h"
+#include "itkMath.h"
 
 void testFancyStringWithBasicType();
 
@@ -128,7 +129,7 @@ void testFancyStringWithBasicType()
     s >> dataOut;
 
     // check result
-    if ( dataIn != dataOut )
+    if ( itk::Math::NotExactlyEquals(dataIn, dataOut) )
       {
       throw "double: input and output data do not match";
       }
@@ -148,7 +149,7 @@ void testFancyStringWithStdVector()
   std::vector<float> dataIn( 10, -0.1f );
   svalue << dataIn;
   // add one more data element to the end of the string
-  svalue.append( " 10 " );
+  svalue.Append( " 10 " );
 
   // read all data elements in the string
   std::vector<float> dataOut1;
@@ -161,7 +162,7 @@ void testFancyStringWithStdVector()
     }
   for ( size_t i = 0; i < dataIn.size(); i++ )
     {
-    if ( dataIn[i] != dataOut1[i] )
+    if ( itk::Math::NotExactlyEquals(dataIn[i], dataOut1[i]) )
       {
       throw "testFancyStringWithStdVector: failed reading all elements in the string (2)";
       }
@@ -179,7 +180,7 @@ void testFancyStringWithStdVector()
     }
   for ( size_t i = 0; i < dataOut2.size(); i++ )
     {
-    if ( dataIn[i] != dataOut2[i] )
+    if ( itk::Math::NotExactlyEquals(dataIn[i], dataOut2[i]) )
       {
       throw "testFancyStringWithStdVector: failed reading all elements for the output vector (2)";
       }
@@ -197,7 +198,7 @@ void testFancyStringWithStdVector()
     }
   for ( size_t i = 0; i < 5; i++ )
     {
-    if ( dataIn[i] != dataOut3[i] )
+    if ( itk::Math::NotExactlyEquals(dataIn[i], dataOut3[i]) )
       {
       throw "testFancyStringWithStdVector: failed reading user-specified number of elements (1.2)";
       }
@@ -215,7 +216,7 @@ void testFancyStringWithStdVector()
     }
   for ( size_t i = 0; i < 5; i++ )
     {
-    if ( dataIn[i] != dataOut4[i] )
+    if ( itk::Math::NotExactlyEquals(dataIn[i], dataOut4[i]) )
       {
       throw "testFancyStringWithStdVector: failed reading user-specified number of elements (2.2)";
       }
@@ -237,7 +238,7 @@ void testFancyStringWithItkArray()
   dataIn.Fill( -0.1 );
   svalue << dataIn;
   // add one more data element to the end of the string
-  svalue.append( " 10 " );
+  svalue.Append( " 10 " );
 
   // read all data elements in the string
   DataType dataOut1;
@@ -250,7 +251,7 @@ void testFancyStringWithItkArray()
     }
   for ( size_t i = 0; i < dataIn.GetSize(); i++ )
     {
-    if ( dataIn[i] != dataOut1[i] )
+    if ( itk::Math::NotExactlyEquals(dataIn[i], dataOut1[i]) )
       {
       throw "testFancyStringWithItkArray: failed reading all elements in the string (2)";
       }
@@ -269,7 +270,7 @@ void testFancyStringWithItkArray()
     }
   for ( size_t i = 0; i < dataOut2.GetSize(); i++ )
     {
-    if ( dataIn[i] != dataOut2[i] )
+    if ( itk::Math::NotExactlyEquals(dataIn[i], dataOut2[i]) )
       {
       throw "testFancyStringWithItkArray: failed reading all elements for the output vector (2)";
       }
@@ -288,7 +289,7 @@ void testFancyStringWithItkArray()
     }
   for ( size_t i = 0; i < 5; i++ )
     {
-    if ( dataIn[i] != dataOut3[i] )
+    if ( itk::Math::NotExactlyEquals(dataIn[i], dataOut3[i]) )
       {
       throw "testFancyStringWithItkArray: failed reading user-specified number of elements (1.2)";
       }
@@ -306,7 +307,7 @@ void testFancyStringWithItkArray()
     }
   for ( size_t i = 0; i < 5; i++ )
     {
-    if ( dataIn[i] != dataOut4[i] )
+    if ( itk::Math::NotExactlyEquals(dataIn[i], dataOut4[i]) )
       {
       throw "testFancyStringWithItkArray: failed reading user-specified number of elements (2.2)";
       }

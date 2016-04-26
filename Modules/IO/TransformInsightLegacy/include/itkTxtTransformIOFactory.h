@@ -17,7 +17,7 @@
  *=========================================================================*/
 #ifndef itkTxtTransformIOFactory_h
 #define itkTxtTransformIOFactory_h
-
+#include "ITKIOTransformInsightLegacyExport.h"
 
 #include "itkObjectFactoryBase.h"
 #include "itkTransformIOBase.h"
@@ -28,7 +28,7 @@ namespace itk
    * \brief Create instances of TxtTransformIO objects using an object factory.
    * \ingroup ITKIOTransformInsightLegacy
    */
-class TxtTransformIOFactory:public ObjectFactoryBase
+class ITKIOTransformInsightLegacy_EXPORT TxtTransformIOFactory:public ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */
@@ -62,8 +62,8 @@ protected:
   virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  TxtTransformIOFactory(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
+  TxtTransformIOFactory(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

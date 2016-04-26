@@ -103,8 +103,8 @@ protected:
   virtual ~ExampleImageSource() {};
 
 private:
-  ExampleImageSource(const Self &); // purposely not implemented
-  void operator=(const Self &); // purposely not implemented
+  ExampleImageSource(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 }
 
@@ -167,11 +167,16 @@ int itkParametricBlindLeastSquaresDeconvolutionImageFilterTest(int argc, char* a
   convolutionFilter->NormalizeOn();
   convolutionFilter->SetKernelImage( kernelSource->GetOutput() );
 
+  // Use the same SizeGreatestPrimeFactor across FFT backends to get
+  // consistent results.
+  convolutionFilter->SetSizeGreatestPrimeFactor( 5 );
+
   // Create an instance of the deconvolution filter
   typedef itk::ParametricBlindLeastSquaresDeconvolutionImageFilter< ImageType, KernelSourceType >
     DeconvolutionFilterType;
   DeconvolutionFilterType::Pointer deconvolutionFilter = DeconvolutionFilterType::New();
   deconvolutionFilter->SetKernelSource( kernelSource );
+  deconvolutionFilter->SetSizeGreatestPrimeFactor( 5 );
 
   // Change the sigma settings here to something different
 

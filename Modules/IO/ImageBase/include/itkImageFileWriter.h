@@ -30,7 +30,7 @@ namespace itk
  * \class ImageFileWriterException
  * \ingroup ITKIOImageBase
  */
-class ITK_ABI_EXPORT ImageFileWriterException:public ExceptionObject
+class ITKIOImageBase_EXPORT ImageFileWriterException:public ExceptionObject
 {
 public:
   /** Run-time information. */
@@ -51,8 +51,7 @@ public:
   {}
 
   /** Has to have empty throw(). */
-  virtual ~ImageFileWriterException() throw( )
-  {}
+  virtual ~ImageFileWriterException() throw( );
 };
 
 /** \class ImageFileWriter
@@ -202,8 +201,8 @@ protected:
   virtual void GenerateData(void) ITK_OVERRIDE;
 
 private:
-  ImageFileWriter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
+  ImageFileWriter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   std::string m_FileName;
 

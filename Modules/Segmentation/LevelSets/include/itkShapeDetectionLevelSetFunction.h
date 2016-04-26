@@ -110,23 +110,23 @@ public:
   {
     Superclass::Initialize(r);
 
-    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::Zero);
-    this->SetPropagationWeight(NumericTraits< ScalarValueType >::One);
-    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::One);
+    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::ZeroValue());
+    this->SetPropagationWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::OneValue());
   }
 
 protected:
   ShapeDetectionLevelSetFunction()
   {
-    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::Zero);
-    this->SetPropagationWeight(NumericTraits< ScalarValueType >::One);
-    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::One);
+    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::ZeroValue());
+    this->SetPropagationWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::OneValue());
   }
 
   virtual ~ShapeDetectionLevelSetFunction() {}
 
-  ShapeDetectionLevelSetFunction(const Self &); //purposely not implemented
-  void operator=(const Self &);                 //purposely not implemented
+  ShapeDetectionLevelSetFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

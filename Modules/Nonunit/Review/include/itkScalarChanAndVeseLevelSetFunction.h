@@ -135,25 +135,25 @@ protected:
   ScalarChanAndVeseLevelSetFunction():Superclass() {}
   ~ScalarChanAndVeseLevelSetFunction(){}
 
-  void ComputeParameters();
+  void ComputeParameters() ITK_OVERRIDE;
 
-  void UpdateSharedDataParameters();
+  void UpdateSharedDataParameters() ITK_OVERRIDE;
 
   ScalarValueType ComputeInternalTerm(const FeaturePixelType & iValue,
-                                      const FeatureIndexType & iIdx);
+                                      const FeatureIndexType & iIdx) ITK_OVERRIDE;
 
   ScalarValueType ComputeExternalTerm(const FeaturePixelType & iValue,
-                                      const FeatureIndexType & iIdx);
+                                      const FeatureIndexType & iIdx) ITK_OVERRIDE;
 
   void UpdateSharedDataInsideParameters(const unsigned int & iId,
-                                        const FeaturePixelType & iVal, const ScalarValueType & iChange);
+                                        const FeaturePixelType & iVal, const ScalarValueType & iChange) ITK_OVERRIDE;
 
   void UpdateSharedDataOutsideParameters(const unsigned int & iId,
-                                         const FeaturePixelType & iVal, const ScalarValueType & iChange);
+                                         const FeaturePixelType & iVal, const ScalarValueType & iChange) ITK_OVERRIDE;
 
 private:
-  ScalarChanAndVeseLevelSetFunction(const Self &); //purposely not implemented
-  void operator=(const Self &);                    //purposely not implemented
+  ScalarChanAndVeseLevelSetFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 }
 

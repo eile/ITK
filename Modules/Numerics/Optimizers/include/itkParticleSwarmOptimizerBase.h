@@ -21,6 +21,7 @@
 
 #include "itkSingleValuedNonLinearOptimizer.h"
 #include "itkMersenneTwisterRandomVariateGenerator.h"
+#include "ITKOptimizersExport.h"
 
 namespace itk
 {
@@ -52,7 +53,7 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ParticleSwarmOptimizerBase :
+class ITKOptimizers_EXPORT ParticleSwarmOptimizerBase :
   public SingleValuedNonLinearOptimizer
 {
 public:
@@ -205,8 +206,8 @@ protected:
    * Implement your update rule in this function.*/
   virtual void UpdateSwarm() = 0;
 
-  ParticleSwarmOptimizerBase( const Self& ); //purposely not implemented
-  void operator=( const Self& );//purposely not implemented
+  ParticleSwarmOptimizerBase( const Self& ) ITK_DELETE_FUNCTION;
+  void operator=( const Self& ) ITK_DELETE_FUNCTION;
 
   virtual void ValidateSettings();
 

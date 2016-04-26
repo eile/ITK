@@ -28,11 +28,14 @@ set(ITK_LEGACY_SILENT "@ITK_LEGACY_SILENT@")
 # Remove code that will become legacy in future releases completely.
 set(ITK_FUTURE_LEGACY_REMOVE "@ITK_FUTURE_LEGACY_REMOVE@")
 
+# ITK's CMake directory with modules ITK uses.
+set(ITK_CMAKE_DIR "@ITK_CONFIG_CMAKE_DIR@")
+
 # The location of the UseITK.cmake file.
 set(ITK_USE_FILE "@ITK_USE_FILE@")
 
 # Whether ITK was built with shared libraries.
-set(ITK_BUILD_SHARED "@BUILD_SHARED_LIBS@")
+set(ITK_BUILD_SHARED "@ITK_BUILD_SHARED_LIBS@")
 
 # List of available ITK modules.
 set(ITK_MODULES_ENABLED "@ITK_CONFIG_MODULES_ENABLED@")
@@ -60,6 +63,7 @@ endif()
 #  ITK_LIBRARIES       = Libraries to link
 #  ITK_INCLUDE_DIRS    = Header file search path
 #  ITK_LIBRARY_DIRS    = Library search path (for outside dependencies)
+#  ITK_RUNTIME_LIBRARY_DIRS = Runtime linker search path
 itk_module_config(ITK ${ITK_MODULES_REQUESTED})
 
 # Add configuration with FFTW

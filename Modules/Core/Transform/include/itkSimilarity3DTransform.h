@@ -43,17 +43,16 @@ namespace itk
  * \sa VersorRigid3DTransform
  * \ingroup ITKTransform
  */
-template< typename TScalar = double >
-// Data type for scalars (float or double)
+template<typename TParametersValueType=double>
 class Similarity3DTransform :
-  public VersorRigid3DTransform< TScalar >
+  public VersorRigid3DTransform<TParametersValueType>
 {
 public:
   /** Standard class typedefs. */
-  typedef Similarity3DTransform             Self;
-  typedef VersorRigid3DTransform< TScalar > Superclass;
-  typedef SmartPointer< Self >              Pointer;
-  typedef SmartPointer< const Self >        ConstPointer;
+  typedef Similarity3DTransform                        Self;
+  typedef VersorRigid3DTransform<TParametersValueType> Superclass;
+  typedef SmartPointer<Self>                           Pointer;
+  typedef SmartPointer<const Self>                     ConstPointer;
 
   /** New macro for creation of through a Smart Pointer. */
   itkNewMacro(Self);
@@ -69,6 +68,7 @@ public:
 
   /** Parameters Type   */
   typedef typename Superclass::ParametersType            ParametersType;
+  typedef typename Superclass::FixedParametersType       FixedParametersType;
   typedef typename Superclass::JacobianType              JacobianType;
   typedef typename Superclass::ScalarType                ScalarType;
   typedef typename Superclass::InputPointType            InputPointType;
@@ -89,7 +89,7 @@ public:
   typedef typename Superclass::VersorType VersorType;
   typedef typename Superclass::AxisType   AxisType;
   typedef typename Superclass::AngleType  AngleType;
-  typedef          TScalar                ScaleType;
+  typedef          TParametersValueType   ScaleType;
 
   /** Set the parameters to the IdentityTransform */
   virtual void SetIdentity(void) ITK_OVERRIDE;
@@ -108,7 +108,7 @@ public:
    * to within the specified tolerance, else an exception is thrown.
    *
    * \sa MatrixOffsetTransformBase::SetMatrix() */
-  virtual void SetMatrix(const MatrixType & matrix, double tolerance) ITK_OVERRIDE;
+  virtual void SetMatrix(const MatrixType & matrix, const TParametersValueType tolerance) ITK_OVERRIDE;
 
   /** Set the transformation from a container of parameters This is typically
    * used by optimizers.  There are 7 parameters. The first three represent the
@@ -147,8 +147,8 @@ protected:
   void ComputeMatrixParameters() ITK_OVERRIDE;
 
 private:
-  Similarity3DTransform(const Self &); // purposely not implemented
-  void operator=(const Self &);        // purposely not implemented
+  Similarity3DTransform(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   ScaleType m_Scale;
 }; // class Similarity3DTransform

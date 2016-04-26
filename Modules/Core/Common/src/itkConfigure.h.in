@@ -40,17 +40,25 @@
   #define ITK_WORDS_BIGENDIAN
 #endif
 
+#define ITK_SIZEOF_VOID_P @CMAKE_SIZEOF_VOID_P@
+
+/* Atomic operations */
+#cmakedefine ITK_HAVE_SYNC_BUILTINS
+#cmakedefine ITK_HAS_INTERLOCKEDADD
+
 /* what threading system are we using */
 #cmakedefine ITK_USE_PTHREADS
 #cmakedefine ITK_HP_PTHREADS
 #cmakedefine ITK_USE_WIN32_THREADS
 
+#cmakedefine ITK_WINDOWS_EXPORT_ALL_SYMBOLS
 #cmakedefine ITK_BUILD_SHARED_LIBS
 #ifdef ITK_BUILD_SHARED_LIBS
 #define ITKDLL
 #else
 #define ITKSTATIC
 #endif
+#cmakedefine ITK_DYNAMIC_LOADING
 
 #cmakedefine ITKV3_COMPATIBILITY
 #cmakedefine ITK_LEGACY_REMOVE

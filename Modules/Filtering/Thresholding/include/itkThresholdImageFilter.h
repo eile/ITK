@@ -96,7 +96,7 @@ public:
 #endif
 
   /** Set the "outside" pixel value. The default value
-   * NumericTraits<PixelType>::Zero. */
+   * NumericTraits<PixelType>::ZeroValue(). */
   itkSetMacro(OutsideValue, PixelType);
 
   /** Get the "outside" pixel value. */
@@ -150,8 +150,8 @@ protected:
                             ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
-  ThresholdImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);       //purposely not implemented
+  ThresholdImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   PixelType m_OutsideValue;
   PixelType m_Lower;

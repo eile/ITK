@@ -96,7 +96,7 @@ namespace itk
  *         filter->SetNumberOfThreads(1);
  * \endcode
  * This is due to buggy code in netlib/dsvdc, that is called by vnl_svd.
- * (used to compute the psudo-inverse to find the dual tensor basis).
+ * (used to compute the pseudo-inverse to find the dual tensor basis).
  *
  * \author Xiaodong Tao, GE, for contributing parts of this class.
  * \author Casey Goodlet, UNC for patches to support multiple baseline
@@ -287,6 +287,8 @@ protected:
 
   void ThreadedGenerateData(const
                             OutputImageRegionType & outputRegionForThread, ThreadIdType) ITK_OVERRIDE;
+
+  void VerifyPreconditions() ITK_OVERRIDE;
 
   /** enum to indicate if the gradient image is specified as a single multi-
    * component image or as several separate images */

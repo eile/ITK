@@ -33,8 +33,8 @@ namespace itk
 /**
  * Constructor
  */
-template<typename TScalar, unsigned int NDimensions>
-TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
+TimeVaryingBSplineVelocityFieldTransform<TParametersValueType, NDimensions>
 ::TimeVaryingBSplineVelocityFieldTransform()
 {
   this->m_SplineOrder = 3;
@@ -49,15 +49,15 @@ TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>
 /**
  * Destructor
  */
-template<typename TScalar, unsigned int NDimensions>
-TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>::
+template<typename TParametersValueType, unsigned int NDimensions>
+TimeVaryingBSplineVelocityFieldTransform<TParametersValueType, NDimensions>::
 ~TimeVaryingBSplineVelocityFieldTransform()
 {
 }
 
-template<typename TScalar, unsigned int NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
 void
-TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>
+TimeVaryingBSplineVelocityFieldTransform<TParametersValueType, NDimensions>
 ::IntegrateVelocityField()
 {
   if( !this->GetVelocityField() )
@@ -84,10 +84,13 @@ TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>
   bspliner->SetCloseDimension( closeDimensions );
   bspliner->Update();
 
+  typename VelocityFieldType::Pointer bsplinerOutput = bspliner->GetOutput();
+  bsplinerOutput->DisconnectPipeline();
+
   typedef TimeVaryingVelocityFieldIntegrationImageFilter<VelocityFieldType, DisplacementFieldType> IntegratorType;
 
   typename IntegratorType::Pointer integrator = IntegratorType::New();
-  integrator->SetInput( bspliner->GetOutput() );
+  integrator->SetInput( bsplinerOutput );
   integrator->SetLowerTimeBound( this->GetLowerTimeBound() );
   integrator->SetUpperTimeBound( this->GetUpperTimeBound() );
 
@@ -106,7 +109,7 @@ TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>
   this->GetModifiableInterpolator()->SetInputImage( displacementField );
 
   typename IntegratorType::Pointer inverseIntegrator = IntegratorType::New();
-  inverseIntegrator->SetInput( bspliner->GetOutput() );
+  inverseIntegrator->SetInput( bsplinerOutput );
   inverseIntegrator->SetLowerTimeBound( this->GetUpperTimeBound() );
   inverseIntegrator->SetUpperTimeBound( this->GetLowerTimeBound() );
 
@@ -124,9 +127,9 @@ TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>
   this->SetInverseDisplacementField( inverseDisplacementField );
 }
 
-template<typename TScalar, unsigned int NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
 void
-TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>
+TimeVaryingBSplineVelocityFieldTransform<TParametersValueType, NDimensions>
 ::UpdateTransformParameters( const DerivativeType & update, ScalarType factor )
 {
   NumberOfParametersType numberOfParameters = this->GetNumberOfParameters();
@@ -167,9 +170,9 @@ TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>
   this->IntegrateVelocityField();
 }
 
-template <typename TScalar, unsigned int NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
 void
-TimeVaryingBSplineVelocityFieldTransform<TScalar, NDimensions>
+TimeVaryingBSplineVelocityFieldTransform<TParametersValueType, NDimensions>
 ::PrintSelf( std::ostream& os, Indent indent ) const
 {
   Superclass::PrintSelf( os, indent );

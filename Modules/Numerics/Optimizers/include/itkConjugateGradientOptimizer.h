@@ -21,6 +21,7 @@
 #include "itkIntTypes.h"
 #include "itkSingleValuedNonLinearVnlOptimizer.h"
 #include "vnl/algo/vnl_conjugate_gradient.h"
+#include "ITKOptimizersExport.h"
 
 namespace itk
 {
@@ -30,7 +31,7 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ConjugateGradientOptimizer:
+class ITKOptimizers_EXPORT ConjugateGradientOptimizer:
   public SingleValuedNonLinearVnlOptimizer
 
 {
@@ -77,8 +78,8 @@ protected:
   typedef Superclass::CostFunctionAdaptorType CostFunctionAdaptorType;
 
 private:
-  ConjugateGradientOptimizer(const Self &); //purposely not implemented
-  void operator=(const Self &);             //purposely not implemented
+  ConjugateGradientOptimizer(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   /**  The vnl optimization method for conjugate gradient. */
   bool                   m_OptimizerInitialized;

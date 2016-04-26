@@ -76,7 +76,7 @@ public:
 
   itkStaticConstMacro(ImageDimension, unsigned int, Superclass::ImageDimension);
 
-  // itkNewMacro() is purposely not provided since this is an abstract class.
+  // itkNewMacro() is not provided since this is an abstract class.
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(RegionBasedLevelSetFunction, FiniteDifferenceFunction);
@@ -171,7 +171,7 @@ public:
       }
   }
 
-#if !defined( CABLE_CONFIGURATION )
+#if !defined( ITK_WRAPPING_PARSER )
   void SetSharedData(SharedDataPointer sharedDataIn)
   {
     this->m_SharedData = sharedDataIn;
@@ -180,16 +180,16 @@ public:
 
   void UpdateSharedData(bool forceUpdate);
 
-  void * GetGlobalDataPointer() const
+  void * GetGlobalDataPointer() const ITK_OVERRIDE
   {
     return new GlobalDataStruct;
   }
 
-  TimeStepType ComputeGlobalTimeStep(void *GlobalData) const;
+  TimeStepType ComputeGlobalTimeStep(void *GlobalData) const ITK_OVERRIDE;
 
   /** Compute the equation value. */
   virtual PixelType ComputeUpdate( const NeighborhoodType & neighborhood,
-                                   void *globalData, const FloatOffsetType & = FloatOffsetType(0.0) );
+                                   void *globalData, const FloatOffsetType & = FloatOffsetType(0.0) ) ITK_OVERRIDE;
 
   void SetInitialImage(InputImageType *f)
   {
@@ -271,7 +271,7 @@ public:
   void SetFunctionId(const unsigned int & iFid)
   { this->m_FunctionId = iFid; }
 
-  virtual void ReleaseGlobalDataPointer(void *GlobalData) const
+  virtual void ReleaseGlobalDataPointer(void *GlobalData) const ITK_OVERRIDE
   { delete (GlobalDataStruct *)GlobalData; }
 
   virtual ScalarValueType ComputeCurvature(const NeighborhoodType &,
@@ -417,8 +417,8 @@ protected:
   static VectorType m_ZeroVectorConstant;
 
 private:
-  RegionBasedLevelSetFunction(const Self &); //purposely not implemented
-  void operator=(const Self &);              //purposely not implemented
+  RegionBasedLevelSetFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

@@ -7,7 +7,7 @@ macro(_itk_module_use_recurse mod)
   if(NOT ${dep}_USED)
     set(${mod}_USED 1)
     itk_module_load("${mod}")
-    foreach(dep IN LISTS ${mod}_DEPENDS)
+    foreach(dep IN LISTS ${mod}_TRANSITIVE_DEPENDS)
       _itk_module_use_recurse(${dep})
     endforeach()
     if(${mod}_INCLUDE_DIRS)
@@ -27,7 +27,8 @@ macro(_itk_module_config_recurse ns mod)
     list(APPEND ${ns}_LIBRARIES ${${mod}_LIBRARIES})
     list(APPEND ${ns}_INCLUDE_DIRS ${${mod}_INCLUDE_DIRS})
     list(APPEND ${ns}_LIBRARY_DIRS ${${mod}_LIBRARY_DIRS})
-    foreach(dep IN LISTS ${mod}_DEPENDS)
+    list(APPEND ${ns}_RUNTIME_LIBRARY_DIRS ${${mod}_RUNTIME_LIBRARY_DIRS})
+    foreach(dep IN LISTS ${mod}_TRANSITIVE_DEPENDS)
       _itk_module_config_recurse("${ns}" "${dep}")
     endforeach()
   endif()
@@ -39,16 +40,27 @@ endmacro()
 # itk_module_load(<module>)
 #
 # Loads variables describing the given module:
-#  <module>_LOADED         = True if the module has been loaded
-#  <module>_DEPENDS        = List of dependencies on other modules
-#  <module>_LIBRARIES      = Libraries to link
-#  <module>_INCLUDE_DIRS   = Header search path
-#  <module>_LIBRARY_DIRS   = Library search path (for outside dependencies)
+#  <module>_LOADED             = True if the module has been loaded
+#  <module>_DEPENDS            = List of dependencies on other modules (public link, private link, compile)
+#  <module>_PUBLIC_DEPENDS     = List of dependencies on other modules (public link)
+#  <module>_TRANSITIVE_DEPENDS = List of dependencies on other modules (public link, compile)
+#  <module>_PRIVATE_DEPENDS    = List of dependencies on other modules (private link)
+#  <module>_LIBRARIES          = Libraries to link
+#  <module>_INCLUDE_DIRS       = Header search path
+#  <module>_LIBRARY_DIRS       = Library search path (for outside dependencies)
+#  <module>_RUNTIME_LIBRARY_DIRS = Runtime linker search path
 macro(itk_module_load mod)
   if(NOT ${mod}_LOADED)
     include("${ITK_MODULES_DIR}/${mod}.cmake" OPTIONAL)
     if(NOT ${mod}_LOADED)
       message(FATAL_ERROR "No such module: \"${mod}\"")
+    endif()
+    # Include the targets file if it has been defined. Targets files other
+    # than ITKTargets.cmake are created when modules are built externally. Do not
+    # include the targets file inside the module itself -- which occurs in a module's
+    # test configuration.
+    if(EXISTS "${${mod}_TARGETS_FILE}" AND NOT itk-module STREQUAL mod)
+      include("${${mod}_TARGETS_FILE}")
     endif()
   endif()
 endmacro()
@@ -59,11 +71,13 @@ endmacro()
 #  <namespace>_LIBRARIES    = Libraries to link
 #  <namespace>_INCLUDE_DIRS = Header search path
 #  <namespace>_LIBRARY_DIRS = Library search path (for outside dependencies)
+#  <namespace>_RUNTIME_LIBRARY_DIRS = Runtime linker search path
 # Do not name a module as the namespace.
 macro(itk_module_config ns)
   set(${ns}_LIBRARIES "")
   set(${ns}_INCLUDE_DIRS "")
   set(${ns}_LIBRARY_DIRS "")
+  set(${ns}_RUNTIME_LIBRARY_DIRS "")
 
   set(_${ns}_USED_MODULES "")
   foreach(mod ${ARGN})
@@ -74,7 +88,8 @@ macro(itk_module_config ns)
   endforeach()
   unset(_${ns}_USED_MODULES)
 
-  foreach(v ${ns}_LIBRARIES ${ns}_INCLUDE_DIRS ${ns}_LIBRARY_DIRS)
+  foreach(v ${ns}_LIBRARIES ${ns}_INCLUDE_DIRS ${ns}_LIBRARY_DIRS
+            ${ns}_RUNTIME_LIBRARY_DIRS)
     if(${v})
       list(REMOVE_DUPLICATES ${v})
     endif()

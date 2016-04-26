@@ -56,6 +56,11 @@ namespace itk {
  * for the algorithm with a different behavior on the border of the image.
  * By default, the image is padded by 1 pixel and constrained to the image region.
  *
+ * \note: When applying a single filter, input and output filters are the same; while applying a pipeline,
+ * input and output filters are different, may not even be of the same type. It is the responsibility of the
+ * user to connect the pipeline properly outside of this filter.
+ *
+ *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
@@ -121,14 +126,6 @@ public:
                       TOutputImage::ImageDimension);
   itkStaticConstMacro(ImageDimension, unsigned int,
                       TOutputImage::ImageDimension);
-
-  // filter types used internally
-  typedef itk::LabelSelectionLabelMapFilter< LabelMapType >                        SelectType;
-  typedef itk::AutoCropLabelMapFilter< LabelMapType >                              CropType;
-  typedef itk::PadLabelMapFilter< LabelMapType >                                   PadType;
-  typedef itk::LabelMapToBinaryImageFilter< LabelMapType, InternalInputImageType>  LM2BIType;
-  typedef itk::LabelImageToLabelMapFilter< InternalOutputImageType, LabelMapType>  LI2LMType;
-  typedef itk::BinaryImageToLabelMapFilter< InternalOutputImageType, LabelMapType> BI2LMType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -209,8 +206,8 @@ protected:
   virtual void GenerateData() ITK_OVERRIDE;
 
 private:
-  ObjectByObjectLabelMapFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  ObjectByObjectLabelMapFilter(const Self&) ITK_DELETE_FUNCTION;
+  void operator=(const Self&) ITK_DELETE_FUNCTION;
 
   bool     m_ConstrainPaddingToImage;
   SizeType m_PadSize;
@@ -220,16 +217,27 @@ private:
 
   InternalOutputPixelType m_InternalForegroundValue;
 
+  typedef itk::LabelSelectionLabelMapFilter< LabelMapType >                        SelectType;
+  typename SelectType::Pointer m_Select;
+
+  typedef itk::AutoCropLabelMapFilter< LabelMapType >                              CropType;
+  typename CropType::Pointer   m_Crop;
+
+  typedef itk::PadLabelMapFilter< LabelMapType >                                   PadType;
+  typename PadType::Pointer    m_Pad;
+
+  typedef itk::LabelMapToBinaryImageFilter< LabelMapType, InternalInputImageType>  LM2BIType;
+  typename LM2BIType::Pointer  m_LM2BI;
+
+  typedef itk::LabelImageToLabelMapFilter< InternalOutputImageType, LabelMapType>  LI2LMType;
+  typename LI2LMType::Pointer  m_LI2LM;
+
+  typedef itk::BinaryImageToLabelMapFilter< InternalOutputImageType, LabelMapType> BI2LMType;
+  typename BI2LMType::Pointer  m_BI2LM;
 
   typename InputFilterType::Pointer       m_InputFilter;
   typename OutputFilterType::Pointer      m_OutputFilter;
 
-  typename SelectType::Pointer m_Select;
-  typename CropType::Pointer   m_Crop;
-  typename PadType::Pointer    m_Pad;
-  typename LM2BIType::Pointer  m_LM2BI;
-  typename LI2LMType::Pointer  m_LI2LM;
-  typename BI2LMType::Pointer  m_BI2LM;
 
   InputImagePixelType          m_Label;
 

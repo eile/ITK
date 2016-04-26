@@ -5,14 +5,15 @@ find_package(PythonInterp REQUIRED)
 ###############################################################################
 # Build swig
 
-option(ITK_USE_SYSTEM_SWIG "Use system swig. If OFF, swig is built as an external project." OFF)
+option(ITK_USE_SYSTEM_SWIG "Use system swig. If OFF, swig is built as an external project." ${ITK_USE_SYSTEM_LIBRARIES})
+mark_as_advanced(ITK_USE_SYSTEM_SWIG)
 
 # Minimal swig version
 set(swig_version_min 3.0.0)
 
-set(ITK_SWIG_VERSION 3.0.3)
-set(swig_md5     fff5ff91fe26ce4e369994753478640b)
-set(swigwin_md5  4db849fd693d0ca3495e1e49d2561b21)
+set(ITK_SWIG_VERSION 3.0.7)
+set(swig_md5     7fff46c84b8c630ede5b0f0827e3d90a)
+set(swigwin_md5  d8b5a9ce49c819cc1bfc1e797b85ba7a)
 
 if(WIN32)
   set(swig_ep "${CMAKE_CURRENT_BINARY_DIR}/swigwin-${ITK_SWIG_VERSION}/swig.exe")
@@ -83,23 +84,59 @@ else()
     if(ITK_BINARY_DIR)
       itk_download_attempt_check(PCRE)
     endif()
+    set(pcre_env)
+    if(NOT CMAKE_CROSSCOMPILING)
+      set(pcre_env
+        env
+          "CC=${CMAKE_C_COMPILER} ${CMAKE_C_COMPILER_ARG1}"
+          "CFLAGS=${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE} -w"
+          "LDFLAGS=$ENV{LDFLAGS}"
+          "LIBS=$ENV{LIBS}"
+          "CPPFLAGS=$ENV{CPPFLAGS}"
+          "CXX=${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ARG1}"
+          "CXXFLAGS=${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} -w"
+          "CPP=$ENV{CPP}"
+          "CXXPP=$ENV{CXXPP}"
+        )
+      if(APPLE)
+        # If building on OS X, the compiler must know what version of the OS X SDK to use
+        # without SDKROOT set, configuring PCRE fails.  The deployment target is set to
+        # ensure the built library is compatible with the correct OS X version.  This may
+        # not be strictly necessary for configure, but the compiler determines which
+        # header files to use based on both of these settings.  Adding it for safety.
+        set(pcre_env ${pcre_env}
+          "SDKROOT=${CMAKE_OSX_SYSROOT}"
+          "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+        )
+      endif()
+    endif()
+    set(extra_external_project_commands)
+    if(APPLE)
+      # If building on OS X, we have to set the SDKROOT and DEPOLYMENT_TARGET environment variables
+      # so that XCode's compilers know which version of the OS X SDK to use.
+      list(APPEND extra_external_project_commands
+        BUILD_COMMAND
+          env
+            "SDKROOT=${CMAKE_OSX_SYSROOT}"
+            "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+          make
+        INSTALL_COMMAND
+          env
+            "SDKROOT=${CMAKE_OSX_SYSROOT}"
+            "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+          make
+            install
+      )
+    endif()
     ExternalProject_Add(PCRE
-    URL http://downloads.sourceforge.net/project/pcre/pcre/8.36/pcre-8.36.tar.gz
-    URL_MD5 ff7b4bb14e355f04885cf18ff4125c98
+    URL http://downloads.sourceforge.net/project/pcre/pcre/8.37/pcre-8.37.tar.gz
+    URL_MD5 6e0cc6d1bdac7a4308151f9b3571b86e
     CONFIGURE_COMMAND
-      env
-        "CC=${CMAKE_C_COMPILER} ${CMAKE_C_COMPILER_ARG1}"
-        "CFLAGS=${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}"
-        "LDFLAGS=$ENV{LDFLAGS}"
-        "LIBS=$ENV{LIBS}"
-        "CPPFLAGS=$ENV{CPPFLAGS}"
-        "CXX=${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ARG1}"
-        "CXXFLAGS=${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}"
-        "CPP=$ENV{CPP}"
-        "CXXPP=$ENV{CXXPP}"
+      ${pcre_env}
       ../PCRE/configure
       --prefix=${CMAKE_CURRENT_BINARY_DIR}/PCRE
       --enable-shared=no
+    ${extra_external_project_commands}
     )
 
     # swig uses bison find it by cmake and pass it down
@@ -133,57 +170,82 @@ else()
     if(ITK_BINARY_DIR)
       itk_download_attempt_check(SWIG)
     endif()
+    # Swig configure step
+    # Run in a CMake script because it will be flagged as a false-positive
+    # warning when executed with CTEST_USE_LAUNCHERS
+    set(swig_env)
+    if(NOT CMAKE_CROSSCOMPILING)
+      set(swig_env
+"
+set(ENV{CC} \"${CMAKE_C_COMPILER} ${CMAKE_C_COMPILER_ARG1}\")
+set(ENV{CFLAGS} \"${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE} -w\")
+set(ENV{LDFLAGS} \"$ENV{LDFLAGS}\")
+set(ENV{LIBS} \"$ENV{LIBS}\")
+set(ENV{CPPFLAGS} \"$ENV{CPPFLAGS}\")
+set(ENV{CXX} \"${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ARG1}\")
+set(ENV{CXXFLAGS} \"${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} -w\")
+set(ENV{CPP} \"$ENV{CPP}\")
+set(ENV{YACC} \"${BISON_EXECUTABLE}\")
+set(ENV{YFLAGS} \"${BISON_FLAGS}\")
+"
+        )
+    endif()
+    set(_swig_configure_script ${CMAKE_CURRENT_BINARY_DIR}/swig_configure_step.cmake)
+    file(WRITE ${_swig_configure_script} "
+    ${swig_env}
+execute_process(COMMAND ../swig/configure
+        \"--prefix=${CMAKE_CURRENT_BINARY_DIR}/swig\"
+        \"--with-pcre-prefix=${CMAKE_CURRENT_BINARY_DIR}/PCRE\"
+  WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}/swig-prefix/src/swig-build\"
+  RESULT_VARIABLE result
+  OUTPUT_VARIABLE output
+  ERROR_VARIABLE error
+  )
+
+set(output_file \"${CMAKE_CURRENT_BINARY_DIR}/swig_configure_output.txt\")
+file(WRITE \${output_file} \${output})
+
+set(error_file \"${CMAKE_CURRENT_BINARY_DIR}/swig_configure_error.txt\")
+file(WRITE \${error_file} \${error})
+
+if(NOT \${result} EQUAL 0)
+  message(STATUS \"Swig configure errors detected - See below.\n\${output}\n\${error}\")
+  message(FATAL_ERROR \"Swig configure error. See \${output_file} and \${error_file}\")
+endif()
+
+message(STATUS \"Swig configure successfully completed.\")
+")
+    set(extra_swig_configure_env)
+    if(APPLE)
+      # If building on OS X, the compiler must know what version of the OS X SDK to use
+      # without SDKROOT set, configuring swig fails.  The deployment target is set to
+      # ensure the built library is compatible with the correct OS X version.  This may
+      # not be strictly necessary for configure, but the compiler determines which
+      # header files to use based on both of these settings.  Adding it for safety.
+      list(APPEND extra_swig_configure_env
+        env
+          "SDKROOT=${CMAKE_OSX_SYSROOT}"
+          "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+      )
+    endif()
     ExternalProject_Add(swig
     URL http://prdownloads.sourceforge.net/swig/swig-${SWIG_VERSION}.tar.gz
     URL_MD5 ${swig_md5}
     CONFIGURE_COMMAND
-      env
-        "CC=${CMAKE_C_COMPILER} ${CMAKE_C_COMPILER_ARG1}"
-        "CFLAGS=${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}"
-        "LDFLAGS=$ENV{LDFLAGS}"
-        "LIBS=$ENV{LIBS}"
-        "CPPFLAGS=$ENV{CPPFLAGS}"
-        "CXX=${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ARG1}"
-        "CXXFLAGS=${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}"
-        "CPP=$ENV{CPP}"
-        "YACC=${BISON_EXECUTABLE}"
-        "YFLAGS=${BISON_FLAGS}"
-      ../swig/configure
-        --prefix=${CMAKE_CURRENT_BINARY_DIR}/swig
-        --with-pcre-prefix=${CMAKE_CURRENT_BINARY_DIR}/PCRE
+      ${extra_swig_configure_env} ${CMAKE_COMMAND} -P "${_swig_configure_script}"
+    ${extra_external_project_commands}
     DEPENDS PCRE
-
     )
     set(SWIG_DIR ${CMAKE_CURRENT_BINARY_DIR}/swig/share/swig/${SWIG_VERSION} CACHE FILEPATH "swig directory." FORCE)
+    mark_as_advanced(SWIG_DIR)
   endif()
   set(SWIG_EXECUTABLE ${swig_ep} CACHE FILEPATH "swig executable." FORCE)
+  mark_as_advanced(SWIG_EXECUTABLE)
 endif()
 
 ###############################################################################
-
 set(IDX_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/idx.py CACHE INTERNAL "idx generator path")
-set(PYGCCXML_DIR ${CMAKE_SOURCE_DIR}/Modules/ThirdParty/pygccxml/src CACHE INTERNAL "pygccxml path")
-
-###############################################################################
-# install the files requires for swiginterface
-if(NOT EXTERNAL_WRAP_ITK_PROJECT)
-  WRAP_ITK_INSTALL(/Configuration/Generators/SwigInterface CMakeLists.txt)
-  WRAP_ITK_INSTALL(/Configuration/Generators/SwigInterface Master.mdx.in)
-  WRAP_ITK_INSTALL(/Configuration/Generators/SwigInterface empty.in)
-  WRAP_ITK_INSTALL(/Configuration/Generators/SwigInterface module.i.in)
-  WRAP_ITK_INSTALL(/Configuration/Generators/SwigInterface module.includes.in)
-
-  install(DIRECTORY ${PYGCCXML_DIR}
-    DESTINATION "${WRAP_ITK_INSTALL_PREFIX}/Configuration/Generators/SwigInterface"
-    PATTERN ".git" EXCLUDE
-  )
-
-  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/idx.py"
-                "${CMAKE_CURRENT_SOURCE_DIR}/igenerator.py"
-    DESTINATION "${WRAP_ITK_INSTALL_PREFIX}/Configuration/Generators/SwigInterface"
-  )
-
-endif()
+set(PYGCCXML_DIR ${ITK_CMAKE_DIR}/../Modules/ThirdParty/pygccxml/src CACHE INTERNAL "pygccxml path")
 
 
 ###############################################################################
@@ -191,7 +253,7 @@ endif()
 set(ITK_WRAP_SWIGINTERFACE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "swig interface source dir")
 set(ITK_WRAP_SWIGINTERFACE_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "swig interface binary dir")
 
-set(WRAPPER_MASTER_INDEX_OUTPUT_DIR "${PROJECT_BINARY_DIR}/Typedefs" CACHE INTERNAL "typedefs dir")
+set(WRAPPER_MASTER_INDEX_OUTPUT_DIR "${ITK_DIR}/Wrapping/Typedefs" CACHE INTERNAL "typedefs dir")
 set(IGENERATOR  "${CMAKE_CURRENT_SOURCE_DIR}/igenerator.py" CACHE INTERNAL "igenerator.py path" FORCE)
 
 macro(itk_wrap_module_swig_interface library_name)
@@ -214,8 +276,6 @@ macro(itk_end_wrap_module_swig_interface)
          DESTINATION "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}")
     get_filename_component(basename ${source} NAME)
     set(dest "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${basename}")
-    WRAP_ITK_INSTALL("/Configuration/Typedefs" "${dest}")
-#    set(SWIG_INTERFACE_MODULE_CONTENT "${SWIG_INTERFACE_MODULE_CONTENT}%import ${basename}\n")
   endforeach()
 
   # the list of .i files generated for the module
@@ -224,7 +284,7 @@ macro(itk_end_wrap_module_swig_interface)
   # prepare dependencies
   set(DEPS )
   foreach(dep ${WRAPPER_LIBRARY_DEPENDS})
-    set(DEPS ${DEPS} ${${dep}IdxFiles} ${${dep}SwigFiles})
+    list(APPEND DEPS ${${dep}IdxFiles} ${${dep}SwigFiles})
     set(SWIG_INTERFACE_MDX_CONTENT "${dep}.mdx\n${SWIG_INTERFACE_MDX_CONTENT}")
   endforeach()
 
@@ -232,11 +292,10 @@ macro(itk_end_wrap_module_swig_interface)
   set(swig_libs )
   foreach(swig_lib ${WRAPPER_SWIG_LIBRARY_FILES})
     get_filename_component(basename ${swig_lib} NAME)
-    set(swig_libs ${swig_libs} --swig-include ${basename})
+    list(APPEND swig_libs --swig-include ${basename})
     file(COPY "${swig_lib}"
       DESTINATION "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}")
     set(dest "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${basename}")
-    WRAP_ITK_INSTALL("/Configuration/Typedefs" "${dest}")
   endforeach()
 
   # accumulate the idx files already generated before this module to generate usable depenencies
@@ -256,19 +315,19 @@ macro(itk_end_wrap_module_swig_interface)
     # prepare the options
     set(opts )
     foreach(dep ${WRAPPER_LIBRARY_DEPENDS})
-      set(opts ${opts} --mdx "${WRAP_ITK_TYPEDEFS_DIRECTORY}/${dep}.mdx")
-#      set(opts ${opts} --include "${dep}.includes")
-#      set(opts ${opts} --import "${dep}.i")
+      list(APPEND opts --mdx "${WRAP_ITK_TYPEDEFS_DIRECTORY}/${dep}.mdx")
+#      list(APPEND opts --include "${dep}.includes")
+#      list(APPEND opts --import "${dep}.i")
     endforeach()
     # import the interface files previously defined instead of importing all the files defined
     # in the module to avoid many warnings when running swig
 #    foreach(i ${SWIG_INTERFACE_FILES})
 #      get_filename_component(bi "${i}" NAME)
-#      set(opts ${opts} --import "${bi}")
+#      list(APPEND opts --import "${bi}")
 #    endforeach()
 
     if(ITK_WRAP_EXPLICIT)
-      set(opts ${opts} --include "${WRAPPER_LIBRARY_NAME}Explicit.h")
+      list(APPEND opts --include "${WRAPPER_LIBRARY_NAME}Explicit.h")
     endif()
 
     add_custom_command(
@@ -284,17 +343,17 @@ macro(itk_end_wrap_module_swig_interface)
         -w1 -w3 -w51 -w52 -w53 -w54
         -A protected -A private
         -p ${PYGCCXML_DIR}
-        -g ${GCCXML}
+        -g ${CASTXML_EXECUTABLE}
         --typedef-input ${typedef_in_file}
         --typedef-output ${typedef_file}
         --include ${module}SwigInterface.h
         ${xml_file}
         ${interface_file}
       DEPENDS ${DEPS} ${idx_files} ${IGENERATOR} # ${SWIG_INTERFACE_IDX_FILES} ${SWIG_INTERFACE_FILES} ${typedef_in_file} # ${includes_file}
+      VERBATIM
     )
 
-    set(SWIG_INTERFACE_FILES ${SWIG_INTERFACE_FILES} ${interface_file})
-    WRAP_ITK_INSTALL("/Configuration/Typedefs" "${interface_file}")
+    list(APPEND SWIG_INTERFACE_FILES ${interface_file})
   endforeach()
 
   # the mdx file
@@ -310,24 +369,14 @@ macro(itk_end_wrap_module_swig_interface)
   set(deps_includes )
   foreach(dep ${WRAPPER_LIBRARY_DEPENDS})
     set(deps_imports "${deps_imports}%import ${dep}.i\n")
-#    set(deps_includes "${deps_includes}#include \"${dep}.includes\"\n")
   endforeach()
 
-#  set(SWIG_INTERFACE_INCLUDES "${deps_includes}#include \"${WRAPPER_LIBRARY_NAME}.includes\"")
   set(CONFIG_MODULE_INTERFACE_CONTENT ) #"${deps_imports}${SWIG_INTERFACE_MODULE_CONTENT}")
   configure_file("${ITK_WRAP_SWIGINTERFACE_SOURCE_DIR}/module.i.in" "${module_interface_file}"
     @ONLY)
-  WRAP_ITK_INSTALL("/Configuration/Typedefs/" "${module_interface_file}")
-
-#  set(WRAP_ITK_FILE_CONTENT )
-#  configure_file("${WRAP_ITK_CONFIG_DIR}/empty.in" "${module_interface_ext_file}"
-#    @ONLY)
-#  install(FILES "${module_interface_ext_file}"
-#    DESTINATION "${WRAP_ITK_INSTALL_PREFIX}/Configuration/Typedefs/"
-#  )
 
   add_custom_target(${WRAPPER_LIBRARY_NAME}Idx DEPENDS ${SWIG_INTERFACE_IDX_FILES})
-  add_dependencies(${WRAPPER_LIBRARY_NAME}Idx ${WRAPPER_LIBRARY_NAME}GccXML)
+  add_dependencies(${WRAPPER_LIBRARY_NAME}Idx ${WRAPPER_LIBRARY_NAME}CastXML)
   set(${WRAPPER_LIBRARY_NAME}IdxFiles ${SWIG_INTERFACE_IDX_FILES} CACHE INTERNAL "Internal ${WRAPPER_LIBRARY_NAME}Idx file list.")
 
   add_custom_target(${WRAPPER_LIBRARY_NAME}Swig DEPENDS ${SWIG_INTERFACE_FILES})
@@ -383,7 +432,6 @@ macro(itk_end_wrap_submodule_swig_interface module)
   configure_file("${ITK_WRAP_SWIGINTERFACE_SOURCE_DIR}/module.includes.in"
      ${includes_file}
      @ONLY)
-  WRAP_ITK_INSTALL("/Configuration/Typedefs/" "${includes_file}")
 
   # the master idx file
   set(mdx_file "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${WRAPPER_LIBRARY_NAME}.mdx")
@@ -393,28 +441,19 @@ macro(itk_end_wrap_submodule_swig_interface module)
   add_custom_command(
     OUTPUT ${idx_file}
     COMMAND ${IDX_GENERATOR}
-      ${PYGCCXML_DIR} ${GCCXML} ${xml_file} ${idx_file}
+      ${PYGCCXML_DIR} ${CASTXML_EXECUTABLE} ${xml_file} ${idx_file}
     DEPENDS ${IDX_GENERATOR} ${xml_file}
+    VERBATIM
   )
   WRAP_ITK_INSTALL("/Configuration/Typedefs/" "${idx_file}")
-#   add_custom_target(${module}Idx DEPENDS ${idx_file})
 
   # store the path of the idx file to store it in the mdx file
   set(SWIG_INTERFACE_MDX_CONTENT "${SWIG_INTERFACE_MDX_CONTENT}${module}.idx\n")
-  set(SWIG_INTERFACE_IDX_FILES ${SWIG_INTERFACE_IDX_FILES} ${idx_file})
+  list(APPEND SWIG_INTERFACE_IDX_FILES ${idx_file})
 
   set(SWIG_INTERFACE_MODULE_CONTENT "${SWIG_INTERFACE_MODULE_CONTENT}%import ${module}.i\n")
 
-  set(SWIG_INTERFACE_MODULES ${SWIG_INTERFACE_MODULES} ${module})
-
-#  set(interface_ext_file "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${module}_ext.i")
-#  set(WRAP_ITK_FILE_CONTENT )
-#  configure_file("${WRAP_ITK_CONFIG_DIR}/empty.in" "${interface_ext_file}"
-#    @ONLY)
-#  install(FILES "${interface_ext_file}"
-#    DESTINATION "${WRAP_ITK_INSTALL_PREFIX}/Configuration/Typedefs/"
-#  )
-
+  list(APPEND SWIG_INTERFACE_MODULES ${module})
 endmacro()
 
 

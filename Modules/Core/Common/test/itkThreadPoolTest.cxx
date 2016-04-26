@@ -18,16 +18,25 @@
 
 #include "itkMultiThreader.h"
 #include "itkTimeProbe.h"
+#include "itkConfigure.h"
+
+itk::MutexLock::Pointer sharedMutex;
 
 void* execute(void *ptr)
 {
   // Here - get any args from ptr.
-  //std::cout << std::endl << "Thread fn starting.." << std::endl;
-  int *data = reinterpret_cast<int *>(ptr);
-  int m = 100;
+  itk::MultiThreader::ThreadInfoStruct* threadInfo =
+    static_cast<itk::MultiThreader::ThreadInfoStruct*>(ptr);
+
+  int *data = static_cast<int *>(threadInfo->UserData);
+
+  sharedMutex->Lock();
   std::cout << "Ptr received  :" << ptr
-            << "Value " << *data << std::endl;
+            << ", Value " << *data << std::endl;
+  sharedMutex->Unlock();
+
   int    n = 10;
+  int m = 100;
   double sum = 1.0;
 
   for( int j = 0; j < m; j++ )
@@ -38,14 +47,19 @@ void* execute(void *ptr)
       sum = sum + i + j;
       }
     }
-  //std::cout << std::endl << "Thread fn DONE" << std::endl;
+
   return ITK_NULLPTR;
 }
 
+#if !defined(ITK_USE_PTHREADS)
+int itkThreadPoolTest(int, char* [])
+{
+#else
 int itkThreadPoolTest(int argc, char* argv[])
 {
-#if defined(_WIN32) || defined(_WIN64)
-#else
+
+  sharedMutex = itk::MutexLock::New();
+
   int count = 1000000;
   if( argc > 1 )
     {
@@ -66,7 +80,6 @@ int itkThreadPoolTest(int argc, char* argv[])
   int data = 100;
   for(int i=0; i<count;i++)
     {
-
     threader->SetSingleMethod(&execute,(void *)&data);
     threader->SingleMethodExecute();
     }

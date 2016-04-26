@@ -20,6 +20,7 @@
 
 #include "itkSingleValuedNonLinearVnlOptimizerv4.h"
 #include "vnl/algo/vnl_amoeba.h"
+#include "ITKOptimizersv4Export.h"
 
 namespace itk
 {
@@ -56,7 +57,7 @@ namespace itk
  *
  * \ingroup ITKOptimizersv4
  */
-class AmoebaOptimizerv4:
+class ITKOptimizersv4_EXPORT AmoebaOptimizerv4:
   public SingleValuedNonLinearVnlOptimizerv4
 {
 public:
@@ -141,12 +142,11 @@ protected:
   typedef Superclass::CostFunctionAdaptorType CostFunctionAdaptorType;
 
 private:
+  AmoebaOptimizerv4(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
+
   /**Check that the settings are valid. If not throw an exception.*/
   void ValidateSettings();
-  //purposely not implemented
-  AmoebaOptimizerv4(const Self &);
-  //purposely not implemented
-  void operator=(const Self &);
 
   ParametersType::ValueType       m_ParametersConvergenceTolerance;
   MeasureType                     m_FunctionConvergenceTolerance;

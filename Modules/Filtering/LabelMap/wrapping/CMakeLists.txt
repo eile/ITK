@@ -1,6 +1,6 @@
 itk_wrap_module(ITKLabelMap)
 
-set(WRAPPER_LIBRARY_GROUPS
+set(WRAPPER_SUBMODULE_ORDER
   itkLabelObjectLine
   itkLabelObject
   itkShapeLabelObject
@@ -16,7 +16,7 @@ set(tmp_default_includes ${WRAPPER_DEFAULT_INCLUDE})
 
 # Add itkStatisticsLabelObject.h, it is not automatically detected
 # (but it maybe should)
-set(WRAPPER_DEFAULT_INCLUDE ${WRAPPER_DEFAULT_INCLUDE} "itkStatisticsLabelObject.h")
+list(APPEND WRAPPER_DEFAULT_INCLUDE "itkStatisticsLabelObject.h")
 
 itk_auto_load_submodules()
 itk_end_wrap_module()

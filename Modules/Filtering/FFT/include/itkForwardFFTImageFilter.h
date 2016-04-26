@@ -72,6 +72,12 @@ public:
     * Default implementation is VnlFFT. */
   static Pointer New();
 
+  /* Return the prefered greatest prime factor supported for the input image
+   * size. Defaults to 2 as many implementations work only for sizes that are
+   * power of 2.
+   */
+  virtual SizeValueType GetSizeGreatestPrimeFactor() const;
+
 protected:
   ForwardFFTImageFilter() {}
   virtual ~ForwardFFTImageFilter() {}
@@ -83,8 +89,8 @@ protected:
   virtual void EnlargeOutputRequestedRegion(DataObject *output);
 
 private:
-  ForwardFFTImageFilter(const Self &); // purposely not implemented
-  void operator=(const Self &);        // purposely not implemented
+  ForwardFFTImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // end namespace itk
 

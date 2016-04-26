@@ -23,9 +23,9 @@
 namespace itk
 {
 /** \class StatisticsLabelMapFilter
- * \brief The valuator class for the ShapeLabelObject
+ * \brief The valuator class for the StatisticsLabelObject
  *
- * StatisticsCollectionImageFilter can be used to set the attributes values
+ * StatisticsLabelMapFilter can be used to set the attributes values
  * of the StatisticsLabelObject in a LabelMap.
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
@@ -141,8 +141,8 @@ protected:
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  StatisticsLabelMapFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);           //purposely not implemented
+  StatisticsLabelMapFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   FeatureImagePixelType m_Minimum;
   FeatureImagePixelType m_Maximum;

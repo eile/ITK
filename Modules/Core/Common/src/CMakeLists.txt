@@ -1,4 +1,8 @@
 set(ITKCommon_SRCS
+itkMemoryProbesCollectorBase.cxx
+itkCreateObjectFunction.cxx
+itkLogger.cxx
+itkLogOutput.cxx
 itkLoggerOutput.cxx
 itkProgressAccumulator.cxx
 itkNumericTraits.cxx
@@ -10,7 +14,6 @@ itkFileOutputWindow.cxx
 itkSimpleFilterWatcher.cxx
 itkNumericTraitsVectorPixel.cxx
 itkObject.cxx
-itkDynamicLoader.cxx
 itkQuadrilateralCellTopology.cxx
 itkIterationReporter.cxx
 itkMemoryProbe.cxx
@@ -76,19 +79,30 @@ itkSimpleFastMutexLock.cxx
 itkNumericTraitsDiffusionTensor3DPixel.cxx
 itkEquivalencyTable.cxx
 itkXMLFileOutputWindow.cxx
+itkXMLFilterWatcher.cxx
 itkStoppingCriterionBase.cxx
 itkCompensatedSummation.cxx
 itkArrayOutputSpecialization.cxx
 itkNumberToString.cxx
 itkSmartPointerForwardReferenceProcessObject.cxx
 itkThreadPool.cxx
+itkRandomVariateGeneratorBase.cxx
+itkAtomicInt.cxx
+itkMath.cxx
 )
 
 if(WIN32)
   list(APPEND ITKCommon_SRCS itkWin32OutputWindow.cxx)
-  list(APPEND ITKCommon_SRCS itkWin32OutputWindow.cxx itkWinThreadPool.cxx)
-else()
+endif()
+
+if(ITK_USE_WIN32_THREADS)
+  list(APPEND ITKCommon_SRCS itkWinThreadPool.cxx)
+elseif(ITK_USE_PTHREADS)
   list(APPEND ITKCommon_SRCS itkPThreadPool.cxx)
+endif()
+
+if(ITK_DYNAMIC_LOADING)
+  list(APPEND ITKCommon_SRCS itkDynamicLoader.cxx)
 endif()
 
 # Prevent optimization from affecting the floating point calculation.
@@ -120,13 +134,14 @@ endif()
 ### generating libraries
 add_library( ITKCommon ${ITK_LIBRARY_BUILD_TYPE} ${ITKCommon_SRCS})
 
-target_link_libraries(ITKCommon
-  itksys
-  ITKVNLInstantiation
-  ${ITKDoubleConversion_LIBRARIES})
+itk_module_link_dependencies()
+target_link_libraries(ITKCommon LINK_PUBLIC itksys ITKVNLInstantiation)
 
 if(UNIX)
-  target_link_libraries(ITKCommon ${CMAKE_THREAD_LIBS} ${CMAKE_DL_LIBS} -lm)
+  target_link_libraries(ITKCommon LINK_PUBLIC ${CMAKE_THREAD_LIBS} -lm)
+  if(ITK_DYNAMIC_LOADING)
+    target_link_libraries(ITKCommon LINK_PUBLIC ${CMAKE_DL_LIBS})
+  endif()
 endif()
 
 itk_module_target(ITKCommon)

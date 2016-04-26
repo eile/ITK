@@ -81,7 +81,7 @@ public:
   typedef typename TMaskImage::Pointer   MaskImagePointer;
 
   /** Set the "outside" pixel value. The default value
-   * NumericTraits<OutputPixelType>::Zero. */
+   * NumericTraits<OutputPixelType>::ZeroValue(). */
   itkSetMacro(OutsideValue, OutputPixelType);
 
   /** Get the "outside" pixel value. */
@@ -145,9 +145,9 @@ protected:
   ~KappaSigmaThresholdImageFilter(){}
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   typedef typename TInputImage::SizeType    InputSizeType;
   typedef typename TInputImage::IndexType   InputIndexType;
@@ -165,8 +165,8 @@ protected:
                       TOutputImage::ImageDimension);
 
 private:
-  KappaSigmaThresholdImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                 //purposely not implemented
+  KappaSigmaThresholdImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   MaskPixelType   m_MaskValue;
   double          m_SigmaFactor;

@@ -87,16 +87,18 @@ public:
 
   /** Image typedef support */
   typedef TInputImage                       InputImageType;
+  typedef TInputImage                       SpeedImageType;
   typedef typename InputImageType::Pointer  InputImagePointer;
   typedef TOutputImage                      OutputImageType;
+  typedef TOutputImage                      LevelSetImageType;
   typedef typename OutputImageType::Pointer OutputImagePointer;
 
   /** Superclass typedefs. */
   typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
 
   /** FastMarchingUpwindGradientImageFilter typedefs. */
-  typedef itk::FastMarchingUpwindGradientImageFilter< TInputImage,
-                                                      TOutputImage > FastMarchingUpwindGradientImageFilterType;
+  typedef itk::FastMarchingUpwindGradientImageFilter< LevelSetImageType,
+                                                      SpeedImageType > FastMarchingUpwindGradientImageFilterType;
 
   /** Typedef support of level set method types. */
   typedef typename FastMarchingUpwindGradientImageFilterType::PixelType
@@ -162,8 +164,8 @@ protected:
   void PrintSelf(std::ostream &, Indent) const ITK_OVERRIDE;
 
 private:
-  CollidingFrontsImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);             //purposely not implemented
+  CollidingFrontsImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   NodeContainerPointer m_SeedPoints1;
   NodeContainerPointer m_SeedPoints2;

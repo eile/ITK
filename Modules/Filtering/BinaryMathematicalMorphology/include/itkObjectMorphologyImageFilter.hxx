@@ -25,6 +25,7 @@
 #include "itkNeighborhoodAlgorithm.h"
 #include "itkProgressReporter.h"
 #include "itkImageRegionConstIterator.h"
+#include "itkMath.h"
 
 namespace itk
 {
@@ -33,7 +34,7 @@ ObjectMorphologyImageFilter< TInputImage, TOutputImage, TKernel >
 ::ObjectMorphologyImageFilter():
   m_Kernel()
 {
-  m_DefaultBoundaryCondition.SetConstant(NumericTraits< PixelType >::Zero);
+  m_DefaultBoundaryCondition.SetConstant(NumericTraits< PixelType >::ZeroValue());
   m_BoundaryCondition = &m_DefaultBoundaryCondition;
 
   m_UseBoundaryCondition = false;
@@ -95,7 +96,7 @@ void
 ObjectMorphologyImageFilter< TInputImage, TOutputImage, TKernel >
 ::BeforeThreadedGenerateData()
 {
-  if ( m_ObjectValue == 0 )
+  if ( Math::ExactlyEquals(m_ObjectValue, NumericTraits< typename TInputImage::PixelType >::ZeroValue()) )
     {
     this->GetOutput()->FillBuffer(1);
     }
@@ -123,7 +124,7 @@ ObjectMorphologyImageFilter< TInputImage, TOutputImage, TKernel >
   oRegIter.GoToBegin();
   while ( !oRegIter.IsAtEnd() )
     {
-    if ( oRegIter.Get() != m_ObjectValue )
+    if ( Math::NotExactlyEquals(oRegIter.Get(), m_ObjectValue) )
       {
       oRegIter.Set( iRegIter.Get() );
       }
@@ -168,7 +169,7 @@ ObjectMorphologyImageFilter< TInputImage, TOutputImage, TKernel >
 
     while ( !iSNIter.IsAtEnd() )
       {
-      if ( iSNIter.GetCenterPixel() == m_ObjectValue )
+      if ( Math::ExactlyEquals(iSNIter.GetCenterPixel(), m_ObjectValue) )
         {
         if ( this->IsObjectPixelOnBoundary(iSNIter) )
           {
@@ -201,7 +202,7 @@ ObjectMorphologyImageFilter< TInputImage, TOutputImage, TKernel >
     for ( i = 0; i < s; i++ )
       {
       tf = iNIter.GetPixel(i);
-      if ( tf != m_ObjectValue )
+      if ( Math::NotExactlyEquals(tf, m_ObjectValue) )
         {
         return true;
         }
@@ -212,7 +213,7 @@ ObjectMorphologyImageFilter< TInputImage, TOutputImage, TKernel >
     for ( i = 0; i < s; i++ )
       {
       tf = iNIter.GetPixel(i, isInside);
-      if ( tf != m_ObjectValue && isInside )
+      if ( Math::NotExactlyEquals(tf, m_ObjectValue) && isInside )
         {
         return true;
         }

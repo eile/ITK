@@ -18,6 +18,7 @@
 #ifndef itkXMLFile_h
 #define itkXMLFile_h
 #include "itkLightProcessObject.h"
+#include "ITKIOXMLExport.h"
 #include <fstream>
 
 namespace itk
@@ -30,7 +31,7 @@ namespace itk
  * are implemented here.
  * \ingroup ITKIOXML
  */
-class XMLReaderBase:public LightProcessObject
+class ITKIOXML_EXPORT XMLReaderBase:public LightProcessObject
 {
 public:
   typedef XMLReaderBase Self;
@@ -76,8 +77,8 @@ protected:
   std::string m_Filename;
 
 private:
-  XMLReaderBase(const Self &);  //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  XMLReaderBase(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** \class XMLReader
@@ -112,8 +113,8 @@ protected:
   T *m_OutputObject;
 
 private:
-  XMLReader(const Self &);      //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  XMLReader(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /** \class XMLWriterBase
@@ -192,8 +193,8 @@ protected:
   std::string m_Filename;       // name of file to write.
 
 private:
-  XMLWriterBase(const Self &);  //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  XMLWriterBase(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 }
 #endif

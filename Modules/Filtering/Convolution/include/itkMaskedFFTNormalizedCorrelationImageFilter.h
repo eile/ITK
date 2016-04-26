@@ -131,7 +131,7 @@ namespace itk
  * 2) D. Padfield. "Masked FFT registration". In Proc. Computer
  * Vision and Pattern Recognition, 2010.
  *
- * \author: Dirk Padfield, GE Global Research, padfield@research.ge.com
+ * \author: Dirk Padfield, GE Global Research, padfield\@research.ge.com
  * \ingroup ITKConvolution
  */
 
@@ -150,7 +150,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(MaskedFFTNormalizedCorrelationImageFilter, MaskedFFTNormalizedCrossCorrelationImageFilter);
+  itkTypeMacro(MaskedFFTNormalizedCorrelationImageFilter, ImageToImageFilter);
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
@@ -316,8 +316,8 @@ protected:
   double CalculatePrecisionTolerance( LocalInputImageType * inputImage );
 
 private:
-  MaskedFFTNormalizedCorrelationImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  MaskedFFTNormalizedCorrelationImageFilter(const Self&) ITK_DELETE_FUNCTION;
+  void operator=(const Self&) ITK_DELETE_FUNCTION;
 
   /** Larger values zero-out pixels on a larger border around the correlation image.
    * Thus, larger values remove less stable computations but also limit the capture range.

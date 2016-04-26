@@ -102,7 +102,7 @@ public:
                      DerivativeType & derivative) const ITK_OVERRIDE
   {
     itkWarningMacro(<< "This metric does not provide metric derivatives.");
-    derivative.Fill(NumericTraits< typename DerivativeType::ValueType >::Zero);
+    derivative.Fill(NumericTraits< typename DerivativeType::ValueType >::ZeroValue());
   }
 
   /**  Get the value of the metric at a particular parameter
@@ -167,8 +167,8 @@ protected:
   };
 
 private:
-  MatchCardinalityImageToImageMetric(const Self &); //purposely not implemented
-  void operator=(const Self &);                     //purposely not implemented
+  MatchCardinalityImageToImageMetric(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   bool                         m_MeasureMatches;
   std::vector< MeasureType >   m_ThreadMatches;

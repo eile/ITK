@@ -29,6 +29,28 @@ message("${msg}")
 #--  CPPFLAGS    C/C++/Objective C preprocessor flags, e.g. -I<include dir> if
 #--              you have headers in a nonstandard directory <include dir>
 
+set(_additional_configure_env)
+set(_additional_external_project_args)
+if (APPLE)
+  list(APPEND _additional_configure_env
+        "SDKROOT=${CMAKE_OSX_SYSROOT}"
+        "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+  )
+  list(APPEND _additional_external_project_args
+        BUILD_COMMAND
+          env
+            "SDKROOT=${CMAKE_OSX_SYSROOT}"
+            "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+          make
+        INSTALL_COMMAND
+          env
+            "SDKROOT=${CMAKE_OSX_SYSROOT}"
+            "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+          make
+            install
+  )
+endif()
+
 ## Perhaps in the future a set of TryCompiles could be used here.
 set(FFTW_OPTIMIZATION_CONFIGURATION "" CACHE INTERNAL "architecture flags: --enable-sse --enable-sse2 --enable-altivec --enable-mips-ps --enable-cell")
 if(ITK_USE_SYSTEM_FFTW)
@@ -53,9 +75,9 @@ else()
       set(FFTW_SHARED_FLAG --enable-shared)
     endif()
 
-    set(_fftw_target_version 3.3.3)
-    set(_fftw_url_md5 "0a05ca9c7b3bfddc8278e7c40791a1c2")
-    set(_fftw_url "http://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${_fftw_url_md5}&name=fftw-${_fftw_target_version}.tar.gz")
+    set(_fftw_target_version 3.3.4)
+    set(_fftw_url_md5 "2edab8c06b24feeb3b82bbb3ebf3e7b3")
+    set(_fftw_url "https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${_fftw_url_md5}&name=fftw-${_fftw_target_version}.tar.gz")
 
     if(ITK_USE_FFTWF)
       itk_download_attempt_check(FFTW)
@@ -72,6 +94,7 @@ else()
             "LIBS=$ENV{LIBS}"
             "CPP=$ENV{CPP}"
             "CPPFLAGS=$ENV{CPPFLAGS}"
+            ${_additional_configure_env}
           ${ITK_BINARY_DIR}/fftwf/src/fftwf/configure
             ${FFTW_SHARED_FLAG}
             ${FFTW_OPTIMIZATION_CONFIGURATION}
@@ -79,6 +102,7 @@ else()
             --disable-fortran
             --enable-float
             --prefix=${ITK_BINARY_DIR}/fftw
+        ${_additional_external_project_args}
         )
     endif()
 
@@ -97,6 +121,7 @@ else()
            "LIBS=$ENV{LIBS}"
            "CPP=$ENV{CPP}"
            "CPPFLAGS=$ENV{CPPFLAGS}"
+            ${_additional_configure_env}
           ${ITK_BINARY_DIR}/fftwd/src/fftwd/configure
             ${FFTW_SHARED_FLAG}
             ${FFTW_OPTIMIZATION_CONFIGURATION}
@@ -104,6 +129,7 @@ else()
             --disable-fortran
             --disable-float
             --prefix=${ITK_BINARY_DIR}/fftw
+        ${_additional_external_project_args}
         )
     endif()
     set(FFTW_INCLUDE_PATH ${ITK_BINARY_DIR}/fftw/include)

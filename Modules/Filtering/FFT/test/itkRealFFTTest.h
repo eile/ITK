@@ -166,8 +166,7 @@ test_fft(unsigned int *SizeOfDimensions)
 
   // Inform the filter that there's an odd # of pixels in the x
   // dimension.
-  const bool dimensionIsOdd = SizeOfDimensions[0] & 1;
-  C2R->SetActualXDimensionIsOdd( dimensionIsOdd );
+  C2R->SetActualXDimensionIsOddInput( R2C->GetActualXDimensionIsOddOutput() );
   C2R->Print( std::cout );
   C2R->Update();
   std::cerr << "C2R region: " << C2R->GetOutput()->GetLargestPossibleRegion() << std::endl;
@@ -209,7 +208,7 @@ test_fft(unsigned int *SizeOfDimensions)
     TPixel val = originalImageIterator.Value();
     TPixel val2 = inverseFFTImageIterator.Value();
     TPixel diff = vnl_math_abs( val - val2 );
-    if ( val != 0 )
+    if ( itk::Math::NotAlmostEquals(val, itk::NumericTraits<TPixel>::ZeroValue()) )
       {
       diff /= vnl_math_abs( val );
       }
@@ -382,7 +381,7 @@ test_fft_rtc(unsigned int *SizeOfDimensions)
         {
         double val = std::abs(fftbufA[zStrideA+yStrideA+k]);
         double diff = std::abs(fftbufA[zStrideA+yStrideA+k] - fftbufB[zStrideB+yStrideB+k]);
-        if ( val != 0 )
+        if ( itk::Math::NotAlmostEquals(val, 0.0) )
           {
           diff /= vnl_math_abs( val );
           }

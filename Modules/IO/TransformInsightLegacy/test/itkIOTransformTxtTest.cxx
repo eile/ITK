@@ -40,18 +40,22 @@ static int oneTest(const std::string & outputDirectory, const char *goodname,con
   itk::ObjectFactoryBase::RegisterFactory(itk::TxtTransformIOFactory::New() );
 
   // Set it's parameters
-  typename AffineTransformType::ParametersType p = affine->GetParameters();
-  for ( i = 0; i < p.GetSize(); i++ )
     {
-    p[i] = i;
+    typename AffineTransformType::ParametersType p = affine->GetParameters();
+    for ( i = 0; i < p.GetSize(); i++ )
+      {
+      p[i] = i;
+      }
+    affine->SetParameters ( p );
     }
-  affine->SetParameters ( p );
-  p = affine->GetFixedParameters ();
-  for ( i = 0; i < p.GetSize(); i++ )
     {
-    p[i] = i;
+    typename AffineTransformType::FixedParametersType p = affine->GetFixedParameters ();
+    for ( i = 0; i < p.GetSize(); i++ )
+      {
+      p[i] = i;
+      }
+    affine->SetFixedParameters ( p );
     }
-  affine->SetFixedParameters ( p );
   typename itk::TransformFileWriterTemplate<ScalarType>::Pointer writer;
   typename itk::TransformFileReaderTemplate<ScalarType>::Pointer reader;
 
@@ -82,9 +86,8 @@ static int oneTest(const std::string & outputDirectory, const char *goodname,con
 
   try
     {
-    typename itk::TransformFileReaderTemplate<ScalarType>::TransformListType *list;
-    list = reader->GetTransformList();
-    typename itk::TransformFileReaderTemplate<ScalarType>::TransformListType::iterator lit = list->begin();
+    const typename itk::TransformFileReaderTemplate<ScalarType>::TransformListType * list = reader->GetTransformList();
+    typename itk::TransformFileReaderTemplate<ScalarType>::TransformListType::const_iterator lit = list->begin();
     while ( lit != list->end() )
       {
       (*lit)->Print ( std::cout );
@@ -104,18 +107,22 @@ static int oneTest(const std::string & outputDirectory, const char *goodname,con
   typename AffineTransformTypeNotRegistered::Pointer Bogus = AffineTransformTypeNotRegistered::New();
 
   // Set it's parameters
-  p = Bogus->GetParameters();
-  for ( i = 0; i < p.GetSize(); i++ )
     {
-    p[i] = i;
+    typename AffineTransformType::ParametersType p = Bogus->GetParameters();
+    for ( i = 0; i < p.GetSize(); i++ )
+      {
+      p[i] = i;
+      }
+    Bogus->SetParameters ( p );
     }
-  Bogus->SetParameters ( p );
-  p = Bogus->GetFixedParameters ();
-  for ( i = 0; i < p.GetSize(); i++ )
     {
-    p[i] = i;
+    typename AffineTransformType::FixedParametersType p = Bogus->GetFixedParameters ();
+    for ( i = 0; i < p.GetSize(); i++ )
+      {
+      p[i] = i;
+      }
+    Bogus->SetFixedParameters ( p );
     }
-  Bogus->SetFixedParameters ( p );
 
   typename itk::TransformFileWriterTemplate<ScalarType>::Pointer badwriter;
   typename itk::TransformFileReaderTemplate<ScalarType>::Pointer badreader;
@@ -196,9 +203,8 @@ secondTest( const std::string & outputDirectory )
     {
     reader->Update();
     std::cerr << "FAILED to throw expected exception" << std::endl;
-    typename itk::TransformFileReaderTemplate<ScalarType>::TransformListType *list;
-    list = reader->GetTransformList();
-    typename itk::TransformFileReaderTemplate<ScalarType>::TransformListType::iterator lit =
+    const typename itk::TransformFileReaderTemplate<ScalarType>::TransformListType * list = reader->GetTransformList();
+    typename itk::TransformFileReaderTemplate<ScalarType>::TransformListType::const_iterator lit =
       list->begin();
     while ( lit != list->end() )
       {

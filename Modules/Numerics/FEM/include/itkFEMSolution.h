@@ -19,6 +19,8 @@
 #ifndef itkFEMSolution_h
 #define itkFEMSolution_h
 
+#include "ITKFEMExport.h"
+
 namespace itk
 {
 namespace fem
@@ -33,7 +35,7 @@ namespace fem
  * \sa LinearSystemWrapper
  * \ingroup ITKFEM
  */
-class Solution
+class ITKFEM_EXPORT Solution
 {
 public:
 
@@ -68,9 +70,7 @@ public:
    * Virtual destructor should properly destroy the object and clean up any
    * memory allocated for matrix and vector storage.
    */
-  virtual ~Solution()
-  {
-  }
+  virtual ~Solution();
 };
 }
 }  // end namespace itk::fem

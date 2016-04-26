@@ -33,6 +33,7 @@
 #include "itkFEMMaterialBase.h"
 #include "itkFEMMaterialLinearElasticity.h"
 #include "itkVectorContainer.h"
+#include "ITKFEMExport.h"
 
 namespace itk
 {
@@ -71,7 +72,7 @@ namespace fem
  */
 
 template <unsigned int VDimension = 3>
-class FEMObject : public DataObject
+class  FEMObject : public DataObject
 {
 public:
   /** Standard class typedefs. */
@@ -334,8 +335,8 @@ protected:
   MaterialContainerPointer m_MaterialContainer;
 
 private:
-  FEMObject(const Self &);      // purposely not implemented
-  void operator=(const Self &); // purposely not implemented
+  FEMObject(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   void AddNextLoadInternal(Load *l);
 };  // End Class: FEMObject

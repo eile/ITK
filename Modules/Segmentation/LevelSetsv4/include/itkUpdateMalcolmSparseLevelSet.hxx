@@ -19,11 +19,13 @@
 #ifndef itkUpdateMalcolmSparseLevelSet_hxx
 #define itkUpdateMalcolmSparseLevelSet_hxx
 
+#include "itkMath.h"
 #include "itkUpdateMalcolmSparseLevelSet.h"
 
 
 namespace itk
 {
+
 template< unsigned int VDimension, typename TEquationContainer >
 UpdateMalcolmSparseLevelSet< VDimension, TEquationContainer >
 ::UpdateMalcolmSparseLevelSet() :
@@ -39,6 +41,7 @@ template< unsigned int VDimension, typename TEquationContainer >
 UpdateMalcolmSparseLevelSet< VDimension, TEquationContainer >
 ::~UpdateMalcolmSparseLevelSet()
 {}
+
 
 template< unsigned int VDimension, typename TEquationContainer >
 void
@@ -280,7 +283,7 @@ UpdateMalcolmSparseLevelSet< VDimension, TEquationContainer >
 ::EvolveWithPhasedPropagation( LevelSetLayerType& ioList,
                         LevelSetLayerType& ioUpdate,
                         const bool& iContraction )
-  {
+{
   itkAssertInDebugAndIgnoreInReleaseMacro( ioList.size() == ioUpdate.size() );
 
   ZeroFluxNeumannBoundaryCondition< LabelImageType > sp_nbc;
@@ -328,7 +331,7 @@ UpdateMalcolmSparseLevelSet< VDimension, TEquationContainer >
     LevelSetInputType currentIdx = nodeIt->first;
     LevelSetInputType inputIndex = currentIdx + this->m_Offset;
 
-    if( update != NumericTraits< LevelSetOutputRealType >::ZeroValue() )
+    if( Math::NotAlmostEquals( update, NumericTraits< LevelSetOutputRealType >::ZeroValue() ) )
       {
       // only allow positiveUpdate forces
       if( iContraction )
@@ -386,7 +389,7 @@ UpdateMalcolmSparseLevelSet< VDimension, TEquationContainer >
 
     ++nodeIt;
     }
-  }
+}
 
 template< unsigned int VDimension,
           typename TEquationContainer >

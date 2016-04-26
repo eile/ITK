@@ -14,7 +14,7 @@ set(ITK_USE_PTHREADS 0)
 set(ITK_HP_PTHREADS 0)
 if(CMAKE_USE_WIN32_THREADS_INIT)
   set(ITK_USE_WIN32_THREADS 1)
-elseif(CMAKE_USE_PTHREADS_INIT)
+elseif(CMAKE_USE_PTHREADS_INIT AND NOT EMSCRIPTEN)
   set(ITK_USE_PTHREADS 1)
 elseif(CMAKE_HP_PTHREADS_INIT)
   set(ITK_HP_PTHREADS 1)
@@ -45,6 +45,16 @@ check_include_files("sys/types.h" HAVE_SYS_TYPES_H)
 include(CheckSupportForSSERounding)
 
 
+# Test for atomics and other compiler intrinsics
+include(itkCheckBuiltins)
+
+
+# Check for atomic functions
+include(CheckSymbolExists)
+if(WIN32 AND NOT MINGW)
+  check_symbol_exists(InterlockedAdd "windows.h" ITK_HAS_INTERLOCKEDADD)
+endif()
+
 
 # Check for the new C++11 alignas type specifier for future portable alignment
 try_compile( ITK_HAS_CPP11_ALIGNAS
@@ -67,6 +77,7 @@ try_compile( ITK_HAS_GNU_ATTRIBUTE_ALIGNED
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake/itkCheckHasGNUAttributeAligned.cxx
   CMAKE_FLAGS "-DCMAKE_BUILD_TYPE:STRING=Debug" )
 
+set(ITK_WINDOWS_EXPORT_ALL_SYMBOLS ${CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS})
 configure_file(src/itkConfigure.h.in itkConfigure.h)
 
 set(ITKCommon_INCLUDE_DIRS

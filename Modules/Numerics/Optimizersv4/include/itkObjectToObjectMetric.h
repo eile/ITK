@@ -84,25 +84,26 @@ namespace itk
  *
  * \ingroup ITKOptimizersv4
  */
-template<unsigned int TFixedDimension, unsigned int TMovingDimension, typename TVirtualImage = Image<double, TFixedDimension>, class TInternalComputationValueType=double>
+template<unsigned int TFixedDimension, unsigned int TMovingDimension, typename TVirtualImage = Image<double, TFixedDimension>,
+         typename TParametersValueType=double>
 class ObjectToObjectMetric:
-  public ObjectToObjectMetricBaseTemplate< TInternalComputationValueType >
+  public ObjectToObjectMetricBaseTemplate<TParametersValueType>
 {
 public:
   /** Standard class typedefs. */
-  typedef ObjectToObjectMetric                                              Self;
-  typedef ObjectToObjectMetricBaseTemplate< TInternalComputationValueType > Superclass;
-  typedef SmartPointer< Self >                                              Pointer;
-  typedef SmartPointer< const Self >                                        ConstPointer;
+  typedef ObjectToObjectMetric                                   Self;
+  typedef ObjectToObjectMetricBaseTemplate<TParametersValueType> Superclass;
+  typedef SmartPointer<Self>                                     Pointer;
+  typedef SmartPointer<const Self>                               ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ObjectToObjectMetric, ObjectToObjectMetricBaseTemplate);
 
   /** Type used for representing object components  */
-  typedef TInternalComputationValueType            CoordinateRepresentationType;
+  typedef TParametersValueType            CoordinateRepresentationType;
 
   /** Type for internal computations */
-  typedef TInternalComputationValueType            InternalComputationValueType;
+  typedef TParametersValueType            InternalComputationValueType;
 
   /**  Type of the measure. */
   typedef typename Superclass::MeasureType            MeasureType;
@@ -147,8 +148,12 @@ public:
   typedef typename VirtualPointSetType::Pointer                                 VirtualPointSetPointer;
 
   /**  Type of the Transform Base classes */
-  typedef Transform<TInternalComputationValueType, TVirtualImage::ImageDimension, TMovingDimension> MovingTransformType;
-  typedef Transform<TInternalComputationValueType, TVirtualImage::ImageDimension, TFixedDimension>  FixedTransformType;
+  typedef Transform<TParametersValueType,
+                    TVirtualImage::ImageDimension,
+                    TMovingDimension>                  MovingTransformType;
+  typedef Transform<TParametersValueType,
+                    TVirtualImage::ImageDimension,
+                    TFixedDimension>                   FixedTransformType;
 
   typedef typename FixedTransformType::Pointer         FixedTransformPointer;
   typedef typename FixedTransformType::InputPointType  FixedInputPointType;
@@ -175,7 +180,7 @@ public:
   virtual void SetParameters( ParametersType & params ) ITK_OVERRIDE;
   virtual const ParametersType & GetParameters() const ITK_OVERRIDE;
   virtual bool HasLocalSupport() const ITK_OVERRIDE;
-  virtual void UpdateTransformParameters( const DerivativeType & derivative, TInternalComputationValueType factor) ITK_OVERRIDE;
+  virtual void UpdateTransformParameters( const DerivativeType & derivative, TParametersValueType factor) ITK_OVERRIDE;
 
   /** Connect the fixed transform. */
   itkSetObjectMacro(FixedTransform, FixedTransformType);
@@ -221,7 +226,6 @@ public:
 
   /** Use a virtual domain image to define the virtual reference space.
    * \sa SetVirtualDomain */
-  void SetVirtualDomainFromImage( VirtualImageType * virtualImage);
   void SetVirtualDomainFromImage( const VirtualImageType * virtualImage);
 
   /** Returns a flag. True if arbitrary virtual domain points will
@@ -335,8 +339,8 @@ protected:
   mutable SizeValueType                   m_NumberOfValidPoints;
 
 private:
-  ObjectToObjectMetric(const Self &); //purposely not implemented
-  void operator=(const Self &);     //purposely not implemented
+  ObjectToObjectMetric(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };
 } // end namespace itk

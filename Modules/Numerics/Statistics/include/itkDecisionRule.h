@@ -23,7 +23,7 @@
 #include "itkObject.h"
 #include "itkObjectFactory.h"
 #include "itkArray.h"
-#include "itkVariableLengthVector.h"
+#include "ITKStatisticsExport.h"
 
 namespace itk
 {
@@ -44,7 +44,7 @@ namespace Statistics
  *  \ingroup ITKStatistics
  */
 
-class DecisionRule : public Object
+class ITKStatistics_EXPORT DecisionRule : public Object
 {
 public:
   /** Standard class typedefs */
@@ -75,8 +75,8 @@ protected:
   virtual ~DecisionRule();
 
 private:
-  DecisionRule(const Self &);   //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  DecisionRule(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };                              // end of class
 } // end of namespace Statistics
 } // end of namespace itk

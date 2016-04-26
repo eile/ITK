@@ -123,13 +123,13 @@ protected:
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Generate metadata for output image */
-  void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Calculate the required input region */
-  void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Actual filter computation */
-  void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
 private:
   /** Const slice iterator type of the input image */
@@ -179,9 +179,8 @@ private:
   RegionType m_InputRequestedRegion; /**< The region requested from* the input
                                        image   */
 
-  /**< purposely not implemented */
-  DirectFourierReconstructionImageToImageFilter(const Self &);
-  void operator=(const Self &);
+  DirectFourierReconstructionImageToImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 } // namespace itk
 

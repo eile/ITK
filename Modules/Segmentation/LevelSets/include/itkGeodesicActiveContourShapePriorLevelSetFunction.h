@@ -145,29 +145,27 @@ public:
   {
     Superclass::Initialize(r);
 
-    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::One);
-    this->SetPropagationWeight(NumericTraits< ScalarValueType >::One);
-    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::One);
-    this->SetShapePriorWeight(NumericTraits< ScalarValueType >::One);
+    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetPropagationWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetShapePriorWeight(NumericTraits< ScalarValueType >::OneValue());
   }
 
 protected:
   GeodesicActiveContourShapePriorLevelSetFunction()
   {
-    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::One);
-    this->SetPropagationWeight(NumericTraits< ScalarValueType >::One);
-    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::One);
-    this->SetShapePriorWeight(NumericTraits< ScalarValueType >::One);
+    this->SetAdvectionWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetPropagationWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetCurvatureWeight(NumericTraits< ScalarValueType >::OneValue());
+    this->SetShapePriorWeight(NumericTraits< ScalarValueType >::OneValue());
 
     m_DerivativeSigma = 1.0;
   }
 
   virtual ~GeodesicActiveContourShapePriorLevelSetFunction() {}
 
-  GeodesicActiveContourShapePriorLevelSetFunction(const Self &); //purposely not
-                                                                 // implemented
-  void operator=(const Self &);                                  //purposely not
-                                                                 // implemented
+  GeodesicActiveContourShapePriorLevelSetFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {

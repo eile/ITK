@@ -61,15 +61,15 @@ public:
   virtual void computeOverlapParameters( const FeatureIndexType,
     unsigned int &, unsigned int & ) {}
 
-  virtual void ComputeParameters() {}
+  virtual void ComputeParameters() ITK_OVERRIDE {}
 
 protected:
   ScalarChanAndVeseLevelSetFunctionTestHelper() {}
   ~ScalarChanAndVeseLevelSetFunctionTestHelper() {}
 
 private:
-  ScalarChanAndVeseLevelSetFunctionTestHelper(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  ScalarChanAndVeseLevelSetFunctionTestHelper(const Self&) ITK_DELETE_FUNCTION;
+  void operator=(const Self&) ITK_DELETE_FUNCTION;
 };
 
 template <unsigned int NDimension>

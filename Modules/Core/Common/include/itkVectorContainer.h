@@ -166,18 +166,34 @@ public:
   class Iterator
   {
 public:
-    Iterator() {}
+    typedef typename VectorIterator::iterator_category iterator_category;
+    typedef typename VectorIterator::value_type        value_type;
+    typedef typename VectorIterator::difference_type   difference_type;
+    typedef typename VectorIterator::pointer           pointer;
+    typedef typename VectorIterator::reference         reference;
+
+    Iterator() : m_Pos(0) {}
     Iterator(size_type d, const VectorIterator & i):m_Pos(d), m_Iter(i) {}
+    Iterator(const Iterator & r): m_Pos(r.m_Pos), m_Iter(r.m_Iter) {}
     Iterator & operator*()    { return *this; }
     Iterator * operator->()   { return this; }
     Iterator & operator++()   { ++m_Pos; ++m_Iter; return *this; }
     Iterator operator++(int) { Iterator temp(*this); ++m_Pos; ++m_Iter; return temp; }
     Iterator & operator--()   { --m_Pos; --m_Iter; return *this; }
     Iterator operator--(int) { Iterator temp(*this); --m_Pos; --m_Iter; return temp; }
+
+    difference_type operator-(const Iterator & r) const { return static_cast< difference_type >( this->m_Pos ) - static_cast< difference_type >( r.m_Pos ); }
+
     bool operator==(const Iterator & r) const { return m_Iter == r.m_Iter; }
     bool operator!=(const Iterator & r) const { return m_Iter != r.m_Iter; }
     bool operator==(const ConstIterator & r) const { return m_Iter == r.m_Iter; }
     bool operator!=(const ConstIterator & r) const { return m_Iter != r.m_Iter; }
+    bool operator<(const Iterator & r) const { return ( this->operator-( r ) ) < 0; }
+    bool operator>(const Iterator & r) const { return ( r < *this ); }
+    bool operator>=(const Iterator & r) const { return !( *this < r ); }
+    bool operator<=(const Iterator & r) const { return !( *this < r ); }
+
+    Iterator & operator+=(difference_type n) { m_Pos += n; m_Iter += n; return *this; };
 
     /** Get the index into the VectorContainer associated with this iterator.
         */
@@ -200,9 +216,15 @@ private:
   class ConstIterator
   {
 public:
+    typedef typename VectorConstIterator::iterator_category iterator_category;
+    typedef typename VectorConstIterator::value_type        value_type;
+    typedef typename VectorConstIterator::difference_type   difference_type;
+    typedef typename VectorConstIterator::pointer           pointer;
+    typedef typename VectorConstIterator::reference         reference;
+
     ConstIterator():m_Pos(0) {}
     ConstIterator(size_type d, const VectorConstIterator & i):m_Pos(d), m_Iter(i) {}
-    ConstIterator(const Iterator & r) { m_Pos = r.m_Pos; m_Iter = r.m_Iter; }
+    ConstIterator(const Iterator & r) : m_Pos( r.m_Pos ), m_Iter( r.m_Iter ) { }
     ConstIterator & operator*()    { return *this; }
     ConstIterator * operator->()   { return this; }
     ConstIterator & operator++()   { ++m_Pos; ++m_Iter; return *this; }
@@ -210,10 +232,19 @@ public:
     ConstIterator & operator--()   { --m_Pos; --m_Iter; return *this; }
     ConstIterator operator--(int) { ConstIterator temp(*this); --m_Pos; --m_Iter; return temp; }
     ConstIterator & operator=(const Iterator & r) { m_Pos = r.m_Pos; m_Iter = r.m_Iter; return *this; }
+    ConstIterator & operator+=(difference_type n) { m_Pos += n; m_Iter += n; return *this; };
+
+    difference_type operator-(const ConstIterator & r) const { return static_cast< difference_type >( m_Pos ) - static_cast< difference_type >( r.m_Pos ); }
+
     bool operator==(const Iterator & r) const { return m_Iter == r.m_Iter; }
     bool operator!=(const Iterator & r) const { return m_Iter != r.m_Iter; }
     bool operator==(const ConstIterator & r) const { return m_Iter == r.m_Iter; }
     bool operator!=(const ConstIterator & r) const { return m_Iter != r.m_Iter; }
+    bool operator<(const ConstIterator & r) const { return ( this->operator-(r) < 0 ); }
+    bool operator>(const ConstIterator & r) const { return ( r < *this ); }
+    bool operator<=(const ConstIterator & r) const { return !( *this > r ); }
+    bool operator>=(const ConstIterator & r) const { return !( *this < r ); }
+
 
     /** Get the index into the VectorContainer associated with this iterator.
         */

@@ -18,6 +18,7 @@
 #ifndef itkConfidenceConnectedImageFilter_hxx
 #define itkConfidenceConnectedImageFilter_hxx
 
+#include "itkMath.h"
 #include "itkConfidenceConnectedImageFilter.h"
 #include "itkMacro.h"
 #include "itkImageRegionIterator.h"
@@ -152,7 +153,7 @@ ConfidenceConnectedImageFilter< TInputImage, TOutputImage >
   OutputImageRegionType region = outputImage->GetRequestedRegion();
   outputImage->SetBufferedRegion(region);
   outputImage->Allocate();
-  outputImage->FillBuffer (NumericTraits< OutputImagePixelType >::Zero);
+  outputImage->FillBuffer (NumericTraits< OutputImagePixelType >::ZeroValue());
 
   // Compute the statistics of the seed point
   typedef MeanImageFunction< InputImageType,
@@ -349,7 +350,7 @@ ConfidenceConnectedImageFilter< TInputImage, TOutputImage >
     m_Mean      = sum / double(numberOfSamples);
     m_Variance  = ( sumOfSquares - ( sum * sum / double(numberOfSamples) ) ) / ( double(numberOfSamples) - 1.0 );
     // if the variance is zero, there is no point in continuing
-    if ( m_Variance == 0 )
+    if ( Math::AlmostEquals( m_Variance, 0.0 ) )
       {
       itkDebugMacro( << "\nLower intensity = " << lower
                      << ", Upper intensity = " << upper
@@ -404,7 +405,7 @@ ConfidenceConnectedImageFilter< TInputImage, TOutputImage >
     // upper] bounds prescribed, the pixel is added to the output
     // segmentation and its neighbors become candidates for the
     // iterator to walk.
-    outputImage->FillBuffer (NumericTraits< OutputImagePixelType >::Zero);
+    outputImage->FillBuffer (NumericTraits< OutputImagePixelType >::ZeroValue());
     IteratorType thirdIt = IteratorType (outputImage, function, m_Seeds);
     thirdIt.GoToBegin();
     try

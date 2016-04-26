@@ -44,12 +44,13 @@ public:
     m_Event(event),
     m_Tag(tag)
   {}
-  virtual ~Observer()
-  { delete m_Event; }
+  virtual ~Observer();
   Command::Pointer   m_Command;
   const EventObject *m_Event;
   unsigned long      m_Tag;
 };
+/* Create Out-of-line Definition */
+Observer::~Observer() { delete m_Event; }
 
 class ITKCommon_HIDDEN SubjectImplementation
 {
@@ -425,7 +426,20 @@ Object
       }
     catch(...)
       {
-      itkWarningMacro("Exception occurred in DeleteEvent Observer!");
+      // The macro is not use to avoid a memory allocation, and reduce
+      // potential exceptions.
+      // itkWarningMacro("Exception occurred in DeleteEvent Observer!");
+      try
+        {
+        if ( GetGlobalWarningDisplay() )
+          {
+          ::itk::OutputWindowDisplayWarningText( "WARNING: Exception occurred in DeleteEvent Observer!" );
+          }
+        }
+      catch(...)
+        {
+        // ignore exception in warning display
+        }
       }
     }
 

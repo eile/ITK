@@ -16,8 +16,9 @@ macro(add_python_test name)
     --add-before-env PYTHONPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIGURATION>"
     --add-before-env PYTHONPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
     --add-before-libpath "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIGURATION>"
-    --add-before-libpath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>"
     --add-before-libpath "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+    --add-before-libpath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>"
+    --add-before-libpath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
     --add-before-libpath "${ITK_DIR}"
     ${command}
     ${ARGN}
@@ -28,6 +29,7 @@ endmacro()
 add_python_test(PythonTestDirectory ${CMAKE_CURRENT_SOURCE_DIR}/TestDirectory.py)
 add_python_test(PythonTestMetaDataDictionary ${CMAKE_CURRENT_SOURCE_DIR}/TestMetaDataDictionary.py)
 add_python_test(PythonTestObject ${CMAKE_CURRENT_SOURCE_DIR}/TestObject.py)
+add_python_test(PythonTestIndexOffset ${CMAKE_CURRENT_SOURCE_DIR}/TestIndexOffset.py)
 
 # TODO: drop -E option once all filters/spatial objects/cost functions are actually wrapped
 add_python_test(NonBlockingPythonFilterCoverage ${CMAKE_CURRENT_SOURCE_DIR}/wrappingCoverage.py -E -b Filter -e ${CMAKE_CURRENT_SOURCE_DIR}/exclude-filters.txt ${ITK_INCLUDE_DIRS})
@@ -41,13 +43,13 @@ add_python_test(PythonTransformCoverage ${CMAKE_CURRENT_SOURCE_DIR}/wrappingCove
 # These two tests can use up all of system memory when the are executed.
 # TODO: find the root cause and re-enable them.  See ITK-3006 on issues.itk.org.
 #add_python_test(PythonFindEmptyClasses ${CMAKE_CURRENT_SOURCE_DIR}/findEmptyClasses.py)
-#add_python_test(PythonGetNameOfClass ${CMAKE_CURRENT_SOURCE_DIR}/getNameOfClass.py)
+add_python_test(PythonGetNameOfClass ${CMAKE_CURRENT_SOURCE_DIR}/getNameOfClass.py)
 
 add_python_test(PythonTiming ${CMAKE_CURRENT_SOURCE_DIR}/timing.py)
 
 
 # some tests will fail if dim=2 and unsigned short are not wrapped
-INTERSECTION(WRAP_2 2 "${ITK_WRAP_DIMS}")
+INTERSECTION(WRAP_2 2 "${ITK_WRAP_IMAGE_DIMS}")
 if(ITK_WRAP_unsigned_char AND WRAP_2)
   add_python_test(PythonTypemaps ${CMAKE_CURRENT_SOURCE_DIR}/typemaps.py)
 
@@ -430,7 +432,7 @@ if(ITK_WRAP_float AND WRAP_2)
 endif()
 
 
-INTERSECTION(WRAP_3 3 "${ITK_WRAP_DIMS}")
+INTERSECTION(WRAP_3 3 "${ITK_WRAP_IMAGE_DIMS}")
 if(ITK_WRAP_float AND WRAP_3)
   add_python_test(PythonAntiAliasBinaryImageFilterTest
     --compare AntiAliasBinaryImageFilter.png
@@ -446,7 +448,7 @@ endif()
 UNIQUE(types "${WRAP_ITK_SCALAR};UC")
 # signed char can't be used to store an image with values up to 255
 list(REMOVE_ITEM types SC)
-foreach(d ${ITK_WRAP_DIMS})
+foreach(d ${ITK_WRAP_IMAGE_DIMS})
   foreach(t ${types})
     add_python_test(PythonSimplePipeline${t}${d}
       ${CMAKE_CURRENT_SOURCE_DIR}/simple_pipeline.py

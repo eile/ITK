@@ -21,6 +21,7 @@
 #include "itkDataObject.h"
 #include "itkRingBuffer.h"
 #include "itkTemporalRegion.h"
+#include "ITKVideoCoreExport.h"
 
 namespace itk
 {
@@ -38,7 +39,7 @@ namespace itk
  *
  * \ingroup ITKVideoCore
  */
-class TemporalDataObject : public DataObject
+class ITKVideoCore_EXPORT TemporalDataObject : public DataObject
 {
 public:
 
@@ -115,8 +116,8 @@ protected:
 
 private:
 
-  TemporalDataObject(const Self &); //purposely not implemented
-  void operator=(const Self &);     //purposely not implemented
+  TemporalDataObject(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };  // end class TemporalDataObject
 

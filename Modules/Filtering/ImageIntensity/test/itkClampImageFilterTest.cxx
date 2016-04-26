@@ -23,12 +23,15 @@
 
 // Better name demanging for gcc
 #if __GNUC__ > 3 || ( __GNUC__ == 3 && __GNUC_MINOR__ > 0 )
+#ifndef __EMSCRIPTEN__
 #define GCC_USEDEMANGLE
+#endif
 #endif
 
 #ifdef GCC_USEDEMANGLE
 #include <cstdlib>
 #include <cxxabi.h>
+#include "itkMath.h"
 #endif
 
 template< typename T >
@@ -104,7 +107,7 @@ bool TestClampFromTo()
       expectedValue = static_cast< TOutputPixelType >( inValue );
       }
 
-    if ( outValue != expectedValue )
+    if ( itk::Math::NotExactlyEquals(outValue, expectedValue) )
       {
       success = false;
       break;
@@ -211,7 +214,7 @@ bool TestClampFromToWithCustomBounds()
       expectedValue = static_cast< TOutputPixelType >( inValue );
       }
 
-    if ( outValue != expectedValue )
+    if ( itk::Math::NotExactlyEquals(outValue, expectedValue) )
       {
       success = false;
       break;

@@ -19,8 +19,9 @@
 #define itkBinaryImageToLabelMapFilter_h
 
 #include "itkImageToImageFilter.h"
-#include <vector>
+#include <list>
 #include <map>
+#include <vector>
 #include "itkProgressReporter.h"
 #include "itkBarrier.h"
 #include "itkLabelMap.h"
@@ -98,8 +99,6 @@ public:
   itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
   itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
 
-  typedef SizeValueType   LabelType;
-
   /**
    * Image typedef support
    */
@@ -156,6 +155,8 @@ protected:
   virtual ~BinaryImageToLabelMapFilter() {}
   void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
+  typedef SizeValueType InternalLabelType;
+
   /**
    * Standard pipeline method.
    */
@@ -182,8 +183,8 @@ protected:
   virtual const ImageRegionSplitterBase* GetImageRegionSplitter() const ITK_OVERRIDE;
 
 private:
-  BinaryImageToLabelMapFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);              //purposely not implemented
+  BinaryImageToLabelMapFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
   // some additional types
   typedef typename TOutputImage::RegionType::SizeType OutSizeType;
@@ -195,7 +196,7 @@ private:
     // run length information - may be a more type safe way of doing this
     SizeValueType length;
     typename InputImageType::IndexType where; // Index of the start of the run
-    LabelType label;                  // the initial label of the run
+    InternalLabelType label;                  // the initial label of the run
   };
 
   typedef std::vector< runLength > lineEncoding;
@@ -206,22 +207,22 @@ private:
   typedef std::vector< OffsetValueType > OffsetVectorType;
 
   // the types to support union-find operations
-  typedef std::vector< LabelType > UnionFindType;
+  typedef std::vector< InternalLabelType > UnionFindType;
   UnionFindType m_UnionFind;
-  UnionFindType m_Consecutive;
+
+  typedef std::vector< OutputPixelType > ConsecutiveVectorType;
+  ConsecutiveVectorType m_Consecutive;
+
   // functions to support union-find operations
-  void InitUnion(const LabelType size)
-  {
-    m_UnionFind = UnionFindType(size + 1);
-  }
+  void InitUnion(const InternalLabelType size);
 
-  void InsertSet(const LabelType label);
+  void InsertSet(const InternalLabelType label);
 
-  LabelType LookupSet(const LabelType label);
+  InternalLabelType LookupSet(const InternalLabelType label);
 
-  void LinkLabels(const LabelType lab1, const LabelType lab2);
+  void LinkLabels(const InternalLabelType lab1, const InternalLabelType lab2);
 
-  LabelType CreateConsecutive();
+  SizeValueType CreateConsecutive();
 
   //////////////////
   bool CheckNeighbors(const OutputIndexType & A,
@@ -234,14 +235,7 @@ private:
 
   void SetupLineOffsets(OffsetVectorType & LineOffsets);
 
-  void Wait()
-  {
-    // use m_NumberOfLabels.size() to get the number of thread used
-    if ( m_NumberOfLabels.size() > 1 )
-      {
-      m_Barrier->Wait();
-      }
-  }
+  void Wait();
 
   OutputPixelType m_OutputBackgroundValue;
   InputPixelType  m_InputForegroundValue;
@@ -250,21 +244,21 @@ private:
 
   bool m_FullyConnected;
 
-  typename std::vector< SizeValueType >   m_NumberOfLabels;
-  typename std::vector< SizeValueType >   m_FirstLineIdToJoin;
+  std::vector< SizeValueType >   m_NumberOfLabels;
+  std::vector< SizeValueType >   m_FirstLineIdToJoin;
 
   typename Barrier::Pointer m_Barrier;
 
   ImageRegionSplitterDirection::Pointer m_ImageRegionSplitter;
 
-#if !defined( CABLE_CONFIGURATION )
+#if !defined( ITK_WRAPPING_PARSER )
   LineMapType m_LineMap;
 #endif
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#if !defined( CABLE_CONFIGURATION )
+#if !defined( ITK_WRAPPING_PARSER )
 #include "itkBinaryImageToLabelMapFilter.hxx"
 #endif
 #endif

@@ -22,7 +22,7 @@
 #include "itkSmartPointer.h"
 #include "itkTimeStamp.h"
 #include "itkIndent.h"
-#include "itkSimpleFastMutexLock.h"
+#include "itkAtomicInt.h"
 
 #include <iostream>
 #include <typeinfo>
@@ -80,8 +80,7 @@ public:
   /** Return the name of this class as a string. Used by the object factory
    * (implemented in New()) to instantiate objects of a named type. Also
    * used for debugging and other output information.  */
-  virtual const char * GetNameOfClass() const
-  { return "LightObject"; }
+  virtual const char * GetNameOfClass() const;
 
 #ifdef _WIN32
   /** Used to avoid dll boundary problems.  */
@@ -110,14 +109,14 @@ public:
 
   /** Gets the reference count on this object. */
   virtual int GetReferenceCount() const
-  { return static_cast< int >( m_ReferenceCount ); }
+  { return m_ReferenceCount; }
 
   /** Sets the reference count on this object. This is a dangerous
    * method, use it with care. */
   virtual void SetReferenceCount(int);
 
 protected:
-  LightObject():m_ReferenceCount(1) {}
+  LightObject();
   virtual ~LightObject();
 
   /** Methods invoked by Print() to print information about the object
@@ -136,31 +135,13 @@ protected:
    */
   virtual LightObject::Pointer InternalClone() const;
 
-  /** Define the type of the reference count according to the
-      target. This allows the use of atomic operations */
-#if ( defined( WIN32 ) || defined( _WIN32 ) )
-  typedef LONG InternalReferenceCountType;
-#elif defined( __APPLE__ ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1050 )
- #if defined ( __LP64__ ) && __LP64__
-  typedef volatile int64_t InternalReferenceCountType;
- #else
-  typedef volatile int32_t InternalReferenceCountType;
- #endif
-#elif defined( __GLIBCPP__ ) || defined( __GLIBCXX__ )
-  typedef _Atomic_word InternalReferenceCountType;
-#else
-  typedef int InternalReferenceCountType;
-#endif
-
   /** Number of uses of this object by other objects. */
-  mutable InternalReferenceCountType m_ReferenceCount;
+  mutable AtomicInt<int> m_ReferenceCount;
 
-  /** Mutex lock to protect modification to the reference count */
-  mutable SimpleFastMutexLock m_ReferenceCountLock;
 
 private:
-  LightObject(const Self &);    //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  LightObject(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };
 
 /**

@@ -30,7 +30,6 @@ set(ITK_WRAP_JAVA_SRC_DIR ${ITK_WRAP_JAVA_OUT_DIR}/src CACHE INTERNAL "Java prox
 
 set(ITK_WRAP_JAVA_BIN_DIR ${ITK_WRAP_JAVA_SRC_DIR} CACHE INTERNAL "Java proxies binary directory")
 set(ITK_WRAP_JAVA_JAR_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "Java jar files directory")
-set(ITK_WRAP_JAVA_CLASS_NAMES "" CACHE INTERNAL "")
 set(ITK_WRAP_JAVA_JAR_DEPS "" CACHE INTERNAL "")
 set(ITK_WRAP_JAVA_USER_CLASS_PATH "" CACHE INTERNAL "additional user java classpath")
 
@@ -38,24 +37,8 @@ set(ITK_WRAP_JAVA_USER_CLASS_PATH "" CACHE INTERNAL "additional user java classp
 set(ITK_WRAP_JAVA_CORE_PACKAGE_NAME "org.itk" CACHE INTERNAL "")
 set(ITK_WRAP_JAVA_CORE_PACKAGE_PATH "org/itk" CACHE INTERNAL "") #TODO: this should be automated
 
-# TODO: iterators are not supported by java
-list(REMOVE_ITEM JAVA_ITK_MODULES "${WRAP_ITK_MODULES}" Iterators)
-
-###############################################################################
-# Install java stuff for external projects
-if(NOT EXTERNAL_WRAP_ITK_PROJECT)
-  WRAP_ITK_INSTALL(/Configuration/Generators/Java
-    CMakeLists.txt
-    java.i
-    module_ext.i.in
-    manifest.in
-  )
-endif()
-
-
 ###############################################################################
 macro(CREATE_JAVA_DIRECTORY_STRUCTURE)
-
   message(STATUS "Creating wrapping Java wrapping directories.")
 
   file(MAKE_DIRECTORY ${ITK_WRAP_JAVA_OUT_DIR})
@@ -65,7 +48,6 @@ macro(CREATE_JAVA_DIRECTORY_STRUCTURE)
 
   # Packages output directory
   file(MAKE_DIRECTORY ${ITK_WRAP_JAVA_SRC_DIR}/${ITK_WRAP_JAVA_CORE_PACKAGE_PATH})
-
 endmacro()
 
 
@@ -86,6 +68,8 @@ macro(itk_wrap_module_java library_name)
   set(ITK_WRAP_JAVA_LIBRARY_DEPS )
   set(ITK_WRAP_JAVA_CXX_FILES )
   set(ITK_WRAP_JAVA_EXTENDED_JAVAIMPORTS )
+
+  set(ITK_WRAP_MODULE_JAVA_CLASS_NAMES )
 
   string(TOLOWER ${WRAPPER_LIBRARY_NAME} _java_package_name)
 
@@ -129,17 +113,14 @@ macro(itk_end_wrap_module_java)
   # set the java source and bin files
   set(java_file )
   set(java_bin_file )
-  foreach(class_name ${ITK_WRAP_JAVA_CLASS_NAMES})
-    set(java_file ${java_file} ${java_package_path}/${class_name}.java)
-    set(java_bin_file ${java_bin_file} ${java_package_bin_path}/${class_name}.class)
+  foreach(class_name ${ITK_WRAP_MODULE_JAVA_CLASS_NAMES})
+    list(APPEND java_file ${java_package_path}/${class_name}.java)
+    list(APPEND java_bin_file ${java_package_bin_path}/${class_name}.class)
   endforeach()
 
   configure_file("${ITK_WRAP_JAVA_SOURCE_DIR}/module_ext.i.in"
     "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/java/${WRAPPER_LIBRARY_NAME}_ext.i"
     @ONLY)
-
-  WRAP_ITK_INSTALL(/Configuration/Typedefs/java
-    "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/java/${WRAPPER_LIBRARY_NAME}_ext.i")
 
   set(interface_file "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${WRAPPER_LIBRARY_NAME}Module.i")
 
@@ -164,7 +145,10 @@ macro(itk_end_wrap_module_java)
   endif()
 
   add_dependencies(${lib} ${WRAPPER_LIBRARY_NAME}Swig)
-  install(TARGETS "${lib}" DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/ITK-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}/Java")
+  install(TARGETS "${lib}"
+    DESTINATION "${ITK_INSTALL_LIBRARY_DIR}/ITK-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}/Java"
+    COMPONENT ${WRAP_ITK_INSTALL_COMPONENT_IDENTIFIER}RuntimeLibraries
+    )
 
   if(EXTERNAL_WRAP_ITK_PROJECT)
     # don't depends on the targets from wrapitk in external projects
@@ -208,7 +192,7 @@ macro(itk_end_wrap_module_java)
 
   # Add java proxy compilation stuff
   # Only add this if there is any classes to be built
-  if(NOT "${ITK_WRAP_JAVA_CLASS_NAMES}" STREQUAL "")
+  if(NOT "${ITK_WRAP_MODULE_JAVA_CLASS_NAMES}" STREQUAL "")
     # compile java proxies
     set(lib_jar ${lib}Jar)
     add_custom_command(
@@ -246,7 +230,7 @@ macro(itk_end_wrap_module_java)
       endforeach()
     endif()
 
-    set(ITK_WRAP_JAVA_JAR_DEPS ${ITK_WRAP_JAVA_JAR_DEPS} ${lib_jar})
+    list(APPEND ITK_WRAP_JAVA_JAR_DEPS ${lib_jar})
   else()
     message("Warning: Unable to create java proxies for ${WRAPPER_LIBRARY_NAME}, nothing to get wrapped in this module.")
   endif()
@@ -254,7 +238,7 @@ macro(itk_end_wrap_module_java)
   # store the module dependencies to be able to reuse them easily - without recurssion
   set(deps )
   foreach(dep ${WRAPPER_LIBRARY_DEPENDS})
-    set(deps ${deps} ${ITK_WRAP_JAVA_${dep}_DEPS} ${dep})
+    list(APPEND deps ${ITK_WRAP_JAVA_${dep}_DEPS} ${dep})
   endforeach()
   if(deps)
     list(REMOVE_DUPLICATES deps)
@@ -264,7 +248,8 @@ endmacro()
 
 ###############################################################################
 macro(itk_end_wrap_submodule_java group_name)
-  set(ITK_WRAP_JAVA_CLASS_NAMES ${ITK_WRAP_JAVA_CLASS_NAMES} ${group_name}Java)
+  list(APPEND ITK_WRAP_SUBMODULE_JAVA_CLASS_NAMES ${group_name}Java)
+  list(APPEND ITK_WRAP_MODULE_JAVA_CLASS_NAMES ${ITK_WRAP_SUBMODULE_JAVA_CLASS_NAMES})
 
   # set the package name and path
   string(TOLOWER ${WRAPPER_LIBRARY_NAME} java_package_name)
@@ -273,8 +258,8 @@ macro(itk_end_wrap_submodule_java group_name)
 
   # set the java source files
   set(java_file )
-  foreach(class_name ${ITK_WRAP_JAVA_CLASS_NAMES})
-    set(java_file ${java_file} ${java_package_path}/${class_name}.java)
+  foreach(class_name ${ITK_WRAP_SUBMODULE_JAVA_CLASS_NAMES})
+    list(APPEND java_file ${java_package_path}/${class_name}.java)
   endforeach()
 
   set(base_name ${group_name})
@@ -284,23 +269,23 @@ macro(itk_end_wrap_submodule_java group_name)
   set(lib ${group_name}Java)
   set(cpp_file "${CMAKE_CURRENT_BINARY_DIR}/${base_name}Java.cpp")
 
-  set(ITK_WRAP_JAVA_CXX_FILES ${ITK_WRAP_JAVA_CXX_FILES} ${cpp_file})
+  list(APPEND ITK_WRAP_JAVA_CXX_FILES ${cpp_file})
 
   # prepare dependencies
   set(DEPS )
   set(ITK_WRAP_JAVA_TYPEMAP_JAVAIMPORTS ${ITK_WRAP_JAVA_EXTENDED_JAVAIMPORTS})
   foreach(dep ${WRAPPER_LIBRARY_DEPENDS} ITKJavaBase)
     # library dependencies
-    set(DEPS ${DEPS} ${${dep}SwigFiles})
+    list(APPEND DEPS ${${dep}SwigFiles})
 
     # create the import package commands
     string(TOLOWER ${dep} java_import_package_name)
     set(java_import_package_name ${ITK_WRAP_JAVA_CORE_PACKAGE_NAME}.${java_import_package_name})
-    set(ITK_WRAP_JAVA_TYPEMAP_JAVAIMPORTS ${ITK_WRAP_JAVA_TYPEMAP_JAVAIMPORTS} "import ${java_import_package_name}.*;")
+    list(APPEND ITK_WRAP_JAVA_TYPEMAP_JAVAIMPORTS "import ${java_import_package_name}.*;")
     foreach(ddep ${ITK_WRAP_JAVA_${dep}_DEPS})
       string(TOLOWER ${ddep} java_import_package_name)
       set(java_import_package_name ${ITK_WRAP_JAVA_CORE_PACKAGE_NAME}.${java_import_package_name})
-      set(ITK_WRAP_JAVA_TYPEMAP_JAVAIMPORTS ${ITK_WRAP_JAVA_TYPEMAP_JAVAIMPORTS} "import ${java_import_package_name}.*;")
+      list(APPEND ITK_WRAP_JAVA_TYPEMAP_JAVAIMPORTS "import ${java_import_package_name}.*;")
     endforeach()
   endforeach()
 
@@ -353,10 +338,7 @@ macro(itk_end_wrap_submodule_java group_name)
     "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/java/${group_name}_ext.i"
     @ONLY)
 
-  WRAP_ITK_INSTALL("/Configuration/Typedefs/java"
-   "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/java/${group_name}_ext.i")
-
-  set(ITK_WRAP_JAVA_LIBRARY_DEPS ${ITK_WRAP_JAVA_LIBRARY_DEPS} "${java_file}" "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/java/${base_name}_ext.i")
+  list(APPEND ITK_WRAP_JAVA_LIBRARY_DEPS "${java_file}" "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/java/${base_name}_ext.i")
 
 endmacro()
 
@@ -365,10 +347,9 @@ endmacro()
 macro(itk_wrap_submodule_java module)
 
   set(text "\n")
-
   set(text "${text}%include java.i\n\n")
-
   set(ITK_WRAP_JAVA_SWIG_EXT "${text}")
+  set(ITK_WRAP_SUBMODULE_JAVA_CLASS_NAMES)
 
 endmacro()
 
@@ -397,7 +378,7 @@ endmacro()
 macro(itk_wrap_one_type_java wrap_method wrap_class swig_name template_params)
 
   # store the wrapped final class names
-  set(ITK_WRAP_JAVA_CLASS_NAMES ${ITK_WRAP_JAVA_CLASS_NAMES} ${swig_name})
+  list(APPEND ITK_WRAP_SUBMODULE_JAVA_CLASS_NAMES ${swig_name})
 
 endmacro()
 

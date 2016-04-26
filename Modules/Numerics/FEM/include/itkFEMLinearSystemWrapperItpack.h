@@ -22,6 +22,7 @@
 #include "itkFEMSolution.h"
 #include "itkFEMLinearSystemWrapper.h"
 #include "itkFEMItpackSparseMatrix.h"
+#include "ITKFEMExport.h"
 #include <vector>
 
 /** Array of pointers to available solver functions */
@@ -47,7 +48,7 @@ namespace fem
  * \sa LinearSystemWrapper
  * \ingroup ITKFEM
  */
-class LinearSystemWrapperItpack : public LinearSystemWrapper
+class ITKFEM_EXPORT LinearSystemWrapperItpack : public LinearSystemWrapper
 {
 public:
 
@@ -692,8 +693,7 @@ public:
   FEMExceptionItpackSolver(const char *file, unsigned int lineNumber, std::string location, integer errorCode);
 
   /** Virtual destructor needed for subclasses. Has to have empty throw(). */
-  virtual ~FEMExceptionItpackSolver()
-  throw ( )
+  virtual ~FEMExceptionItpackSolver() ITK_NOEXCEPT
   {
   }
 

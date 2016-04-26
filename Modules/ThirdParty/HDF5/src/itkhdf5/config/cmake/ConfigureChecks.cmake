@@ -1,15 +1,15 @@
 #-----------------------------------------------------------------------------
 # Include all the necessary files for macros
 #-----------------------------------------------------------------------------
-INCLUDE (${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckIncludeFileCXX.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckIncludeFiles.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckLibraryExists.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckSymbolExists.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckTypeSize.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckVariableExists.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckFortranFunctionExists.cmake)
+INCLUDE (CheckFunctionExists)
+INCLUDE (CheckIncludeFile)
+INCLUDE (CheckIncludeFileCXX)
+INCLUDE (CheckIncludeFiles)
+INCLUDE (CheckLibraryExists)
+INCLUDE (CheckSymbolExists)
+INCLUDE (CheckTypeSize)
+INCLUDE (CheckVariableExists)
+INCLUDE (CheckFortranFunctionExists)
 
 #-----------------------------------------------------------------------------
 # Always SET this for now IF we are on an OS X box
@@ -178,9 +178,8 @@ IF (WINDOWS)
   SET (H5_HAVE_GETCONSOLESCREENBUFFERINFO 1)
   SET (H5_HAVE_FUNCTION 1)
   SET (H5_GETTIMEOFDAY_GIVES_TZ 1)
-  IF (NOT MINGW)
-    SET (H5_HAVE_TIMEZONE 1)
-  ENDIF (NOT MINGW)
+  SET (H5_HAVE_TIMEZONE 0)
+  SET (H5_HAVE__TIMEZONE 1)
   SET (H5_HAVE_GETTIMEOFDAY 1)
   SET (H5_LONE_COLON 0)
 ENDIF (WINDOWS)
@@ -293,7 +292,7 @@ ENDIF (H5_HAVE_STDINT_H AND CMAKE_CXX_COMPILER_LOADED)
 SET (LINUX_LFS 0)
 
 SET (HDF5_EXTRA_FLAGS)
-IF (CMAKE_SYSTEM MATCHES "Linux")
+IF (CMAKE_SYSTEM MATCHES "Linux" OR CMAKE_SYSTEM MATCHES "Emscripten")
   # Linux Specific flags
   SET (HDF5_EXTRA_FLAGS -D_POSIX_SOURCE -D_BSD_SOURCE)
   OPTION (HDF5_ENABLE_LARGE_FILE "Enable support for large (64-bit) files on Linux." ON)
@@ -302,7 +301,7 @@ IF (CMAKE_SYSTEM MATCHES "Linux")
     SET (HDF5_EXTRA_FLAGS ${HDF5_EXTRA_FLAGS} -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE)
   ENDIF (HDF5_ENABLE_LARGE_FILE)
   SET (CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS} ${HDF5_EXTRA_FLAGS})
-ENDIF (CMAKE_SYSTEM MATCHES "Linux")
+ENDIF (CMAKE_SYSTEM MATCHES "Linux" OR CMAKE_SYSTEM MATCHES "Emscripten")
 
 ADD_DEFINITIONS (${HDF5_EXTRA_FLAGS})
 
@@ -628,7 +627,7 @@ IF (WINDOWS)
     IF("${HAVE_IOEO_EXITCODE}" EQUAL 0)
       SET(H5_HAVE_IOEO 1 CACHE INTERNAL "Test InitOnceExecuteOnce")
       MESSAGE(STATUS "Performing Test InitOnceExecuteOnce - Success")
-      FILE(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log 
+      FILE(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
         "Performing C SOURCE FILE Test InitOnceExecuteOnce succeded with the following output:\n"
         "${OUTPUT}\n"
         "Return value: ${HAVE_IOEO}\n")
@@ -640,14 +639,14 @@ IF (WINDOWS)
       ENDIF(CMAKE_CROSSCOMPILING AND "${HAVE_IOEO_EXITCODE}" MATCHES  "FAILED_TO_RUN")
 
       MESSAGE(STATUS "Performing Test InitOnceExecuteOnce - Failed")
-      FILE(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log 
+      FILE(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
         "Performing InitOnceExecuteOnce Test  failed with the following output:\n"
         "${OUTPUT}\n"
         "Return value: ${HAVE_IOEO_EXITCODE}\n")
     ENDIF("${HAVE_IOEO_EXITCODE}" EQUAL 0)
   ENDIF()
 ENDIF (WINDOWS)
-	
+
 
 #-----------------------------------------------------------------------------
 # Option to see if GPFS is available on this filesystem --enable-gpfs
@@ -656,7 +655,7 @@ OPTION (HDF5_ENABLE_GPFS "Enable GPFS hints for the MPI/POSIX file driver" OFF)
 IF (HDF5_ENABLE_GPFS)
   CHECK_INCLUDE_FILE_CONCAT ("gpfs.h"        HAVE_GPFS)
   IF (HAVE_GPFS)
-    HDF5_FUNCTION_TEST (HAVE_GPFS)  
+    HDF5_FUNCTION_TEST (HAVE_GPFS)
   ENDIF (HAVE_GPFS)
 ENDIF (HDF5_ENABLE_GPFS)
 MARK_AS_ADVANCED (HDF5_ENABLE_GPFS)
@@ -696,35 +695,34 @@ ENDIF (INLINE_TEST___inline__)
 IF (NOT H5_PRINTF_LL_WIDTH OR H5_PRINTF_LL_WIDTH MATCHES "unknown")
   SET (PRINT_LL_FOUND 0)
   MESSAGE (STATUS "Checking for appropriate format for 64 bit long:")
-  FOREACH (HDF5_PRINTF_LL l64 l L q I64 ll)
-    SET (CURRENT_TEST_DEFINITIONS "-DPRINTF_LL_WIDTH=${HDF5_PRINTF_LL}")
-    IF (H5_SIZEOF_LONG_LONG)
-      SET (CURRENT_TEST_DEFINITIONS "${CURRENT_TEST_DEFINITIONS} -DHAVE_LONG_LONG")
-    ENDIF (H5_SIZEOF_LONG_LONG)
-    TRY_RUN (HDF5_PRINTF_LL_TEST_RUN   HDF5_PRINTF_LL_TEST_COMPILE
-        ${HDF5_BINARY_DIR}/CMake
-        ${HDF5_RESOURCES_DIR}/HDF5Tests.c
-        CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${CURRENT_TEST_DEFINITIONS}
-        OUTPUT_VARIABLE OUTPUT
+  SET (CURRENT_TEST_DEFINITIONS "-DPRINTF_LL_WIDTH")
+  IF (H5_SIZEOF_LONG_LONG)
+    SET (CURRENT_TEST_DEFINITIONS "${CURRENT_TEST_DEFINITIONS} -DHAVE_LONG_LONG")
+  ENDIF (H5_SIZEOF_LONG_LONG)
+  TRY_RUN (HDF5_PRINTF_LL_TEST_RUN   HDF5_PRINTF_LL_TEST_COMPILE
+           ${HDF5_BINARY_DIR}/CMake
+           ${HDF5_RESOURCES_DIR}/HDF5Tests.c
+           CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${CURRENT_TEST_DEFINITIONS}
+           OUTPUT_VARIABLE OUTPUT
+  )
+  IF (HDF5_PRINTF_LL_TEST_COMPILE)
+    IF (HDF5_PRINTF_LL_TEST_RUN MATCHES 0)
+      STRING(REGEX REPLACE ".*PRINTF_LL_WIDTH=\\[(.*)\\].*" "\\1" HDF5_PRINTF_LL "${OUTPUT}")
+      SET (H5_PRINTF_LL_WIDTH "\"${HDF5_PRINTF_LL}\"" CACHE INTERNAL "Width for printf for type `long long' or `__int64', us. `ll")
+      SET (PRINT_LL_FOUND 1)
+    ELSE (HDF5_PRINTF_LL_TEST_RUN MATCHES 0)
+      MESSAGE ("HDF5: Width test failed with result: ${HDF5_PRINTF_LL_TEST_RUN}")
+    ENDIF (HDF5_PRINTF_LL_TEST_RUN MATCHES 0)
+  ELSE (HDF5_PRINTF_LL_TEST_COMPILE)
+    FILE (APPEND ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeError.log
+          "Test H5_PRINTF_LL_WIDTH failed with the following output:\n ${OUTPUT}\n"
     )
-    IF (HDF5_PRINTF_LL_TEST_COMPILE)
-      IF (HDF5_PRINTF_LL_TEST_RUN MATCHES 0)
-        SET (H5_PRINTF_LL_WIDTH "\"${HDF5_PRINTF_LL}\"" CACHE INTERNAL "Width for printf for type `long long' or `__int64', us. `ll")
-        SET (PRINT_LL_FOUND 1)
-      ELSE (HDF5_PRINTF_LL_TEST_RUN MATCHES 0)
-        MESSAGE ("Width with ${HDF5_PRINTF_LL} failed with result: ${HDF5_PRINTF_LL_TEST_RUN}")
-      ENDIF (HDF5_PRINTF_LL_TEST_RUN MATCHES 0)
-    ELSE (HDF5_PRINTF_LL_TEST_COMPILE)
-      FILE (APPEND ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeError.log
-          "Test H5_PRINTF_LL_WIDTH for ${HDF5_PRINTF_LL} failed with the following output:\n ${OUTPUT}\n"
-      )
-    ENDIF (HDF5_PRINTF_LL_TEST_COMPILE)
-  ENDFOREACH (HDF5_PRINTF_LL)
+  ENDIF (HDF5_PRINTF_LL_TEST_COMPILE)
 
   IF (PRINT_LL_FOUND)
-    MESSAGE (STATUS "Checking for apropriate format for 64 bit long: found ${H5_PRINTF_LL_WIDTH}")
+    MESSAGE (STATUS "HDF5: Checking for appropriate format for 64 bit long: found ${H5_PRINTF_LL_WIDTH}")
   ELSE (PRINT_LL_FOUND)
-    MESSAGE (STATUS "Checking for apropriate format for 64 bit long: not found")
+    MESSAGE (STATUS "HDF5: Checking for appropriate format for 64 bit long: found ${H5_PRINTF_LL_WIDTH}")
     SET (H5_PRINTF_LL_WIDTH "\"unknown\"" CACHE INTERNAL
         "Width for printf for type `long long' or `__int64', us. `ll"
     )

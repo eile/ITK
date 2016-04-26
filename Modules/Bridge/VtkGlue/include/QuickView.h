@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __QuickView_h
-#define __QuickView_h
+#ifndef QuickView_h
+#define QuickView_h
 
 #include <vector>
 #include <algorithm>
@@ -26,11 +26,13 @@
 #include <itkRGBPixel.h>
 #include <itkIntTypes.h>
 
+#include "ITKVtkGlueExport.h"
+
 /** \class ImageInfo
  * \brief A container for an image and its descriptiom
  * \ingroup ITKVtkGlue
  */
-class ImageInfo
+class ITKVtkGlue_EXPORT ImageInfo
 {
 public:
   typedef itk::Image<unsigned char, 2> ImageType;
@@ -49,7 +51,7 @@ public:
  * \brief A container for an rgb image and its descriptiom
  * \ingroup ITKVtkGlue
  */
-class RGBImageInfo
+class ITKVtkGlue_EXPORT RGBImageInfo
 {
 public:
   typedef itk::Image<itk::RGBPixel<unsigned char>, 2> ImageType;
@@ -102,17 +104,20 @@ public:
  *
  * \ingroup ITKVtkGlue
  */
-class QuickView
+class ITKVtkGlue_EXPORT QuickView
 {
 public:
   QuickView()
   {
     m_ShareCamera = true;
+    m_Interpolate = true;
     m_Counter = 0;
     m_Snapshot = false;
     m_SnapshotPath = "";
     m_SnapshotPrefix = "snapshot_";
     m_SnapshotExtension = "png";
+    m_NumberOfColumns = 4;
+    m_ViewPortSize = 300;
   }
   /** Add an image to be rendered. */
   template<typename TImage> void AddImage(
@@ -142,6 +147,18 @@ public:
   void ShareCameraOn()
   {
     m_ShareCamera = true;
+  }
+
+  /** Use pixel replication in rendered image */
+  void InterpolateOff()
+  {
+    m_Interpolate = false;
+  }
+
+  /** Use pixel interpolation in rendered image */
+  void InterpolateOn()
+  {
+    m_Interpolate = true;
   }
 
   /** Each render window will take a snaphot */
@@ -177,6 +194,18 @@ public:
           ::tolower );
   }
 
+  /** Set the number of columns, default 4.*/
+  void SetNumberOfColumns (const unsigned int columns)
+  {
+    m_NumberOfColumns = columns;
+  }
+
+  /** Set the viewport size, default 300.*/
+  void SetViewPortSize (const unsigned int size)
+  {
+    m_ViewPortSize = size;
+  }
+
 private:
   std::vector<ImageInfo>    Images;        // Container for images
   std::vector<RGBImageInfo> RGBImages;     // Container for rgb images
@@ -186,6 +215,9 @@ private:
   std::string               m_SnapshotExtension;
   bool                      m_ShareCamera;
   bool                      m_Snapshot;
+  bool                      m_Interpolate;
+  unsigned int              m_NumberOfColumns;
+  unsigned int              m_ViewPortSize;
 };
 
 #endif

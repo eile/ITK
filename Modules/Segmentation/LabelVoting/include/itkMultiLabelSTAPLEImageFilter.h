@@ -251,7 +251,7 @@ public:
 
   /** Get confusion matrix for the i-th input segmentation.
     */
-  ConfusionMatrixType GetConfusionMatrix( const unsigned int i )
+  ConfusionMatrixType GetConfusionMatrix( const unsigned int i ) const
   {
     return this->m_ConfusionMatrixArray[i];
   }
@@ -259,7 +259,7 @@ public:
 protected:
   MultiLabelSTAPLEImageFilter() :
     m_TotalLabelCount(0),
-    m_LabelForUndecidedPixels(NumericTraits<OutputPixelType>::Zero),
+    m_LabelForUndecidedPixels(NumericTraits<OutputPixelType>::ZeroValue()),
     m_HasLabelForUndecidedPixels(false),
     m_HasPriorProbabilities(false),
     m_HasMaximumNumberOfIterations(false),
@@ -283,8 +283,8 @@ protected:
   void EnlargeOutputRequestedRegion( DataObject * ) ITK_OVERRIDE;
 
 private:
-  MultiLabelSTAPLEImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  MultiLabelSTAPLEImageFilter(const Self&) ITK_DELETE_FUNCTION;
+  void operator=(const Self&) ITK_DELETE_FUNCTION;
 
   size_t m_TotalLabelCount;
 

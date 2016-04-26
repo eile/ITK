@@ -131,29 +131,6 @@ const typename GPUPDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDi
   }
 
 /*
- *
- */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField, typename TParentImageFilter>
-std::vector<SmartPointer<DataObject> >::size_type
-GPUPDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField, TParentImageFilter>
-::GetNumberOfValidRequiredInputs() const
-{
-  typename std::vector<SmartPointer<DataObject> >::size_type num = 0;
-
-  if( this->GetFixedImage() )
-    {
-    num++;
-    }
-
-  if( this->GetMovingImage() )
-    {
-    num++;
-    }
-
-  return num;
-}
-
-/*
  * Standard PrintSelf method.
  */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField, typename TParentImageFilter>
@@ -319,7 +296,7 @@ GPUPDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField
   // Release memory for smoothing buffer
   m_TempField->Initialize();
   // Release memory for smoothing kernels
-  for( int dir = 0; dir < ImageDimension; dir++ )
+  for( unsigned int dir = 0; dir < ImageDimension; dir++ )
     {
     m_GPUSmoothingKernels[dir]->Initialize();
     delete m_SmoothingKernels[dir];
@@ -558,7 +535,7 @@ GPUPDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField
   // call to the smoothing function.
   //
   // Allocate smoothing kernel for displacement field
-  for( int dir = 0; dir < ImageDimension; dir++ )
+  for( unsigned int dir = 0; dir < ImageDimension; dir++ )
     {
     // for each smoothing direction
     oper.SetDirection(dir);
@@ -586,7 +563,7 @@ GPUPDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField
     m_GPUSmoothingKernels[dir]->SetGPUDirtyFlag(true);
     }
   // Allocate smoothing kernel for update field
-  for( int dir = 0; dir < ImageDimension; dir++ )
+  for( unsigned int dir = 0; dir < ImageDimension; dir++ )
     {
     // for each smoothing direction
     oper.SetDirection(dir);

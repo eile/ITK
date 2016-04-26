@@ -87,11 +87,11 @@ protected:
   /** Multi-thread version GenerateData. */
   void  ThreadedGenerateData(const OutputImageRegionType &
                              outputRegionForThread,
-                             ThreadIdType threadId);
+                             ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
-  BoxSigmaImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);      //purposely not implemented
+  BoxSigmaImageFilter(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 };                                   // end of class
 } // end namespace itk
 

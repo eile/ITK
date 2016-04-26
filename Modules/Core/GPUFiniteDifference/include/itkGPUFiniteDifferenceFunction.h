@@ -83,13 +83,12 @@ public:
     * interpolation among grid values in a neighborhood. */
   typedef typename Superclass::FloatOffsetType FloatOffsetType;
 
-  virtual void InitializeIteration() {}
-
-#if !defined( CABLE_CONFIGURATION )
+#if !defined( ITK_WRAPPING_PARSER )
   /** Empty implementation - this will not be used by GPU filters */
   virtual PixelType  ComputeUpdate( const NeighborhoodType & itkNotUsed(neighborhood),
                                     void *itkNotUsed(globalData),
                                     const FloatOffsetType & itkNotUsed(offset = FloatOffsetType(0.0)) )
+    ITK_OVERRIDE
   {
     PixelType pix = itk::NumericTraits<PixelType>::ZeroValue();
     return pix;
@@ -116,11 +115,6 @@ protected:
   ~GPUFiniteDifferenceFunction() {
   }
 
-  void PrintSelf(std::ostream & os, Indent indent) const
-  {
-    Superclass::PrintSelf(os, indent);
-  }
-
   /** GPU kernel manager for GPUFiniteDifferenceFunction class */
   typename GPUKernelManager::Pointer m_GPUKernelManager;
 
@@ -128,8 +122,8 @@ protected:
   int m_ComputeUpdateGPUKernelHandle;
 
 private:
-  GPUFiniteDifferenceFunction(const Self &); //purposely not implemented
-  void operator=(const Self &);              //purposely not implemented
+  GPUFiniteDifferenceFunction(const Self &) ITK_DELETE_FUNCTION;
+  void operator=(const Self &) ITK_DELETE_FUNCTION;
 
 };
 } // end namespace itk

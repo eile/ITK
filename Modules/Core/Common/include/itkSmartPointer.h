@@ -86,9 +86,11 @@ public:
   operator ObjectType *() const
         { return m_Pointer; }
 
-  /** Test if the pointer has been initialized */
+  /** Test if the pointer is not NULL. */
   bool IsNotNull() const
   { return m_Pointer != ITK_SP_NULLPTR; }
+
+  /** Test if the pointer is NULL. */
   bool IsNull() const
   { return m_Pointer == ITK_SP_NULLPTR; }
 
@@ -130,7 +132,7 @@ public:
   SmartPointer & operator=(ObjectType *r)
   {
     SmartPointer temp(r);
-    temp.swap(*this);
+    temp.Swap(*this);
 
     return *this;
   }
@@ -150,7 +152,14 @@ public:
     return m_Pointer;
   }
 
+#if ! defined ( ITK_FUTURE_LEGACY_REMOVE )
   void swap(SmartPointer &other)
+    {
+      this->Swap(other);
+    }
+#endif
+
+  void Swap(SmartPointer &other)
     {
       ObjectType *tmp = this->m_Pointer;
       this->m_Pointer = other.m_Pointer;
@@ -182,7 +191,7 @@ std::ostream & operator<<(std::ostream & os, SmartPointer< T > p)
 template<typename T>
 inline void swap( SmartPointer<T> &a, SmartPointer<T> &b )
 {
-  a.swap(b);
+  a.Swap(b);
 }
 
 } // end namespace itk
